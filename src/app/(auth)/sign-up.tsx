@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,31 +8,77 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
-import { Link, router, useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import BgColor from '@/src/constants/color/BgColor';
 import LogoContant from '@/src/constants/logo/LogoContant';
+import api from '@/src/utils/api/Axios';
+import { setTemData } from '@/src/functions/storage/Storage';
+import AuthToken from '@/src/constants/token/AuthToken';
 
 const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [responseOtp, setResponseotp] = useState("")
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [error, setError] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendOtp = () => {
-    // Handle OTP sending logic here
-    setOtpSent(true);
-    setShowOtpInput(true);
-  };
+    setIsLoading(true)
+    if (phoneNumber.length < 10) {
+      setIsLoading(false)
+      Alert.alert('Error', 'Please enter a valid phone number');
+    } else {
+      api.post("/api/otp/signup", {
+        number: phoneNumber
+      }).then((res) => {
+        if (res.data.success) {
+          setResponseotp(res.data.otp.otp)
+          setOtpSent(true);
+          setShowOtpInput(true);
+          setIsLoading(false)
+        } else {
+          Alert.alert("Otp Ricived Error")
+          setIsLoading(false)
+        }
+      }).catch((err) => {
+        Alert.alert("Otp Sending Error")
+        setIsLoading(false)
+      })
+    }
 
+  };
   const handleVerifyOtp = () => {
-    // Handle OTP verification logic here
-    router.push('/user-info');
+    if (responseOtp == otp) {
+      setTemData(AuthToken.TemLogin, phoneNumber)
+      router.push('/user-info');
+      cleanup()
+    } else {
+      Alert.alert("Invalid Otp Please Enter valid Otp")
+    }
   };
 
   const navigation = useNavigation();
+  const cleanup = () => {
+    setOtpSent(false);
+    setResponseotp("");
+    setShowOtpInput(false);
+    setOtp("");
+    setPhoneNumber("");
+    setError("");
+  }
 
+  useEffect(() => {
+    return () => {
+      cleanup()
+    }
+  }, [])
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -76,13 +122,12 @@ const SignUp = () => {
                 </View>
 
                 <TouchableOpacity
-                  className="bg-blue-500 py-4 rounded-xl mb-6"
-                  onPress={handleSendOtp}
+                  className="bg-blue-500  h-14 flex items-center justify-center rounded-xl mb-6"
+                  onPress={() => isLoading ? null : handleSendOtp()}
+                  activeOpacity={0.8}
                   style={{ backgroundColor: BgColor.Accent }}
                 >
-                  <Text className="text-white text-center font-semibold text-lg">
-                    Send OTP
-                  </Text>
+                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> : <Text className="text-white text-center font-semibold text-lg">Send OTP</Text>}
                 </TouchableOpacity>
               </View>
             ) : (
@@ -110,16 +155,16 @@ const SignUp = () => {
                 </View>
 
                 <TouchableOpacity
-                  className="bg-blue-500 py-4 rounded-xl mb-6"
-                  onPress={handleVerifyOtp}
+                  className="bg-blue-500 h-14 flex items-center justify-center rounded-xl mb-6"
+                  onPress={() => isLoading ? null : handleVerifyOtp()}
                   style={{ backgroundColor: BgColor.Accent }}
                 >
-                  <Text className="text-white text-center font-semibold text-lg">
+                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> : <Text className="text-white text-center font-semibold text-lg">
                     Verify OTP
-                  </Text>
+                  </Text>}
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   className="flex-row justify-center items-center mb-6"
                   onPress={() => setShowOtpInput(false)}
                 >
@@ -129,7 +174,6 @@ const SignUp = () => {
               </View>
             )}
 
-            {/* Sign In Link */}
             <View className="flex-row justify-center">
               <Text className="text-zinc-400">Already have an account? </Text>
               <TouchableOpacity onPress={() => navigation.goBack()}>

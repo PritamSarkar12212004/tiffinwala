@@ -1,7 +1,9 @@
 import { View, Text, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import ProfileOptionCard from '../ProfileOptionCard/ProfileOptionCard'
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
+import { removeFullData, removeTemData } from '@/src/functions/storage/Storage';
+import AuthToken from '@/src/constants/token/AuthToken';
 
 const ProfileOptions = () => {
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -58,12 +60,13 @@ const ProfileOptions = () => {
             title: "Logout",
             icon: "log-out-outline",
             description: "Sign out of your account",
-            func: () => {
-                // navigation.navigate("Logout")
+            func: async () => {
+                removeFullData(AuthToken.UserInfo)
+                removeTemData(AuthToken.TemLogin)
+                router.replace("/(auth)" as any)
             }
         }
     ]
-
     return (
         <View className='w-full mb-4'>
             <View className='flex-row items-center justify-between mb-4'>

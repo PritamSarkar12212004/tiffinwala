@@ -1,10 +1,6 @@
 import { Alert } from "react-native";
 
-const uploadToCloudinary = async (
-  fileUri: any,
-  fileType: any,
-  setUploadProgress: any
-) => {
+const uploadToCloudinary = async (fileUri: any, fileType: any) => {
   try {
     // Extract file extension
     const match = fileUri.match(/\.(\w+)$/);

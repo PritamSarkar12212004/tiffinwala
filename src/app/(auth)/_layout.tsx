@@ -16,6 +16,7 @@ const MainLayout = () => {
 
     <Stack
       screenOptions={{
+        headerShown: false,
         headerStyle: {
           backgroundColor: BgColor.Primary,
         },
@@ -46,10 +47,19 @@ const MainLayout = () => {
         name="user-info"
         options={{
           title: 'Complete Profile',
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="LocationPicker"
+        options={{
+          title: 'Select Location',
           headerShown: true,
           animation: 'slide_from_right',
         }}
       />
+
     </Stack>
   </>
 

@@ -8,11 +8,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Link, router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import BgColor from '@/src/constants/color/BgColor';
+import api from '@/src/utils/api/Axios';
 import LogoContant from '@/src/constants/logo/LogoContant';
+import { setFullData } from '@/src/functions/storage/Storage';
+import AuthToken from '@/src/constants/token/AuthToken';
 
 const index = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -21,17 +26,66 @@ const index = () => {
   const [otpSent, setOtpSent] = useState(false);
   const navigation = useNavigation();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [responseOtp, setResponseotp] = useState('');
+
   const handleSendOtp = () => {
-    // Handle OTP sending logic here
-    setOtpSent(true);
-    setShowOtpInput(true);
-  };
+    setIsLoading(true)
+    if (phoneNumber.length < 10) {
+      setIsLoading(false)
+      Alert.alert('Error', 'Please enter a valid phone number');
+    } else {
+      api.post("/api/otp/signin", {
+        number: phoneNumber
+      }).then((res) => {
+        if (res.data.success) {
+          setResponseotp(res.data.otp.otp)
+          setOtpSent(true);
+          setShowOtpInput(true);
+          setIsLoading(false)
+        } else {
+          Alert.alert("Otp Ricived Error")
+          setIsLoading(false)
+        }
+      }).catch((err) => {
+        Alert.alert("Otp Sending Error")
+        setIsLoading(false)
+      })
+    }
 
+  };
   const handleVerifyOtp = () => {
-    // Handle OTP verification logic here
-    router.replace('/(main)');
+    setIsLoading(true)
+    if (responseOtp == otp) {
+      api.post("/api/user/profile-login", {
+        phone: phoneNumber
+      }).then((res) => {
+        if (res.data.success) {
+          setFullData(AuthToken.UserInfo, res.data.data)
+          cleanup()
+          router.replace('/(main)/(tab)' as any);
+        }
+      }).catch((err) => {
+        if (err.status === 400) {
+          Alert.alert("Error", "User Not exists Please Sign Up");
+        } else if (err.status === 500) {
+          Alert.alert("Error", "Server Error");
+        }
+        setIsLoading(false)
+      })
+    } else {
+      Alert.alert("Invalid Otp Please Enter valid Otp")
+      setIsLoading(false)
+    }
   };
 
+  const cleanup = () => {
+    setOtpSent(false);
+    setResponseotp("");
+    setShowOtpInput(false);
+    setOtp("");
+    setPhoneNumber("");
+  }
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -75,13 +129,15 @@ const index = () => {
                 </View>
 
                 <TouchableOpacity
-                  className="bg-blue-500 py-4 rounded-xl mb-6"
-                  onPress={handleSendOtp}
+                  className="bg-blue-500 h-14 flex items-center justify-center rounded-xl mb-6"
+                  onPress={() => isLoading ? null : handleSendOtp()}
                   style={{ backgroundColor: BgColor.Accent }}
                 >
-                  <Text className="text-white text-center font-semibold text-lg">
-                    Send OTP
-                  </Text>
+                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> :
+                    <Text className="text-white text-center font-semibold text-lg">
+                      Send OTP
+                    </Text>
+                  }
                 </TouchableOpacity>
               </View>
             ) : (
@@ -109,13 +165,15 @@ const index = () => {
                 </View>
 
                 <TouchableOpacity
-                  className="bg-blue-500 py-4 rounded-xl mb-6"
-                  onPress={handleVerifyOtp}
+                  className="bg-blue-500 h-14 flex items-center justify-center rounded-xl mb-6"
+                  onPress={() => isLoading ? null : handleVerifyOtp()}
                   style={{ backgroundColor: BgColor.Accent }}
                 >
-                  <Text className="text-white text-center font-semibold text-lg">
-                    Verify OTP
-                  </Text>
+                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> :
+                    <Text className="text-white text-center font-semibold text-lg">
+                      Verify OTP
+                    </Text>
+                  }
                 </TouchableOpacity>
 
                 <TouchableOpacity

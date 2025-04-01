@@ -10,11 +10,11 @@ const MainTiffinCard = () => {
     const router = useRouter();
     const navigation = useNavigation()
     const [isLiked, setIsLiked] = useState(false);
-    const { bottomSheetRef } = userContext();
+    const { bottomSheetRef2 } = userContext();
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
     const bottomSheetHandler = () => {
-        bottomSheetRef.current?.expand()
+        bottomSheetRef2.current?.expand()
     }
 
     const likeHandler = () => {

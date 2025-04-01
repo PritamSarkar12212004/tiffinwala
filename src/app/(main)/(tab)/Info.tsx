@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons'
 
 const Info = () => {
   // Simulating user type - in real app this would come from auth context
-  const [isOwner] = useState(true)
+  const [isOwner] = useState(false)
   const [showUploadForm, setShowUploadForm] = useState(false)
   const [postTitle, setPostTitle] = useState('')
   const [postDescription, setPostDescription] = useState('')

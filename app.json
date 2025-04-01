@@ -83,7 +83,8 @@
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
         }
-      ]
+      ],
+      ["react-native-compressor"]
     ],
     "experiments": {
       "typedRoutes": true

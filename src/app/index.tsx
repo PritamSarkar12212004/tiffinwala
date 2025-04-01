@@ -5,12 +5,26 @@ import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import BgColor from '../constants/color/BgColor'
 import Color from '../constants/color/Color'
 import { useRouter } from 'expo-router'
+import { getFullData, getTemData,} from '../functions/storage/Storage'
+import AuthToken from '../constants/token/AuthToken'
 const index = () => {
     const router = useRouter()
+
+    const authChaker = () => {
+        const tempLogin = getTemData(AuthToken.TemLogin)
+        const fullLogin = getFullData(AuthToken.UserInfo)
+        if (tempLogin) {
+            router.replace("/user-info" as any)
+        } else if (fullLogin) {
+            router.replace("/(main)/(tab)" as any)
+        } else {
+            router.replace("/(auth)" as any)
+        }
+    }
     const loading = () => {
         setTimeout(() => {
-            router.replace("/(auth)")
-        }, 10)
+            authChaker()
+        }, 1000)
     }
     useEffect(() => {
         loading()

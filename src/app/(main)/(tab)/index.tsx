@@ -11,8 +11,8 @@ import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
 
 const index = () => {
-  const { bottomSheetRef } = userContext()
-  
+  const { bottomSheetRef2 } = userContext()
+
   return (
     <View className='w-full h-full' style={{ backgroundColor: BgColor.Primary }}>
       <MainPageHeader />
@@ -24,7 +24,7 @@ const index = () => {
         </MainPageLayout>
       </ScrollView>
       <BottomSheet
-        ref={bottomSheetRef}
+        ref={bottomSheetRef2}
         style={{ marginBottom: 80, zIndex: 10 }} // Adjust the margin to move it above the tab bar
         snapPoints={['70%']}
         index={-1}
