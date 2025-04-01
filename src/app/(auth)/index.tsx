@@ -12,6 +12,7 @@ import {
 import { Link, router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import BgColor from '@/src/constants/color/BgColor';
+import LogoContant from '@/src/constants/logo/LogoContant';
 
 const index = () => {
   const [email, setEmail] = useState('');
@@ -34,7 +35,7 @@ const index = () => {
           {/* Logo and Welcome Text */}
           <View className="items-center mt-16 mb-12">
             <Image
-              source={{ uri: 'https://via.placeholder.com/120' }}
+              source={LogoContant.logo3}
               className="w-32 h-32 rounded-full mb-6 border-4"
               style={{ borderColor: BgColor.Accent }}
             />

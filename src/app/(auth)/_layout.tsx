@@ -27,7 +27,7 @@ const MainLayout = () => {
       }}
     >
       <Stack.Screen
-        name="sign-in"
+        name="index"
         options={{
           title: 'Sign In',
           headerShown: false,
