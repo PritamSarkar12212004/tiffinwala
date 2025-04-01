@@ -1,0 +1,93 @@
+import { View, Text, FlatList } from 'react-native'
+import React, { useState } from 'react'
+import ProfileOptionCard from '../ProfileOptionCard/ProfileOptionCard'
+import { useNavigation } from 'expo-router';
+
+const ProfileOptions = () => {
+    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [notifications, setNotifications] = useState(true);
+    const navigation = useNavigation()
+
+    const data = [
+        {
+            title: "Notifications",
+            icon: "notifications-outline",
+            description: "Manage your notification preferences",
+            showSwitch: true,
+            isEnabled: notifications,
+            func: () => {
+                navigation.navigate("Notifications")
+            }
+        },
+        {
+            title: "Theme",
+            icon: "moon-outline",
+            description: "Toggle dark/light theme",
+            showSwitch: true,
+            isEnabled: isDarkMode,
+            func: () => {
+                navigation.navigate("DarkMode")
+            }
+        },
+
+        {
+            title: "Privacy Settings",
+            icon: "shield-checkmark-outline",
+            description: "Manage your privacy preferences",
+            func: () => {
+                navigation.navigate("Privacy")
+            }
+        },
+        {
+            title: "Help & Support",
+            icon: "help-circle-outline",
+            description: "Get help and contact support",
+            func: () => {
+                navigation.navigate("HelpSupport")
+            }
+        },
+        {
+            title: "About App",
+            icon: "information-circle-outline",
+            description: "App version and information",
+            func: () => {
+                navigation.navigate("About")
+            }
+        },
+        {
+            title: "Logout",
+            icon: "log-out-outline",
+            description: "Sign out of your account",
+            func: () => {
+                // navigation.navigate("Logout")
+            }
+        }
+    ]
+
+    return (
+        <View className='w-full mb-4'>
+            <View className='flex-row items-center justify-between mb-4'>
+                <View>
+                    <Text className='text-white text-xl font-bold'>Settings</Text>
+                    <Text className='text-zinc-400 text-sm'>Manage your account settings</Text>
+                </View>
+            </View>
+
+            <View className='flex gap-2'>
+                {data.map((item, index) => (
+                    <ProfileOptionCard
+                        key={index}
+                        title={item.title}
+                        icon={item.icon}
+                        func={item.func}
+                        description={item.description}
+                        showSwitch={item.showSwitch}
+                        isEnabled={item.isEnabled}
+                    />
+                ))}
+            </View>
+        </View>
+    )
+}
+
+export default ProfileOptions
