@@ -90,7 +90,7 @@ const Promotions = () => {
                                     <Ionicons name="pencil-outline" size={20} color="#FFD700" />
                                     <Text className="text-white ml-2">Edit</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("promotion-analytics")} className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center">
+                                <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("PromotionAnalytics")} className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center">
                                     <Ionicons name="analytics-outline" size={20} color="#FFD700" />
                                     <Text className="text-white ml-2">Analytics</Text>
                                 </TouchableOpacity>

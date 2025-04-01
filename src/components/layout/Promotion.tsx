@@ -1,14 +1,14 @@
 import { View, Text, FlatList, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React from 'react'
-import { useRouter } from 'expo-router'
+import { router, useNavigation, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import BgColor from '@/src/constants/color/BgColor'
 
 const { width } = Dimensions.get('window');
 
 const Promotion = () => {
-  const router = useRouter();
-  
+  const nvaigation = useNavigation();
+
   const data = [
     {
       id: 1,
@@ -37,7 +37,7 @@ const Promotion = () => {
   ]
 
   const handlePromotionPress = (id: number) => {
-    router.push('/promotion-analytics');
+    nvaigation.navigate('PromotionAnalytics')
   }
 
   return (
@@ -47,8 +47,8 @@ const Promotion = () => {
           <Text className='text-white text-xl font-bold'>Special Offers</Text>
           <Text className='text-gray-400 text-sm'>Limited time deals</Text>
         </View>
-        <TouchableOpacity 
-          onPress={() => router.push('/promotion-analytics')}
+        <TouchableOpacity
+          onPress={() => nvaigation.navigate('PromotionAnalytics')}
           className='flex-row items-center bg-blue-500/20 px-4 py-2 rounded-full'
         >
           <Text className='text-blue-400 mr-2'>View All</Text>
@@ -60,8 +60,8 @@ const Promotion = () => {
         showsHorizontalScrollIndicator={false}
         data={data}
         renderItem={({ item }) => (
-          <TouchableOpacity 
-            activeOpacity={0.8} 
+          <TouchableOpacity
+            activeOpacity={0.8}
             className='mr-3'
             onPress={() => handlePromotionPress(item.id)}
           >

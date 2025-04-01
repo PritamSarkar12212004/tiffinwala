@@ -31,6 +31,7 @@ const MainLayout = () => {
         options={{
           title: 'Sign In',
           headerShown: false,
+          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen
@@ -38,6 +39,7 @@ const MainLayout = () => {
         options={{
           title: 'Sign Up',
           headerShown: false,
+          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen
@@ -45,6 +47,7 @@ const MainLayout = () => {
         options={{
           title: 'Complete Profile',
           headerShown: true,
+          animation: 'slide_from_right',
         }}
       />
     </Stack>

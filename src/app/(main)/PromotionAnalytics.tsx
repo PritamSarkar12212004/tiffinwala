@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+// import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import BgColor from '@/src/constants/color/BgColor';
 
@@ -31,7 +31,7 @@ const PromotionAnalytics = () => {
     <ScrollView className="flex-1" style={{ backgroundColor: BgColor.Primary }}>
       <View className="p-4">
         <Text className="text-2xl font-bold mb-4 text-white">Promotion Analytics</Text>
-        
+
         {/* Summary Cards */}
         <View className="flex-row flex-wrap justify-between mb-6">
           <View className="bg-zinc-800 p-4 rounded-lg w-[48%] mb-4">
@@ -55,7 +55,7 @@ const PromotionAnalytics = () => {
         {/* Views Chart */}
         <View className="bg-zinc-800 p-4 rounded-lg shadow-sm mb-6">
           <Text className="text-lg font-semibold mb-4 text-white">Views Over Time</Text>
-          <LineChart
+          {/* <LineChart
             data={data}
             width={screenWidth - 40}
             height={220}
@@ -65,7 +65,7 @@ const PromotionAnalytics = () => {
               marginVertical: 8,
               borderRadius: 16,
             }}
-          />
+          /> */}
         </View>
 
         {/* Top Performing Posts */}
