@@ -5,17 +5,21 @@ import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import BgColor from '../constants/color/BgColor'
 import Color from '../constants/color/Color'
 import { useRouter } from 'expo-router'
-import { getFullData, getTemData,} from '../functions/storage/Storage'
+import { getFullData, getTemData, } from '../functions/storage/Storage'
 import AuthToken from '../constants/token/AuthToken'
+import { userContext } from '../utils/context/ContextApi'
 const index = () => {
     const router = useRouter()
 
-    const authChaker = () => {
+    // call hooks
+    const { setUserProfile } = userContext()
+    const authChaker = async () => {
         const tempLogin = getTemData(AuthToken.TemLogin)
         const fullLogin = getFullData(AuthToken.UserInfo)
         if (tempLogin) {
             router.replace("/user-info" as any)
         } else if (fullLogin) {
+            setUserProfile(fullLogin)
             router.replace("/(main)/(tab)" as any)
         } else {
             router.replace("/(auth)" as any)

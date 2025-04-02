@@ -1,14 +1,15 @@
 import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native'
 import React from 'react'
 import PageNavigation from '@/src/components/navigation/PageNavigation'
-import BgColor from '@/src/constants/color/BgColor'
 import ProfilePost from '@/src/components/layout/ProfilePost';
 import ProfilePromotion from '@/src/components/layout/ProfilePromotion';
 import ProfileOptions from '@/src/components/layout/ProfileOptions';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
+import { userContext } from '@/src/utils/context/ContextApi';
 const Profile = () => {
     const navigation = useNavigation()
+    const { userProfile } = userContext()
     const stats = [
         { label: "Posts", value: "24" },
         { label: "Reviews", value: "156" },
@@ -26,7 +27,7 @@ const Profile = () => {
                         <View className="flex-row items-center gap-4">
                             <View className="relative">
                                 <Image
-                                    source={{ uri: "https://i.pinimg.com/736x/bc/36/5e/bc365e7fba523aae944ce0952c00f1dc.jpg" }}
+                                    source={{ uri: userProfile?.User_Image }}
                                     className="w-24 h-24 rounded-full border-2 border-[#FFD700]"
                                     resizeMode="cover"
                                 />
@@ -35,14 +36,18 @@ const Profile = () => {
                                 </TouchableOpacity>
                             </View>
                             <View className="flex-1">
-                                <Text className="text-white text-2xl font-bold">Pritam Sarkar</Text>
+                                <Text className="text-white text-2xl font-bold">{userProfile?.User_Name}</Text>
                                 <View className="flex-row items-center gap-2 mt-1">
                                     <Ionicons name="call" size={16} color="#FFD700" />
-                                    <Text className="text-zinc-400">+91 9876543210</Text>
+                                    <Text className="text-zinc-400">
+                                        {userProfile?.User_Phone_Number}
+                                    </Text>
                                 </View>
                                 <View className="flex-row items-center gap-2 mt-1">
                                     <Ionicons name="location" size={16} color="#FFD700" />
-                                    <Text className="text-zinc-400 text-sm">Kolkata, West Bengal</Text>
+                                    <Text className="text-zinc-400 text-sm">{
+                                        userProfile?.User_Address.address
+                                    }</Text>
                                 </View>
                             </View>
                         </View>
@@ -60,7 +65,7 @@ const Profile = () => {
                         {/* Action Buttons */}
                         <View className="flex-row gap-3 mt-4">
                             <TouchableOpacity activeOpacity={0.8}
-                                onPress={() => navigation.navigate("ProfileEdit")}
+                                onPress={() => navigation.navigate("ProfileEdit" as never)}
                                 className="flex-1 bg-[#FFD700] py-3 rounded-xl flex-row items-center justify-center gap-2">
                                 <Ionicons name="pencil" size={20} color="black" />
                                 <Text className="text-black font-semibold">Edit Profile</Text>

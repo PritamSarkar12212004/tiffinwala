@@ -110,7 +110,7 @@ const LocationPage = () => {
     if (location && locationDetails) {
         return (
             <View className='w-full h-full flex px-2 bg-black'>
-                <PageNavigation />
+                <PageNavigation path="Location" />
                 <View className='flex-1 w-full items-center justify-center gap-4'>
                     <View className='w-20 h-20 rounded-full bg-green-500/20 items-center justify-center'>
                         <Ionicons name="checkmark-circle" size={40} color="#4CAF50" />
@@ -135,7 +135,7 @@ const LocationPage = () => {
 
     return (
         <View className='w-full h-full flex px-2 bg-black'>
-            <PageNavigation />
+            <PageNavigation path="Location" />
             <View className='flex-1 w-full items-center justify-center gap-4'>
                 <LottiAnimation height={300} width={300} path={LottiConstant.mapLoading} bg={"black"} />
                 <Text className='text-white text-xl font-bold'>Getting Your Location</Text>

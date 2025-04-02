@@ -1,27 +1,11 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { BottomSheet } from "@gorhom/bottom-sheet";
+import { createContext, useContext, useRef, useState } from "react";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { ContextType, LocationData, UserProfile } from "@/src/components/interface/AllInterface";
 
-interface LocationData {
-    latitude: number;
-    longitude: number;
-    address?: string;
-    city?: string;
-    state?: string;
-    area?: string;
-    pincode?: string;
-}
 
-interface ContextType {
-    bottomSheetRef: React.RefObject<BottomSheet>;
-    bottomSheetRef2: React.RefObject<BottomSheet>;
-    tempMobileNumber: string;
-    setTempMobileNumber: (value: string) => void;
-    location: LocationData | null;
-    setLocation: (location: LocationData | null) => void;
-}
+
 
 const Context = createContext<ContextType | undefined>(undefined);
-
 export const ContextProvider = ({ children }: any) => {
     // Bottom Sheet Ref
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -32,6 +16,9 @@ export const ContextProvider = ({ children }: any) => {
 
     // location
     const [location, setLocation] = useState<LocationData | null>(null);
+
+    // user Profile Information 
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
 
     return (
         <Context.Provider
@@ -44,7 +31,10 @@ export const ContextProvider = ({ children }: any) => {
                 setTempMobileNumber,
                 // location
                 location,
-                setLocation
+                setLocation,
+                // user Profile Information 
+                userProfile,
+                setUserProfile
             }}
         >
             {children}

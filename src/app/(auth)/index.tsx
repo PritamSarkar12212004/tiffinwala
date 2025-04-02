@@ -11,13 +11,14 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { Link, router, useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import BgColor from '@/src/constants/color/BgColor';
 import api from '@/src/utils/api/Axios';
 import LogoContant from '@/src/constants/logo/LogoContant';
 import { setFullData } from '@/src/functions/storage/Storage';
 import AuthToken from '@/src/constants/token/AuthToken';
+import { userContext } from '@/src/utils/context/ContextApi';
 
 const index = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -28,6 +29,7 @@ const index = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [responseOtp, setResponseotp] = useState('');
+  const { setUserProfile } = userContext();
 
   const handleSendOtp = () => {
     setIsLoading(true)
@@ -62,6 +64,7 @@ const index = () => {
       }).then((res) => {
         if (res.data.success) {
           setFullData(AuthToken.UserInfo, res.data.data)
+          setUserProfile(res.data.data)
           cleanup()
           router.replace('/(main)/(tab)' as any);
         }
@@ -127,7 +130,6 @@ const index = () => {
                     />
                   </View>
                 </View>
-
                 <TouchableOpacity
                   className="bg-blue-500 h-14 flex items-center justify-center rounded-xl mb-6"
                   onPress={() => isLoading ? null : handleSendOtp()}

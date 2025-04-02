@@ -9,9 +9,11 @@ import {
 import AuthToken from "@/src/constants/token/AuthToken";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { userContext } from "@/src/utils/context/ContextApi";
 
 const useCreateProfile = () => {
   const router = useRouter();
+  const { setUserProfile } = userContext();
   const createProfile = async (
     formData: any,
     image: any,
@@ -36,6 +38,7 @@ const useCreateProfile = () => {
         })
         .then((res) => {
           setFullData(AuthToken.UserInfo, res.data.data);
+          setUserProfile(res.data.data);
           removeTemData(AuthToken.TemLogin);
           setIsLoading(false);
           router.replace("/(main)/(tab)" as any);
