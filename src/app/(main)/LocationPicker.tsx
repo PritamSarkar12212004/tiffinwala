@@ -74,20 +74,6 @@ const LocationPicker = () => {
                 </TouchableOpacity>
                 <Text className="text-white text-xl font-semibold">Pick Location</Text>
             </View>
-
-            <View className="p-4">
-                <View className="flex-row items-center bg-zinc-800 rounded-xl px-4 py-2 mb-4">
-                    <Ionicons name="search-outline" size={20} color="#FFD700" />
-                    <TextInput
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        placeholder="Search location..."
-                        placeholderTextColor="#71717a"
-                        className="text-white flex-1 ml-2"
-                    />
-                </View>
-            </View>
-
             <View className="flex-1">
                 <MapView
                     style={StyleSheet.absoluteFill}

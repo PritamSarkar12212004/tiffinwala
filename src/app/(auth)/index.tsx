@@ -32,6 +32,7 @@ const index = () => {
   const { setUserProfile } = userContext();
 
   const handleSendOtp = () => {
+
     setIsLoading(true)
     if (phoneNumber.length < 10) {
       setIsLoading(false)

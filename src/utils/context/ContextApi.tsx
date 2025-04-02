@@ -19,6 +19,7 @@ export const ContextProvider = ({ children }: any) => {
 
     // user Profile Information 
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+    
 
     return (
         <Context.Provider

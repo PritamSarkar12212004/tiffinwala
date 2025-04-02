@@ -11,9 +11,10 @@ interface LocationData {
 }
 
 interface UserProfile {
-  User_Name: string;
+  _id: string;
+  name: string;
   email: string;
-  User_Phone_Number: string;
+  phone: string;
   address: string;
   User_Address: {
     address: string;
@@ -32,4 +33,16 @@ interface UserProfile {
   setUserProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
 }
 
-export { LocationData, UserProfile, ContextType };
+interface Profile {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  bio: string;
+  gender: string;
+  profileImage: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+export { LocationData, UserProfile, ContextType,Profile };
