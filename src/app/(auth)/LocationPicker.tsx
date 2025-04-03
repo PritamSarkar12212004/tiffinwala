@@ -128,19 +128,20 @@ const LocationPicker = () => {
         }
     };
 
-    const handleConfirm = () => {
-        const locationData = {
-            latitude: selectedLocation.latitude,
-            longitude: selectedLocation.longitude,
-            address,
-            city: addressDetails.city,
-            state: addressDetails.state,
-            area: addressDetails.area,
-            pincode: addressDetails.pincode
-        };
+    const handleConfirm = async () => {
 
-        setLocation(locationData);
-        router.back();
+        console.log(selectedLocation)
+        const { latitude, longitude } = selectedLocation
+        const [address] = await Location.reverseGeocodeAsync({
+            latitude: latitude,
+            longitude: longitude
+        });
+        if (address) {
+            setLocation(address);
+            router.back();
+        } else {
+            Alert.alert('Error', 'Failed to get location. Please try again.');
+        }
     };
 
     return (
