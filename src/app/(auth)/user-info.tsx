@@ -65,39 +65,34 @@ const UserInfo = () => {
   const getCurrentLocation = async () => {
     setIsLoadingLocation(true);
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location permission is required to get your current location.');
+      // Check if location services are enabled
+      const enabled = await Location.hasServicesEnabledAsync();
+      if (!enabled) {
+        Alert.alert('Error', 'Location services are disabled. Please enable them in your device settings.');
+        setIsLoadingLocation(false);
         return;
       }
-      const location = await Location.getCurrentPositionAsync({});
 
-      // Get address details
-      const [result] = await Location.reverseGeocodeAsync({
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Please allow location access to use this feature.');
+        setIsLoadingLocation(false);
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High
+      });
+
+      // Get address from coordinates
+      const [address] = await Location.reverseGeocodeAsync({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude
       });
 
-      if (result) {
-        const formattedAddress = [
-          result.street,
-          result.district,
-          result.city,
-          result.region,
-          result.country
-        ].filter(Boolean).join(', ');
-
-        const locationData = {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          address: formattedAddress,
-          city: result.city || '',
-          state: result.region || '',
-          area: result.district || '',
-          pincode: result.postalCode || ''
-        };
-
-        setLocation(locationData);
+      if (address) {
+        setLocation(address);
+        setFormData(prev => ({ ...prev, location: address }));
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to get location. Please try again.');
@@ -287,21 +282,10 @@ const UserInfo = () => {
                 {formData.location && (
                   <View className="bg-zinc-700 p-4 rounded-xl">
                     <Text className="text-white font-semibold mb-2">Selected Location:</Text>
-                    {formData.location.address && (
-                      <Text className="text-zinc-400 mb-2">{formData.location.address}</Text>
+                    {formData.location && (
+                      <Text className="text-zinc-400 mb-2">{formData.location.formattedAddress}</Text>
                     )}
-                    {formData.location.city && (
-                      <Text className="text-zinc-400">City: {formData.location.city}</Text>
-                    )}
-                    {formData.location.state && (
-                      <Text className="text-zinc-400">State: {formData.location.state}</Text>
-                    )}
-                    {formData.location.area && (
-                      <Text className="text-zinc-400">Area: {formData.location.area}</Text>
-                    )}
-                    {formData.location.pincode && (
-                      <Text className="text-zinc-400">Pincode: {formData.location.pincode}</Text>
-                    )}
+
                   </View>
                 )}
 
@@ -320,6 +304,7 @@ const UserInfo = () => {
 
             {/* Submit Button */}
             <TouchableOpacity
+              activeOpacity={0.8}
               className="bg-blue-500 h-14 flex items-center justify-center rounded-xl"
               onPress={handleSubmit}
               disabled={isLoading}

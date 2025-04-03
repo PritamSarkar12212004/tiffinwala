@@ -5,15 +5,16 @@ import {
   getTemData,
   removeTemData,
   setFullData,
+  setLocationData,
 } from "@/src/functions/storage/Storage";
 import AuthToken from "@/src/constants/token/AuthToken";
 import { Alert } from "react-native";
-import { useRouter } from "expo-router";
 import { userContext } from "@/src/utils/context/ContextApi";
-
+import { useRouter } from "expo-router";
+import UtilsToken from "@/src/constants/token/UtilsToken";
 const useCreateProfile = () => {
   const router = useRouter();
-  const { setUserProfile } = userContext();
+  const { setUserProfile, setUserTemLocation } = userContext();
   const createProfile = async (
     formData: any,
     image: any,
@@ -39,6 +40,9 @@ const useCreateProfile = () => {
         .then((res) => {
           setFullData(AuthToken.UserInfo, res.data.data);
           setUserProfile(res.data.data);
+
+          setLocationData(UtilsToken.Location, res.data.data.User_Address);
+          setUserTemLocation(res.data.data.User_Address);
           removeTemData(AuthToken.TemLogin);
           setIsLoading(false);
           router.replace("/(main)/(tab)" as any);

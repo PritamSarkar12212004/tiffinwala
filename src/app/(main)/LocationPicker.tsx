@@ -38,8 +38,7 @@ const LocationPicker = () => {
             });
 
             if (result) {
-                const formattedAddress = `${result.street || ''} ${result.city || ''} ${result.region || ''} ${result.country || ''}`;
-                setAddress(formattedAddress);
+                setAddress(result);
             }
         } catch (error) {
             console.error('Error getting address:', error);

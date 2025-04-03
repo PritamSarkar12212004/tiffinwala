@@ -3,9 +3,15 @@ import compressImage from "@/src/functions/compresser/ImageCompreser";
 import uploadToCloudinary from "@/src/utils/cloudinary/Cloudinary";
 import api from "@/src/utils/api/Axios";
 import { userContext } from "@/src/utils/context/ContextApi";
-import { removeFullData, setFullData } from "@/src/functions/storage/Storage";
+import {
+  removeFullData,
+  removeLocationData,
+  setFullData,
+  setLocationData,
+} from "@/src/functions/storage/Storage";
 import AuthToken from "@/src/constants/token/AuthToken";
 import { useNavigation } from "expo-router";
+import UtilsToken from "@/src/constants/token/UtilsToken";
 
 const useUpdateProfile = () => {
   const { userProfile, setUserProfile } = userContext();
@@ -34,6 +40,8 @@ const useUpdateProfile = () => {
           await removeFullData(AuthToken.UserInfo);
           await setFullData(AuthToken.UserInfo, response.data.data);
           setUserProfile(response.data.data);
+          removeLocationData(UtilsToken.Location);
+          setLocationData(UtilsToken.Location, response.data.data.User_Address);
 
           setIsLoading(false);
           navigation.goBack();

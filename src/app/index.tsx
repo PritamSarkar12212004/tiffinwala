@@ -12,14 +12,17 @@ const index = () => {
     const router = useRouter()
 
     // call hooks
-    const { setUserProfile } = userContext()
+    const { setUserProfile, setUserTemLocation } = userContext()
+
     const authChaker = async () => {
         const tempLogin = getTemData(AuthToken.TemLogin)
         const fullLogin = getFullData(AuthToken.UserInfo)
+        console.log(fullLogin)
         if (tempLogin) {
             router.replace("/user-info" as any)
         } else if (fullLogin) {
             setUserProfile(fullLogin)
+            setUserTemLocation(fullLogin.User_Address);
             router.replace("/(main)/(tab)" as any)
         } else {
             router.replace("/(auth)" as any)

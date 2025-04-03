@@ -16,9 +16,10 @@ import { Ionicons } from '@expo/vector-icons';
 import BgColor from '@/src/constants/color/BgColor';
 import api from '@/src/utils/api/Axios';
 import LogoContant from '@/src/constants/logo/LogoContant';
-import { setFullData } from '@/src/functions/storage/Storage';
+import { setFullData, setLocationData } from '@/src/functions/storage/Storage';
 import AuthToken from '@/src/constants/token/AuthToken';
 import { userContext } from '@/src/utils/context/ContextApi';
+import UtilsToken from '@/src/constants/token/UtilsToken';
 
 const index = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -29,7 +30,7 @@ const index = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [responseOtp, setResponseotp] = useState('');
-  const { setUserProfile } = userContext();
+  const { setUserProfile, setUserTemLocation } = userContext();
 
   const handleSendOtp = () => {
 
@@ -66,6 +67,9 @@ const index = () => {
         if (res.data.success) {
           setFullData(AuthToken.UserInfo, res.data.data)
           setUserProfile(res.data.data)
+          setLocationData(UtilsToken.Location, res.data.data.User_Address);
+          setUserTemLocation(res.data.data.User_Address);
+
           cleanup()
           router.replace('/(main)/(tab)' as any);
         }
@@ -192,7 +196,7 @@ const index = () => {
             {/* Sign Up Link */}
             <View className="flex-row justify-center">
               <Text className="text-zinc-400">Don't have an account? </Text>
-              <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('sign-up')}>
+              <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('sign-up' as never)}>
                 <Text className="text-blue-400 font-semibold">Sign Up</Text>
               </TouchableOpacity>
             </View>

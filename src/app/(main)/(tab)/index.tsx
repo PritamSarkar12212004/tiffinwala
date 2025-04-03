@@ -1,12 +1,12 @@
 import { View, Text, ScrollView, StyleSheet, Image, } from 'react-native'
-import React, { useRef } from 'react'
+import React from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import MainPageHeader from '@/src/components/headers/MainPageHeader'
 import MainPageLayout from '@/src/components/layout/MainPageLayout'
 import Searhmain from '@/src/components/search/Searhmain'
 import Promotion from '@/src/components/layout/Promotion'
 import MainCardShow from '@/src/components/layout/MainCardShow'
-import BottomSheet, { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
 

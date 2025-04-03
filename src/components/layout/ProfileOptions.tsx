@@ -2,9 +2,10 @@ import { View, Text, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import ProfileOptionCard from '../ProfileOptionCard/ProfileOptionCard'
 import { router, useNavigation } from 'expo-router';
-import { removeFullData, removeTemData } from '@/src/functions/storage/Storage';
+import { removeFullData, removeLocationData, removeTemData } from '@/src/functions/storage/Storage';
 import AuthToken from '@/src/constants/token/AuthToken';
 import { userContext } from '@/src/utils/context/ContextApi';
+import UtilsToken from '@/src/constants/token/UtilsToken';
 
 const ProfileOptions = () => {
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -63,11 +64,11 @@ const ProfileOptions = () => {
             title: "Logout",
             icon: "log-out-outline",
             description: "Sign out of your account",
-            func:  () => {
+            func: () => {
                 removeFullData(AuthToken.UserInfo)
                 removeTemData(AuthToken.TemLogin)
                 setUserProfile(null)
-
+                removeLocationData(UtilsToken.Location)
                 router.replace("/(auth)" as any)
             }
         }

@@ -9,7 +9,7 @@ import { useNavigation } from 'expo-router';
 import { userContext } from '@/src/utils/context/ContextApi';
 const Profile = () => {
     const navigation = useNavigation()
-    const { userProfile } = userContext()
+    const { userProfile, userTemLocation } = userContext()
     const stats = [
         { label: "Posts", value: "24" },
         { label: "Reviews", value: "156" },
@@ -43,11 +43,12 @@ const Profile = () => {
                                         {userProfile?.User_Phone_Number}
                                     </Text>
                                 </View>
-                                <View className="flex-row items-center gap-2 mt-1">
+                                <View className="flex-row  justify-center gap-2 mt-1">
                                     <Ionicons name="location" size={16} color="#FFD700" />
-                                    <Text className="text-zinc-400 text-sm">{
-                                        userProfile?.User_Address.address
-                                    }</Text>
+                                    <Text className="text-zinc-400 text-sm">
+                                        {userTemLocation?.formattedAddress ? userTemLocation?.formattedAddress : userTemLocation?.address}
+
+                                    </Text>
                                 </View>
                             </View>
                         </View>

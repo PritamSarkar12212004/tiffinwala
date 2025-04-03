@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
@@ -6,17 +6,18 @@ import PageNavigation from '@/src/components/navigation/PageNavigation'
 import * as Location from 'expo-location';
 import { useNavigation } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons';
+import UtilsToken from '@/src/constants/token/UtilsToken'
+import { removeLocationData, setLocationData } from '@/src/functions/storage/Storage'
+import api from '@/src/utils/api/Axios'
+import { userContext } from '@/src/utils/context/ContextApi'
 
 const LocationPage = () => {
+    const { userProfile, setUserTemLocation } = userContext()
     const navigation = useNavigation()
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [locationDetails, setLocationDetails] = useState<{
-        address?: string;
-        city?: string;
-        state?: string;
-    } | null>(null);
+    const [locationDetails, setLocationDetails] = useState<Location.LocationGeocodedAddress | null>(null);
 
     const getCurrentLocation = async () => {
         try {
@@ -50,22 +51,10 @@ const LocationPage = () => {
             });
 
             if (address) {
-                setLocationDetails({
-                    address: address.street,
-                    city: address.city,
-                    state: address.region,
-                });
+                setLocationDetails(address);
             }
 
-            // Log location details
-            console.log('Location Details:', {
-                coordinates: {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                },
-                address: address,
-                timestamp: new Date(location.timestamp).toLocaleString(),
-            });
+
 
         } catch (error) {
             console.error('Location Error:', error);
@@ -73,6 +62,21 @@ const LocationPage = () => {
         } finally {
             setIsLoading(false);
         }
+    }
+
+    const locationSeter = async () => {
+        await removeLocationData(UtilsToken.Location)
+        await setLocationData(UtilsToken.Location, locationDetails)
+        setUserTemLocation(locationDetails)
+
+        api.post("/api/user/location-update", {
+            address: locationDetails,
+            userProfile: userProfile?._id
+        }).then((res) => {
+            navigation.goBack()
+        }).catch((err) => {
+            Alert.alert("Error", "Something went wrong")
+        })
     }
 
     useEffect(() => {
@@ -118,14 +122,12 @@ const LocationPage = () => {
                     <Text className='text-white text-xl font-bold text-center'>Location Found!</Text>
                     <View className='bg-zinc-800 p-4 rounded-xl w-full mx-4'>
                         <Text className='text-zinc-400 text-center mb-2'>Your Location:</Text>
-                        <Text className='text-white text-center font-semibold'>{locationDetails.address}</Text>
-                        <Text className='text-zinc-400 text-center'>{locationDetails.city}, {locationDetails.state}</Text>
+                        <Text className='text-white text-center font-semibold'>{locationDetails.formattedAddress}</Text>
                     </View>
                     <TouchableOpacity
-                        onPress={() => navigation.goBack()}
+                        onPress={() => locationSeter()}
                         className='bg-zinc-800 px-6 py-3 rounded-full flex-row items-center gap-2'
                     >
-                        <Ionicons name="arrow-back" size={20} color="#FFD700" />
                         <Text className='text-white font-semibold'>Continue</Text>
                     </TouchableOpacity>
                 </View>

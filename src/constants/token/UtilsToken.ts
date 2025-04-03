@@ -1,4 +1,4 @@
 const UtilsToken = {
-  Location: "Location",
+  Location: "userLocation",
 };
 export default UtilsToken;

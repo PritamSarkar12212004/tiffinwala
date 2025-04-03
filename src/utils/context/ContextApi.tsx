@@ -1,6 +1,6 @@
 import { createContext, useContext, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { ContextType, LocationData, UserProfile } from "@/src/components/interface/AllInterface";
+import { ContextType, LocationData, UserProfile, UserTemLocation } from "@/src/components/interface/AllInterface";
 
 
 
@@ -19,7 +19,10 @@ export const ContextProvider = ({ children }: any) => {
 
     // user Profile Information 
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-    
+
+    // user Tem Location
+    const [userTemLocation, setUserTemLocation] = useState<UserTemLocation | null>(null)
+
 
     return (
         <Context.Provider
@@ -35,7 +38,10 @@ export const ContextProvider = ({ children }: any) => {
                 setLocation,
                 // user Profile Information 
                 userProfile,
-                setUserProfile
+                setUserProfile,
+                // user Tem Location
+                userTemLocation,
+                setUserTemLocation
             }}
         >
             {children}

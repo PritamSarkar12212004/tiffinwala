@@ -22,7 +22,7 @@ interface UserProfile {
   User_Image: string;
 }
 
- interface ContextType {
+interface ContextType {
   bottomSheetRef: React.RefObject<BottomSheet>;
   bottomSheetRef2: React.RefObject<BottomSheet>;
   tempMobileNumber: string;
@@ -31,6 +31,10 @@ interface UserProfile {
   setLocation: React.Dispatch<React.SetStateAction<LocationData | null>>;
   userProfile: UserProfile | null;
   setUserProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
+  userTemLocation: UserTemLocation | null;
+  setUserTemLocation: React.Dispatch<
+    React.SetStateAction<UserTemLocation | null>
+  >;
 }
 
 interface Profile {
@@ -44,5 +48,11 @@ interface Profile {
   latitude: number | null;
   longitude: number | null;
 }
+interface UserTemLocation {
+  longitude: number;
+  latitude: number;
+  address: string;
+  formattedAddress: string;
+}
 
-export { LocationData, UserProfile, ContextType,Profile };
+export { LocationData, UserProfile, ContextType, Profile, UserTemLocation };
