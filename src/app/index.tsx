@@ -17,7 +17,6 @@ const index = () => {
     const authChaker = async () => {
         const tempLogin = getTemData(AuthToken.TemLogin)
         const fullLogin = getFullData(AuthToken.UserInfo)
-        console.log(fullLogin)
         if (tempLogin) {
             router.replace("/user-info" as any)
         } else if (fullLogin) {

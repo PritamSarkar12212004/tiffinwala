@@ -113,23 +113,58 @@ const LocationPage = () => {
 
     if (location && locationDetails) {
         return (
-            <View className='w-full h-full flex px-2 bg-black'>
+            <View className='w-full h-full flex bg-black'>
                 <PageNavigation path="Location" />
-                <View className='flex-1 w-full items-center justify-center gap-4'>
-                    <View className='w-20 h-20 rounded-full bg-green-500/20 items-center justify-center'>
-                        <Ionicons name="checkmark-circle" size={40} color="#4CAF50" />
+                <View className='flex-1 w-full px-4'>
+                    {/* Header */}
+                    <View className='flex-row items-center justify-between mb-6 mt-4'>
+                        <View>
+                            <Text className='text-white text-2xl font-bold'>Location Details</Text>
+                            <Text className='text-zinc-400 text-sm'>Your current location information</Text>
+                        </View>
+                        <View className='w-12 h-12 rounded-full bg-green-500/20 items-center justify-center'>
+                            <Ionicons name="checkmark-circle" size={30} color="#4CAF50" />
+                        </View>
                     </View>
-                    <Text className='text-white text-xl font-bold text-center'>Location Found!</Text>
-                    <View className='bg-zinc-800 p-4 rounded-xl w-full mx-4'>
-                        <Text className='text-zinc-400 text-center mb-2'>Your Location:</Text>
-                        <Text className='text-white text-center font-semibold'>{locationDetails.formattedAddress}</Text>
+
+                    {/* Location Card */}
+                    <View className='bg-zinc-800 rounded-2xl overflow-hidden mb-6'>
+                        <View className='p-4 border-b border-zinc-700'>
+                            <Text className='text-zinc-400 text-sm mb-1'>Current Address</Text>
+                            <Text className='text-white text-lg font-semibold'>{locationDetails.formattedAddress}</Text>
+                        </View>
+                        <View className='p-4'>
+                            <Text className='text-zinc-400 text-sm mb-2'>Coordinates</Text>
+                            <View className='flex-row justify-between items-center'>
+                                <View>
+                                    <Text className='text-zinc-400 text-xs'>Latitude</Text>
+                                    <Text className='text-white font-medium'>{location.coords.latitude.toFixed(6)}</Text>
+                                </View>
+                                <View>
+                                    <Text className='text-zinc-400 text-xs'>Longitude</Text>
+                                    <Text className='text-white font-medium'>{location.coords.longitude.toFixed(6)}</Text>
+                                </View>
+                            </View>
+                        </View>
                     </View>
-                    <TouchableOpacity
-                        onPress={() => locationSeter()}
-                        className='bg-zinc-800 px-6 py-3 rounded-full flex-row items-center gap-2'
-                    >
-                        <Text className='text-white font-semibold'>Continue</Text>
-                    </TouchableOpacity>
+
+                    {/* Action Buttons */}
+                    <View className='flex-row gap-3'>
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                            className='flex-1 bg-zinc-800 py-4 rounded-xl flex-row items-center justify-center gap-2'
+                        >
+                            <Ionicons name="arrow-back" size={24} color="white" />
+                            <Text className='text-white font-semibold text-lg'>Back</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => locationSeter()}
+                            className='flex-1 bg-[#FFD700] py-4 rounded-xl flex-row items-center justify-center gap-2'
+                        >
+                            <Ionicons name="checkmark-circle" size={24} color="black" />
+                            <Text className='text-black font-bold text-lg'>Confirm</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )

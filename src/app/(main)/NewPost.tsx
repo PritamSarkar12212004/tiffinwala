@@ -1,31 +1,16 @@
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Alert, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
-
-interface PostData {
-    title: string;
-    description: string;
-    price: string;
-    foodTypes: string[];
-    images: string[];
-    address: string;
-    latitude: number | null;
-    longitude: number | null;
-    availableDays: string[];
-    mealTypes: string[];
-    specialOffers: string[];
-    menuItems: {
-        title: string;
-        image: string;
-        description: string;
-    }[];
-}
+import { PostData } from '@/src/components/interface/AllInterface'
+import useCreateProductApi from '@/src/hooks/product-api/useCreateProductApi'
 
 const NewPost = () => {
     const router = useRouter();
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
     const [post, setPost] = useState<PostData>({
         title: "",
         description: "",
@@ -37,7 +22,6 @@ const NewPost = () => {
         longitude: null,
         availableDays: [],
         mealTypes: [],
-        specialOffers: [],
         menuItems: []
     });
 
@@ -45,26 +29,107 @@ const NewPost = () => {
     const dayOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const mealTypeOptions = ["Breakfast", "Lunch", "Dinner", "All Day"];
 
+    const validateField = (key: keyof PostData, value: any): string => {
+        switch (key) {
+            case 'title':
+                if (!value.trim()) return 'Title is required';
+                if (value.length < 5) return 'Title must be at least 5 characters';
+                return '';
+            case 'description':
+                if (!value.trim()) return 'Description is required';
+                if (value.length < 20) return 'Description must be at least 20 characters';
+                return '';
+            case 'price':
+                if (!value.trim()) return 'Price is required';
+                if (isNaN(Number(value))) return 'Price must be a valid number';
+                if (Number(value) <= 0) return 'Price must be greater than 0';
+                return '';
+            case 'foodTypes':
+                if (value.length === 0) return 'At least one food type is required';
+                return '';
+            case 'images':
+                if (value.length === 0) return 'At least one image is required';
+                return '';
+            case 'address':
+                if (!value.trim()) return 'Address is required';
+                return '';
+            case 'availableDays':
+                if (value.length === 0) return 'At least one day must be selected';
+                return '';
+            case 'mealTypes':
+                if (value.length === 0) return 'At least one meal type is required';
+                return '';
+            case 'menuItems':
+                if (value.length === 0) return 'At least one menu item is required';
+                for (const item of value) {
+                    if (!item.title.trim()) return 'Menu item title is required';
+                    if (!item.description.trim()) return 'Menu item description is required';
+                }
+                return '';
+            default:
+                return '';
+        }
+    };
+
     const handleChange = (key: keyof PostData, value: any) => {
         setPost(prev => ({
             ...prev,
             [key]: value
         }));
+
+        const error = validateField(key, value);
+        setErrors(prev => ({
+            ...prev,
+            [key]: error
+        }));
     };
 
     const pickImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+        try {
+            setIsLoading(true);
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(
+                    'Permission Required',
+                    'Please allow access to your photo library to add images.',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                            text: 'Open Settings',
+                            onPress: () => {
+                                // Add logic to open app settings
+                            }
+                        }
+                    ]
+                );
+                return;
+            }
 
-        if (!result.canceled) {
-            setPost(prev => ({
-                ...prev,
-                images: [...prev.images, result.assets[0].uri]
-            }));
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+
+            if (!result.canceled) {
+                setPost(prev => ({
+                    ...prev,
+                    images: [...prev.images, result.assets[0].uri]
+                }));
+                setErrors(prev => ({
+                    ...prev,
+                    images: ''
+                }));
+            }
+        } catch (error) {
+            Alert.alert(
+                'Error',
+                'Failed to pick image. Please try again.',
+                [{ text: 'OK' }]
+            );
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -126,22 +191,55 @@ const NewPost = () => {
     };
 
     const pickMenuImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+        try {
+            setIsLoading(true);
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(
+                    'Permission Required',
+                    'Please allow access to your photo library to add menu images.',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                            text: 'Open Settings',
+                            onPress: () => {
+                                // Add logic to open app settings
+                            }
+                        }
+                    ]
+                );
+                return;
+            }
 
-        if (!result.canceled) {
-            setPost(prev => ({
-                ...prev,
-                menuItems: [...prev.menuItems, {
-                    title: "",
-                    image: result.assets[0].uri,
-                    description: ""
-                }]
-            }));
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+
+            if (!result.canceled) {
+                setPost(prev => ({
+                    ...prev,
+                    menuItems: [...prev.menuItems, {
+                        title: "",
+                        image: result.assets[0].uri,
+                        description: ""
+                    }]
+                }));
+                setErrors(prev => ({
+                    ...prev,
+                    menuItems: ''
+                }));
+            }
+        } catch (error) {
+            Alert.alert(
+                'Error',
+                'Failed to pick menu image. Please try again.',
+                [{ text: 'OK' }]
+            );
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -149,6 +247,14 @@ const NewPost = () => {
         setPost(prev => ({
             ...prev,
             menuItems: prev.menuItems.filter((_, i) => i !== index)
+        }));
+
+        // Validate menu items after removal
+        const updatedMenuItems = post.menuItems.filter((_, i) => i !== index);
+        const error = validateField('menuItems', updatedMenuItems);
+        setErrors(prev => ({
+            ...prev,
+            menuItems: error
         }));
     };
 
@@ -159,12 +265,59 @@ const NewPost = () => {
                 i === index ? { ...item, [field]: value } : item
             )
         }));
+
+        // Validate menu items after update
+        const updatedMenuItems = post.menuItems.map((item, i) =>
+            i === index ? { ...item, [field]: value } : item
+        );
+        const error = validateField('menuItems', updatedMenuItems);
+        setErrors(prev => ({
+            ...prev,
+            menuItems: error
+        }));
     };
 
+    // use hooks
+    const { uploadProduct } = useCreateProductApi()
+
     const handleSubmit = () => {
-        // TODO: Implement post submission
-        router.back();
+        // Validate all fields
+        const newErrors: Record<string, string> = {};
+        let hasErrors = false;
+
+        Object.keys(post).forEach((key) => {
+            const error = validateField(key as keyof PostData, post[key as keyof PostData]);
+            if (error) {
+                newErrors[key] = error;
+                hasErrors = true;
+            }
+        });
+
+        setErrors(newErrors);
+
+        if (hasErrors) {
+            Alert.alert(
+                'Validation Error',
+                'Please fix the following errors:\n\n' +
+                Object.values(newErrors).filter(Boolean).join('\n'),
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
+        // If no errors, proceed with submission
+        setIsLoading(true);
+        // Add your submission logic here
+        uploadProduct(post)
+        setIsLoading(false);
     };
+
+    const ErrorMessage = ({ message }: { message: string }) => (
+        <View className="flex-row items-center mt-1">
+            <Ionicons name="alert-circle" size={16} color="#ef4444" />
+            <Text className="text-red-500 ml-1 text-sm">{message}</Text>
+        </View>
+    );
 
     return (
         <View className="flex-1 bg-zinc-900">
@@ -188,8 +341,9 @@ const NewPost = () => {
                             onChangeText={(value) => handleChange('title', value)}
                             placeholder="Enter post title"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.title ? 'border-red-500 border' : ''}`}
                         />
+                        {errors.title && <ErrorMessage message={errors.title} />}
                     </View>
 
                     {/* Description */}
@@ -200,10 +354,11 @@ const NewPost = () => {
                             onChangeText={(value) => handleChange('description', value)}
                             placeholder="Describe your tiffin service"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.description ? 'border-red-500 border' : ''}`}
                             multiline
                             numberOfLines={4}
                         />
+                        {errors.description && <ErrorMessage message={errors.description} />}
                     </View>
 
                     {/* Price */}
@@ -214,9 +369,10 @@ const NewPost = () => {
                             onChangeText={(value) => handleChange('price', value)}
                             placeholder="Enter price"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.price ? 'border-red-500 border' : ''}`}
                             keyboardType="numeric"
                         />
+                        {errors.price && <ErrorMessage message={errors.price} />}
                     </View>
 
                     {/* Food Types */}
@@ -227,8 +383,7 @@ const NewPost = () => {
                                 <TouchableOpacity
                                     key={type}
                                     onPress={() => toggleArrayItem('foodTypes', type)}
-                                    className={`px-4 py-2 rounded-lg ${post.foodTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'
-                                        }`}
+                                    className={`px-4 py-2 rounded-lg ${post.foodTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
                                 >
                                     <Text className={post.foodTypes.includes(type) ? 'text-black font-semibold' : 'text-white'}>
                                         {type}
@@ -236,6 +391,7 @@ const NewPost = () => {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {errors.foodTypes && <ErrorMessage message={errors.foodTypes} />}
                     </View>
 
                     {/* Enhanced Images Section */}
@@ -246,10 +402,18 @@ const NewPost = () => {
                                 <View key={index} className="relative mr-2">
                                     <Image source={{ uri }} className="w-32 h-32 rounded-lg" />
                                     <TouchableOpacity
-                                        onPress={() => setPost(prev => ({
-                                            ...prev,
-                                            images: prev.images.filter((_, i) => i !== index)
-                                        }))}
+                                        onPress={() => {
+                                            setPost(prev => ({
+                                                ...prev,
+                                                images: prev.images.filter((_, i) => i !== index)
+                                            }));
+                                            if (post.images.length === 1) {
+                                                setErrors(prev => ({
+                                                    ...prev,
+                                                    images: 'At least one image is required'
+                                                }));
+                                            }
+                                        }}
                                         className="absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 items-center justify-center"
                                     >
                                         <Ionicons name="close" size={16} color="white" />
@@ -258,11 +422,17 @@ const NewPost = () => {
                             ))}
                             <TouchableOpacity
                                 onPress={pickImage}
+                                disabled={isLoading}
                                 className="w-32 h-32 rounded-lg bg-zinc-700 items-center justify-center"
                             >
-                                <Ionicons name="add" size={32} color="#FFD700" />
+                                {isLoading ? (
+                                    <ActivityIndicator color="#FFD700" />
+                                ) : (
+                                    <Ionicons name="add" size={32} color="#FFD700" />
+                                )}
                             </TouchableOpacity>
                         </ScrollView>
+                        {errors.images && <ErrorMessage message={errors.images} />}
                     </View>
 
                     {/* Menu Section */}
@@ -282,14 +452,14 @@ const NewPost = () => {
                                                 onChangeText={(value) => updateMenuItem(index, 'title', value)}
                                                 placeholder="Item name"
                                                 placeholderTextColor="#71717a"
-                                                className="text-white text-lg font-semibold mb-2"
+                                                className={`text-white text-lg font-semibold mb-2 ${!item.title.trim() ? 'border-red-500 border' : ''}`}
                                             />
                                             <TextInput
                                                 value={item.description}
                                                 onChangeText={(value) => updateMenuItem(index, 'description', value)}
                                                 placeholder="Item description"
                                                 placeholderTextColor="#71717a"
-                                                className="text-zinc-400"
+                                                className={`text-zinc-400 ${!item.description.trim() ? 'border-red-500 border' : ''}`}
                                                 multiline
                                                 numberOfLines={2}
                                             />
@@ -305,12 +475,20 @@ const NewPost = () => {
                             ))}
                             <TouchableOpacity
                                 onPress={pickMenuImage}
+                                disabled={isLoading}
                                 className="flex-row items-center justify-center bg-zinc-700 rounded-lg p-3"
                             >
-                                <Ionicons name="add" size={24} color="#FFD700" />
-                                <Text className="text-white ml-2">Add Menu Item</Text>
+                                {isLoading ? (
+                                    <ActivityIndicator color="#FFD700" />
+                                ) : (
+                                    <>
+                                        <Ionicons name="add" size={24} color="#FFD700" />
+                                        <Text className="text-white ml-2">Add Menu Item</Text>
+                                    </>
+                                )}
                             </TouchableOpacity>
                         </View>
+                        {errors.menuItems && <ErrorMessage message={errors.menuItems} />}
                     </View>
 
                     {/* Location */}
@@ -350,8 +528,7 @@ const NewPost = () => {
                                 <TouchableOpacity
                                     key={day}
                                     onPress={() => toggleArrayItem('availableDays', day)}
-                                    className={`px-4 py-2 rounded-lg ${post.availableDays.includes(day) ? 'bg-[#FFD700]' : 'bg-zinc-700'
-                                        }`}
+                                    className={`px-4 py-2 rounded-lg ${post.availableDays.includes(day) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
                                 >
                                     <Text className={post.availableDays.includes(day) ? 'text-black font-semibold' : 'text-white'}>
                                         {day}
@@ -359,6 +536,7 @@ const NewPost = () => {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {errors.availableDays && <ErrorMessage message={errors.availableDays} />}
                     </View>
 
                     {/* Meal Types */}
@@ -369,8 +547,7 @@ const NewPost = () => {
                                 <TouchableOpacity
                                     key={type}
                                     onPress={() => toggleArrayItem('mealTypes', type)}
-                                    className={`px-4 py-2 rounded-lg ${post.mealTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'
-                                        }`}
+                                    className={`px-4 py-2 rounded-lg ${post.mealTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
                                 >
                                     <Text className={post.mealTypes.includes(type) ? 'text-black font-semibold' : 'text-white'}>
                                         {type}
@@ -378,28 +555,21 @@ const NewPost = () => {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {errors.mealTypes && <ErrorMessage message={errors.mealTypes} />}
                     </View>
 
-                    {/* Special Offers */}
-                    <View className="bg-zinc-800 rounded-xl p-4">
-                        <Text className="text-white text-lg mb-2">Special Offers</Text>
-                        <TextInput
-                            value={post.specialOffers.join('\n')}
-                            onChangeText={(value) => handleChange('specialOffers', value.split('\n'))}
-                            placeholder="Enter special offers (one per line)"
-                            placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
-                            multiline
-                            numberOfLines={4}
-                        />
-                    </View>
                 </View>
 
                 <TouchableOpacity
                     className="bg-[#FFD700] rounded-xl p-4 mt-6 mb-6"
                     onPress={handleSubmit}
+                    disabled={isLoading}
                 >
-                    <Text className="text-black text-lg font-semibold text-center">Create Post</Text>
+                    {isLoading ? (
+                        <ActivityIndicator color="#000000" />
+                    ) : (
+                        <Text className="text-black text-lg font-semibold text-center">Create Post</Text>
+                    )}
                 </TouchableOpacity>
             </ScrollView>
         </View>

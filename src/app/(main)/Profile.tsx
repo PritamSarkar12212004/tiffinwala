@@ -80,7 +80,6 @@ const Profile = () => {
                     {/* Content Sections */}
                     <View className="px-4">
                         <ProfilePost />
-                        <ProfilePromotion />
                         <ProfileOptions />
                     </View>
                 </ScrollView>

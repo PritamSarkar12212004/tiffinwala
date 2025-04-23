@@ -8,30 +8,30 @@ const { width } = Dimensions.get('window');
 const ProfilePost = () => {
     const navigation = useNavigation()
     const data = [
-        {
-            id: 1,
-            image: "https://i.pinimg.com/736x/c5/d1/25/c5d125d946ab440151e513629acaddd3.jpg",
-            title: "Special Thali",
-            likes: 234,
-            comments: 45,
-            date: "2 days ago"
-        },
-        {
-            id: 2,
-            image: "https://i.pinimg.com/736x/9f/24/56/9f245653e018ea245cfff1c7ad26cd84.jpg",
-            title: "Weekend Special",
-            likes: 189,
-            comments: 32,
-            date: "5 days ago"
-        },
-        {
-            id: 3,
-            image: "https://i.pinimg.com/736x/f9/38/a2/f938a2710c32280a74176e39328a3179.jpg",
-            title: "Festival Menu",
-            likes: 312,
-            comments: 67,
-            date: "1 week ago"
-        },
+        // {
+        //     id: 1,
+        //     image: "https://i.pinimg.com/736x/c5/d1/25/c5d125d946ab440151e513629acaddd3.jpg",
+        //     title: "Special Thali",
+        //     likes: 234,
+        //     comments: 45,
+        //     date: "2 days ago"
+        // },
+        // {
+        //     id: 2,
+        //     image: "https://i.pinimg.com/736x/9f/24/56/9f245653e018ea245cfff1c7ad26cd84.jpg",
+        //     title: "Weekend Special",
+        //     likes: 189,
+        //     comments: 32,
+        //     date: "5 days ago"
+        // },
+        // {
+        //     id: 3,
+        //     image: "https://i.pinimg.com/736x/f9/38/a2/f938a2710c32280a74176e39328a3179.jpg",
+        //     title: "Festival Menu",
+        //     likes: 312,
+        //     comments: 67,
+        //     date: "1 week ago"
+        // },
     ]
 
     return (

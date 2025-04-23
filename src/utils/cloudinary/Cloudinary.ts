@@ -48,7 +48,6 @@ const uploadToCloudinary = async (fileUri: any, fileType: any) => {
     const result = await response.json();
 
     if (result.secure_url) {
-      console.log(`${fileType} Upload Successful ✅ URL:`, result.secure_url);
       return result.secure_url;
     } else {
       Alert.alert("Upload Failed", "No URL returned");

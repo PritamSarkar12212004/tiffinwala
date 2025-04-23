@@ -54,5 +54,22 @@ interface UserTemLocation {
   address: string;
   formattedAddress: string;
 }
+interface PostData {
+  title: string;
+  description: string;
+  price: string;
+  foodTypes: string[];
+  images: string[];
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  availableDays: string[];
+  mealTypes: string[];
+  menuItems: {
+      title: string;
+      image: string;
+      description: string;
+  }[];
+}
 
-export { LocationData, UserProfile, ContextType, Profile, UserTemLocation };
+export { LocationData, UserProfile, ContextType, Profile, UserTemLocation, PostData };
