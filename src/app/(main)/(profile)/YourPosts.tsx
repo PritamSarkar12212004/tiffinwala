@@ -2,10 +2,11 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import SettingsPageLayout from '@/src/components/layout/SettingsPageLayout'
-import { useNavigation } from 'expo-router'
+import { useNavigation, useRouter } from 'expo-router'
 
 const YourPosts = () => {
     const navigation = useNavigation()
+    const router = useRouter()
 
     const [posts] = useState([
         {
@@ -45,7 +46,7 @@ const YourPosts = () => {
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 <View className="flex-row justify-between items-center mb-6">
                     <Text className="text-zinc-400 text-sm">Manage your posts</Text>
-                    <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("NewPost")} className="bg-[#FFD700] px-4 py-2 rounded-lg flex-row items-center">
+                    <TouchableOpacity activeOpacity={0.8} onPress={() => router.push("/(main)/(product)/NewPost")} className="bg-[#FFD700] px-4 py-2 rounded-lg flex-row items-center">
                         <Ionicons name="add-outline" size={20} color="black" />
                         <Text className="text-black font-semibold ml-2">New Post</Text>
                     </TouchableOpacity>
@@ -98,7 +99,7 @@ const YourPosts = () => {
                                 </View>
 
                                 <View className="flex-row gap-2 mt-4">
-                                    <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("EditPost")} className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center">
+                                    <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("EditPost" as never)} className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center">
                                         <Ionicons name="pencil-outline" size={20} color="#FFD700" />
                                         <Text className="text-white ml-2">Edit</Text>
                                     </TouchableOpacity>

@@ -7,7 +7,7 @@ import ProfileOptions from '@/src/components/layout/ProfileOptions';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { userContext } from '@/src/utils/context/ContextApi';
-const Profile = () => {
+const index = () => {
     const navigation = useNavigation()
     const { userProfile, userTemLocation } = userContext()
     const stats = [
@@ -88,4 +88,4 @@ const Profile = () => {
     )
 }
 
-export default Profile
+export default index

@@ -7,6 +7,7 @@ const { width } = Dimensions.get('window');
 
 const ProfilePost = () => {
     const navigation = useNavigation()
+
     const data = [
         // {
         //     id: 1,
@@ -41,13 +42,13 @@ const ProfilePost = () => {
                     <Text className='text-white text-xl font-bold'>Your Posts</Text>
                     <Text className='text-zinc-400 text-sm'>Share your food moments</Text>
                 </View>
-                <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("YourPosts")} className='flex-row items-center gap-2 bg-zinc-800 px-4 py-2 rounded-full'>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("YourPosts" as never)} className='flex-row items-center gap-2 bg-zinc-800 px-4 py-2 rounded-full'>
                     <Text className='text-white font-medium'>See All</Text>
                     <Ionicons name="chevron-forward" size={20} color="white" />
                 </TouchableOpacity>
             </View>
 
-            <FlatList
+            {/* <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={data}
@@ -89,7 +90,7 @@ const ProfilePost = () => {
                 )}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={{ paddingHorizontal: 4 }}
-            />
+            /> */}
         </View>
     )
 }

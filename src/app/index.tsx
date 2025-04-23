@@ -22,7 +22,7 @@ const index = () => {
         } else if (fullLogin) {
             setUserProfile(fullLogin)
             setUserTemLocation(fullLogin.User_Address);
-            router.replace("/(main)/(tab)" as any)
+            router.replace("/(main)" as any)
         } else {
             router.replace("/(auth)" as any)
         }

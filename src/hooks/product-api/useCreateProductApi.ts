@@ -5,6 +5,7 @@ import uploadToCloudinary from "@/src/utils/cloudinary/Cloudinary";
 import { getFullData } from "@/src/functions/storage/Storage";
 import AuthToken from "@/src/constants/token/AuthToken";
 import api from "@/src/utils/api/Axios";
+import { useNavigation } from "expo-router";
 
 const useCreateProductApi = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,12 +13,15 @@ const useCreateProductApi = () => {
   const [progress, setProgress] = useState(0);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedMenuItems, setUploadedMenuItems] = useState<string[]>([]);
-
-  const uploadProduct = async (data: PostData) => {
+  const navigation = useNavigation();
+  const uploadProduct = async (
+    data: PostData,
+    setUploadingProduct: any,
+    setUploadDoneModal: any
+  ) => {
     const fullLoginId = getFullData(AuthToken.UserInfo);
 
     try {
-      setIsLoading(true);
       setError(null);
       setProgress(0);
       setUploadedImages([]);
@@ -131,7 +135,23 @@ const useCreateProductApi = () => {
         userId: fullLoginId._id,
       };
 
-      api.post("/api/product/create-product", finalData);
+      // call api to upload product
+
+      api
+        .post("/api/product/create-product", finalData)
+        .then((res) => {
+          console.log(res.data);
+          setUploadDoneModal(true);
+          setTimeout(() => {
+            setUploadingProduct(false);
+            navigation.goBack();
+          }, 1000);
+        })
+        .catch((err) => {
+          setUploadingProduct(false);
+          console.log(err);
+        });
+
       return finalData;
     } catch (err) {
       const errorMessage =
@@ -140,7 +160,9 @@ const useCreateProductApi = () => {
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setUploadingProduct(false);
+      }, 1000);
       setProgress(0);
     }
   };

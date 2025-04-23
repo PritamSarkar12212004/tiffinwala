@@ -1,16 +1,21 @@
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Alert, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Alert, ActivityIndicator, Animated } from 'react-native'
+import React, { useState, useRef, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
 import { PostData } from '@/src/components/interface/AllInterface'
 import useCreateProductApi from '@/src/hooks/product-api/useCreateProductApi'
+import Modal from 'react-native-modal';
+import LottiAnimation from '@/src/components/layout/LottiAnimation'
+import LottiConstant from '@/src/constants/lotti/LottiConstant'
 
-const NewPost = () => {
+const index = () => {
     const router = useRouter();
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
+    const [isLocationLoading, setIsLocationLoading] = useState(false);
+    const [uploadingProduct, setUploadingProduct] = useState(false)
     const [post, setPost] = useState<PostData>({
         title: "",
         description: "",
@@ -24,6 +29,8 @@ const NewPost = () => {
         mealTypes: [],
         menuItems: []
     });
+    const [isUploading, setIsUploading] = useState(false);
+    const progressAnimation = useRef(new Animated.Value(0)).current;
 
     const foodTypeOptions = ["Veg", "Non-Veg", "Vegan"];
     const dayOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -135,6 +142,7 @@ const NewPost = () => {
 
     const getCurrentLocation = async () => {
         try {
+            setIsLocationLoading(true);
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Permission Denied', 'Please allow location access to use this feature.');
@@ -154,7 +162,13 @@ const NewPost = () => {
             });
 
             if (address) {
-                const formattedAddress = `${address.street || ''} ${address.city || ''} ${address.region || ''} ${address.country || ''}`;
+                const formattedAddress = [
+                    address.street,
+                    address.city,
+                    address.region,
+                    address.country
+                ].filter(Boolean).join(', ');
+
                 setPost(prev => ({
                     ...prev,
                     address: formattedAddress
@@ -162,12 +176,14 @@ const NewPost = () => {
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to get location. Please try again.');
+        } finally {
+            setIsLocationLoading(false);
         }
     };
 
     const pickLocationFromMap = () => {
         router.push({
-            pathname: '/LocationPicker',
+            pathname: '/(main)/LocationPicker',
             params: {
                 onSelect: JSON.stringify((location: { latitude: number; longitude: number; address: string }) => {
                     setPost(prev => ({
@@ -182,12 +198,19 @@ const NewPost = () => {
     };
 
     const toggleArrayItem = (key: keyof PostData, item: string) => {
-        setPost(prev => ({
-            ...prev,
-            [key]: prev[key].includes(item)
-                ? prev[key].filter(i => i !== item)
-                : [...prev[key], item]
-        }));
+        setPost(prev => {
+            // Type guard to ensure we're working with an array
+            if (Array.isArray(prev[key])) {
+                const currentArray = prev[key] as string[];
+                return {
+                    ...prev,
+                    [key]: currentArray.includes(item)
+                        ? currentArray.filter(i => i !== item)
+                        : [...currentArray, item]
+                };
+            }
+            return prev;
+        });
     };
 
     const pickMenuImage = async () => {
@@ -277,6 +300,8 @@ const NewPost = () => {
         }));
     };
 
+    const [uploadDoneModal, setUploadDoneModal] = useState(false);
+
     // use hooks
     const { uploadProduct } = useCreateProductApi()
 
@@ -305,11 +330,15 @@ const NewPost = () => {
             return;
         }
 
-        // If no errors, proceed with submission
-        setIsLoading(true);
+        // Start progress animation
+        Animated.timing(progressAnimation, {
+            toValue: 1,
+            duration: 3000,
+            useNativeDriver: false,
+        }).start();
+        setUploadingProduct(true)
         // Add your submission logic here
-        uploadProduct(post)
-        setIsLoading(false);
+        uploadProduct(post, setUploadingProduct, setUploadDoneModal);
     };
 
     const ErrorMessage = ({ message }: { message: string }) => (
@@ -321,10 +350,34 @@ const NewPost = () => {
 
     return (
         <View className="flex-1 bg-zinc-900">
+            <Modal
+                isVisible={uploadingProduct}
+                backdropOpacity={0.8}
+                animationIn="fadeIn"
+                animationOut="fadeOut"
+                useNativeDriver
+            >
+                <View className="flex-1 items-center justify-center">
+                    <View className="bg-zinc-800 rounded-2xl p-8 w-4/5 items-center">
+                        <View className="w-24 flex items-center justify-center  ">
+                            <LottiAnimation width={150} height={150} bg={"transparent"} path={uploadDoneModal ? LottiConstant.productUploadDone : LottiConstant.productUpload} />
+                        </View>
+
+                        <Text className="text-white text-xl font-bold mb-4 text-center">Uploading Your Tiffin Service</Text>
+
+
+
+                        <Text className="text-zinc-400 text-center">
+                            Please wait while we upload your tiffin service details. This may take a moment.
+                        </Text>
+                    </View>
+                </View>
+            </Modal>
             <View className="flex-row items-center p-4 border-b border-zinc-800">
                 <TouchableOpacity
                     onPress={() => router.back()}
                     className="w-10 h-10 rounded-full bg-zinc-800 items-center justify-center mr-3"
+                    activeOpacity={0.8}
                 >
                     <Ionicons name="arrow-back" size={24} color="#FFD700" />
                 </TouchableOpacity>
@@ -332,7 +385,7 @@ const NewPost = () => {
             </View>
 
             <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
-                <View className="flex gap-3">
+                <View className="flex gap-4">
                     {/* Title */}
                     <View className="bg-zinc-800 rounded-xl p-4">
                         <Text className="text-white text-lg mb-2">Title</Text>
@@ -341,7 +394,7 @@ const NewPost = () => {
                             onChangeText={(value) => handleChange('title', value)}
                             placeholder="Enter post title"
                             placeholderTextColor="#71717a"
-                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.title ? 'border-red-500 border' : ''}`}
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.title ? 'border border-red-500' : ''}`}
                         />
                         {errors.title && <ErrorMessage message={errors.title} />}
                     </View>
@@ -354,7 +407,7 @@ const NewPost = () => {
                             onChangeText={(value) => handleChange('description', value)}
                             placeholder="Describe your tiffin service"
                             placeholderTextColor="#71717a"
-                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.description ? 'border-red-500 border' : ''}`}
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.description ? 'border border-red-500' : ''}`}
                             multiline
                             numberOfLines={4}
                         />
@@ -369,7 +422,7 @@ const NewPost = () => {
                             onChangeText={(value) => handleChange('price', value)}
                             placeholder="Enter price"
                             placeholderTextColor="#71717a"
-                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.price ? 'border-red-500 border' : ''}`}
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.price ? 'border border-red-500' : ''}`}
                             keyboardType="numeric"
                         />
                         {errors.price && <ErrorMessage message={errors.price} />}
@@ -384,6 +437,7 @@ const NewPost = () => {
                                     key={type}
                                     onPress={() => toggleArrayItem('foodTypes', type)}
                                     className={`px-4 py-2 rounded-lg ${post.foodTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
+                                    activeOpacity={0.8}
                                 >
                                     <Text className={post.foodTypes.includes(type) ? 'text-black font-semibold' : 'text-white'}>
                                         {type}
@@ -396,11 +450,16 @@ const NewPost = () => {
 
                     {/* Enhanced Images Section */}
                     <View className="bg-zinc-800 rounded-xl p-4">
-                        <Text className="text-white text-lg mb-2">Cover Images</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                        <Text className="text-white text-lg mb-3 font-semibold">Cover Images</Text>
+                        <Text className="text-zinc-400 mb-3">Add attractive images of your tiffin service</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-3">
                             {post.images.map((uri, index) => (
                                 <View key={index} className="relative mr-2">
-                                    <Image source={{ uri }} className="w-32 h-32 rounded-lg" />
+                                    <Image
+                                        source={{ uri }}
+                                        className="w-40 h-40 rounded-lg"
+                                        resizeMode="cover"
+                                    />
                                     <TouchableOpacity
                                         onPress={() => {
                                             setPost(prev => ({
@@ -414,21 +473,26 @@ const NewPost = () => {
                                                 }));
                                             }
                                         }}
-                                        className="absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 items-center justify-center"
+                                        className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 items-center justify-center"
+                                        activeOpacity={0.8}
                                     >
-                                        <Ionicons name="close" size={16} color="white" />
+                                        <Ionicons name="close" size={18} color="white" />
                                     </TouchableOpacity>
                                 </View>
                             ))}
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 onPress={pickImage}
                                 disabled={isLoading}
-                                className="w-32 h-32 rounded-lg bg-zinc-700 items-center justify-center"
+                                className="w-40 h-40 rounded-lg bg-zinc-700 items-center justify-center"
                             >
                                 {isLoading ? (
-                                    <ActivityIndicator color="#FFD700" />
+                                    <ActivityIndicator color="#FFD700" size="large" />
                                 ) : (
-                                    <Ionicons name="add" size={32} color="#FFD700" />
+                                    <View className="items-center">
+                                        <Ionicons name="add-circle" size={40} color="#FFD700" />
+                                        <Text className="text-white mt-2 text-center">Add Image</Text>
+                                    </View>
                                 )}
                             </TouchableOpacity>
                         </ScrollView>
@@ -437,55 +501,55 @@ const NewPost = () => {
 
                     {/* Menu Section */}
                     <View className="bg-zinc-800 rounded-xl p-4">
-                        <Text className="text-white text-lg mb-2">Menu Items</Text>
-                        <View className="flex gap-2">
+                        <Text className="text-white text-lg mb-3 font-semibold">Menu Items</Text>
+                        <Text className="text-zinc-400 mb-3">Add your delicious menu items with images</Text>
+                        <View className="flex gap-4">
                             {post.menuItems.map((item, index) => (
-                                <View key={index} className="bg-zinc-700 rounded-lg p-3">
+                                <View key={index} className="bg-zinc-700 rounded-lg p-4 border border-zinc-600">
                                     <View className="flex-row items-start">
                                         <Image
                                             source={{ uri: item.image }}
-                                            className="w-24 h-24 rounded-lg"
+                                            className="w-32 h-32 rounded-lg"
+                                            resizeMode="cover"
                                         />
-                                        <View className="flex-1 ml-3">
+                                        <View className="flex-1 ml-4">
                                             <TextInput
                                                 value={item.title}
                                                 onChangeText={(value) => updateMenuItem(index, 'title', value)}
                                                 placeholder="Item name"
                                                 placeholderTextColor="#71717a"
-                                                className={`text-white text-lg font-semibold mb-2 ${!item.title.trim() ? 'border-red-500 border' : ''}`}
+                                                className={`text-white text-xl font-semibold mb-3 p-2 ${!item.title.trim() ? 'border-2 border-red-500 rounded-md' : ''}`}
                                             />
                                             <TextInput
                                                 value={item.description}
                                                 onChangeText={(value) => updateMenuItem(index, 'description', value)}
                                                 placeholder="Item description"
                                                 placeholderTextColor="#71717a"
-                                                className={`text-zinc-400 ${!item.description.trim() ? 'border-red-500 border' : ''}`}
+                                                className={`text-zinc-300 text-base p-2 ${!item.description.trim() ? 'border-2 border-red-500 rounded-md' : ''}`}
                                                 multiline
-                                                numberOfLines={2}
+                                                numberOfLines={3}
                                             />
                                         </View>
                                         <TouchableOpacity
                                             onPress={() => removeMenuItem(index)}
-                                            className="w-6 h-6 rounded-full bg-red-500 items-center justify-center ml-2"
+                                            className="w-8 h-8 rounded-full bg-red-500 items-center justify-center ml-2"
+                                            activeOpacity={0.8}
                                         >
-                                            <Ionicons name="close" size={16} color="white" />
+                                            <Ionicons name="close" size={18} color="white" />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
                             ))}
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 onPress={pickMenuImage}
                                 disabled={isLoading}
-                                className="flex-row items-center justify-center bg-zinc-700 rounded-lg p-3"
+                                className="flex-row items-center justify-center bg-zinc-700 rounded-lg p-4"
                             >
-                                {isLoading ? (
-                                    <ActivityIndicator color="#FFD700" />
-                                ) : (
-                                    <>
-                                        <Ionicons name="add" size={24} color="#FFD700" />
-                                        <Text className="text-white ml-2">Add Menu Item</Text>
-                                    </>
-                                )}
+
+                                <Ionicons name="add-circle" size={30} color="#FFD700" />
+                                <Text className="text-white ml-2 text-lg font-medium">Add Menu Item</Text>
+
                             </TouchableOpacity>
                         </View>
                         {errors.menuItems && <ErrorMessage message={errors.menuItems} />}
@@ -493,31 +557,42 @@ const NewPost = () => {
 
                     {/* Location */}
                     <View className="bg-zinc-800 rounded-xl p-4">
-                        <Text className="text-white text-lg mb-2">Location</Text>
+                        <Text className="text-white text-lg mb-3 font-semibold">Location</Text>
+                        <Text className="text-zinc-400 mb-3">Add your delivery location</Text>
                         <TextInput
                             value={post.address}
                             onChangeText={(value) => handleChange('address', value)}
                             placeholder="Enter your address"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3 mb-2"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 mb-3 ${errors.address ? 'border-2 border-red-500' : ''}`}
                             multiline
                         />
-                        <View className="flex-row gap-2">
+                        <View className="flex-row gap-3">
                             <TouchableOpacity
                                 onPress={getCurrentLocation}
-                                className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
+                                className="flex-1 bg-zinc-700 py-3 rounded-lg flex-row items-center justify-center"
+                                disabled={isLocationLoading}
+                                activeOpacity={0.8}
                             >
-                                <Ionicons name="navigate-outline" size={20} color="#FFD700" />
-                                <Text className="text-white ml-2">Current Location</Text>
+                                {isLocationLoading ? (
+                                    <ActivityIndicator color="#FFD700" />
+                                ) : (
+                                    <>
+                                        <Ionicons name="navigate-outline" size={22} color="#FFD700" />
+                                        <Text className="text-white ml-2 font-medium">Current Location</Text>
+                                    </>
+                                )}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={pickLocationFromMap}
-                                className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
+                                className="flex-1 bg-zinc-700 py-3 rounded-lg flex-row items-center justify-center"
+                                activeOpacity={0.8}
                             >
-                                <Ionicons name="map-outline" size={20} color="#FFD700" />
-                                <Text className="text-white ml-2">Pick from Map</Text>
+                                <Ionicons name="map-outline" size={22} color="#FFD700" />
+                                <Text className="text-white ml-2 font-medium">Pick from Map</Text>
                             </TouchableOpacity>
                         </View>
+                        {errors.address && <ErrorMessage message={errors.address} />}
                     </View>
 
                     {/* Available Days */}
@@ -529,6 +604,7 @@ const NewPost = () => {
                                     key={day}
                                     onPress={() => toggleArrayItem('availableDays', day)}
                                     className={`px-4 py-2 rounded-lg ${post.availableDays.includes(day) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
+                                    activeOpacity={0.8}
                                 >
                                     <Text className={post.availableDays.includes(day) ? 'text-black font-semibold' : 'text-white'}>
                                         {day}
@@ -548,6 +624,7 @@ const NewPost = () => {
                                     key={type}
                                     onPress={() => toggleArrayItem('mealTypes', type)}
                                     className={`px-4 py-2 rounded-lg ${post.mealTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
+                                    activeOpacity={0.8}
                                 >
                                     <Text className={post.mealTypes.includes(type) ? 'text-black font-semibold' : 'text-white'}>
                                         {type}
@@ -561,11 +638,11 @@ const NewPost = () => {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-[#FFD700] rounded-xl p-4 mt-6 mb-6"
-                    onPress={handleSubmit}
-                    disabled={isLoading}
+                    className="bg-[#FFD700] rounded-xl h-14    p-4 mt-6 mb-10"
+                    onPress={() => handleSubmit()}
+                    activeOpacity={0.8}
                 >
-                    {isLoading ? (
+                    {uploadingProduct ? (
                         <ActivityIndicator color="#000000" />
                     ) : (
                         <Text className="text-black text-lg font-semibold text-center">Create Post</Text>
@@ -576,4 +653,4 @@ const NewPost = () => {
     )
 }
 
-export default NewPost 
+export default index 
