@@ -6,8 +6,11 @@ import { getFullData } from "@/src/functions/storage/Storage";
 import AuthToken from "@/src/constants/token/AuthToken";
 import api from "@/src/utils/api/Axios";
 import { useNavigation } from "expo-router";
+import { userContext } from "@/src/utils/context/ContextApi";
 
 const useCreateProductApi = () => {
+  const { setProductReloader, productReloader } = userContext();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -140,7 +143,8 @@ const useCreateProductApi = () => {
       api
         .post("/api/product/create-product", finalData)
         .then((res) => {
-          console.log(res.data);
+          setProductReloader(res.data);
+
           setUploadDoneModal(true);
           setTimeout(() => {
             setUploadingProduct(false);

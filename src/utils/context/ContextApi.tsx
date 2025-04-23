@@ -1,6 +1,6 @@
 import { createContext, useContext, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { ContextType, LocationData, UserProfile, UserTemLocation } from "@/src/components/interface/AllInterface";
+import { ContextType, LocationData, UserProfile, UserTemLocation, PostData } from "@/src/components/interface/AllInterface";
 
 
 
@@ -23,6 +23,14 @@ export const ContextProvider = ({ children }: any) => {
     // user Tem Location
     const [userTemLocation, setUserTemLocation] = useState<UserTemLocation | null>(null)
 
+    // profile post product
+    const [product, setProduct] = useState<PostData[]>([]);
+
+    // post product reloader
+    const [productReloader, setProductReloader] = useState("")
+
+
+
 
     return (
         <Context.Provider
@@ -41,7 +49,13 @@ export const ContextProvider = ({ children }: any) => {
                 setUserProfile,
                 // user Tem Location
                 userTemLocation,
-                setUserTemLocation
+                setUserTemLocation,
+                // profile post reloader for new post
+                product,
+                setProduct,
+                // reloader Product
+                productReloader,
+                setProductReloader
             }}
         >
             {children}

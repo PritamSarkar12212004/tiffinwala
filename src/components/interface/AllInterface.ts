@@ -31,10 +31,15 @@ interface ContextType {
   setLocation: React.Dispatch<React.SetStateAction<LocationData | null>>;
   userProfile: UserProfile | null;
   setUserProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
+
   userTemLocation: UserTemLocation | null;
   setUserTemLocation: React.Dispatch<
     React.SetStateAction<UserTemLocation | null>
   >;
+  product: PostData[];
+  setProduct: React.Dispatch<React.SetStateAction<PostData[]>>;
+  productReloader: boolean;
+  setProductReloader: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface Profile {
@@ -66,10 +71,17 @@ interface PostData {
   availableDays: string[];
   mealTypes: string[];
   menuItems: {
-      title: string;
-      image: string;
-      description: string;
+    title: string;
+    image: string;
+    description: string;
   }[];
 }
 
-export { LocationData, UserProfile, ContextType, Profile, UserTemLocation, PostData };
+export {
+  LocationData,
+  UserProfile,
+  ContextType,
+  Profile,
+  UserTemLocation,
+  PostData,
+};

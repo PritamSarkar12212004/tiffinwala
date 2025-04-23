@@ -54,13 +54,19 @@ const index = () => {
                         </View>
 
                         {/* Stats Section */}
-                        <View className="flex-row justify-between mt-6 bg-zinc-800 p-4 rounded-xl">
-                            {stats.map((stat, index) => (
-                                <View key={index} className="items-center">
-                                    <Text className="text-white text-xl font-bold">{stat.value}</Text>
-                                    <Text className="text-zinc-400 text-sm">{stat.label}</Text>
-                                </View>
-                            ))}
+                        <View className="flex-row justify-between mt-6 bg-zinc-800 p-4 px-10 rounded-xl">
+                            <View className="items-center">
+                                <Text className="text-white text-xl font-bold">2</Text>
+                                <Text className="text-zinc-400 text-sm">Post</Text>
+                            </View>
+                            <View className="items-center">
+                                <Text className="text-white text-xl font-bold">300</Text>
+                                <Text className="text-zinc-400 text-sm">Likes</Text>
+                            </View>
+                            <View className="items-center">
+                                <Text className="text-white text-xl font-bold">50</Text>
+                                <Text className="text-zinc-400 text-sm">Follow</Text>
+                            </View>
                         </View>
 
                         {/* Action Buttons */}
