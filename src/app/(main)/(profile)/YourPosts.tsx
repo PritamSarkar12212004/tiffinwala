@@ -75,13 +75,7 @@ const YourPosts = () => {
                             <Ionicons name="pencil-outline" size={20} color="#FFD700" />
                             <Text className="text-white ml-2">Edit</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => router.push("/(main)/(product)/post-view")}
-                            className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
-                        >
-                            <Ionicons name="eye-outline" size={20} color="#FFD700" />
-                            <Text className="text-white ml-2">Analyze</Text>
-                        </TouchableOpacity>
+
                     </View>
                 </View>
             </View>
