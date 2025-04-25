@@ -40,6 +40,8 @@ interface ContextType {
   setProduct: React.Dispatch<React.SetStateAction<PostData[]>>;
   productReloader: boolean;
   setProductReloader: React.Dispatch<React.SetStateAction<boolean>>;
+  editTempInformation: any;
+  seteditTempInformation: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface Profile {
@@ -76,6 +78,9 @@ interface PostData {
     description: string;
   }[];
 }
+interface PostData2 extends PostData {
+  productId: string;
+}
 
 export {
   LocationData,
@@ -84,4 +89,5 @@ export {
   Profile,
   UserTemLocation,
   PostData,
+  PostData2,
 };

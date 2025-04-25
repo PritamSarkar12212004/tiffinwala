@@ -16,6 +16,13 @@ interface Post {
 }
 
 const YourPosts = () => {
+    const { seteditTempInformation } = userContext()
+
+    const editFunctionPage = (item: any) => {
+        router.push("/(main)/(product)/EditPost")
+        seteditTempInformation(item)
+    }
+
     const { product } = userContext()
     const router = useRouter()
 
@@ -33,11 +40,7 @@ const YourPosts = () => {
                             <Ionicons name="image-outline" size={40} color="#FFD700" />
                         )}
                     </View>
-                    <View className="absolute top-2 right-2">
-                        <TouchableOpacity className="w-8 h-8 rounded-full bg-zinc-900 items-center justify-center">
-                            <Ionicons name="ellipsis-vertical" size={20} color="#FFD700" />
-                        </TouchableOpacity>
-                    </View>
+
                 </View>
 
                 <View className="p-4">
@@ -66,7 +69,7 @@ const YourPosts = () => {
                     <View className="flex-row gap-2 mt-4">
                         <TouchableOpacity
                             activeOpacity={0.8}
-                            onPress={() => router.push("/(main)/(product)/EditPost")}
+                            onPress={() => editFunctionPage(item)}
                             className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
                         >
                             <Ionicons name="pencil-outline" size={20} color="#FFD700" />
@@ -77,7 +80,7 @@ const YourPosts = () => {
                             className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
                         >
                             <Ionicons name="eye-outline" size={20} color="#FFD700" />
-                            <Text className="text-white ml-2">View</Text>
+                            <Text className="text-white ml-2">Analyze</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

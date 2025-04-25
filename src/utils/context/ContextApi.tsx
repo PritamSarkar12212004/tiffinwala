@@ -27,7 +27,10 @@ export const ContextProvider = ({ children }: any) => {
     const [product, setProduct] = useState<PostData[]>([]);
 
     // post product reloader
-    const [productReloader, setProductReloader] = useState("")
+    const [productReloader, setProductReloader] = useState<any>("")
+
+    // edit page temp information
+    const [editTempInformation, seteditTempInformation] = useState<any>()
 
 
 
@@ -55,7 +58,9 @@ export const ContextProvider = ({ children }: any) => {
                 setProduct,
                 // reloader Product
                 productReloader,
-                setProductReloader
+                setProductReloader,
+                editTempInformation,
+                seteditTempInformation
             }}
         >
             {children}

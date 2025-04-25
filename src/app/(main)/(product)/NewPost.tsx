@@ -29,7 +29,6 @@ const index = () => {
         mealTypes: [],
         menuItems: []
     });
-    const [isUploading, setIsUploading] = useState(false);
     const progressAnimation = useRef(new Animated.Value(0)).current;
 
     const foodTypeOptions = ["Veg", "Non-Veg", "Vegan"];
@@ -554,6 +553,7 @@ const index = () => {
                         </View>
                         {errors.menuItems && <ErrorMessage message={errors.menuItems} />}
                     </View>
+
 
                     {/* Location */}
                     <View className="bg-zinc-800 rounded-xl p-4">
