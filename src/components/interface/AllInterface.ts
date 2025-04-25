@@ -12,7 +12,7 @@ interface LocationData {
 
 interface UserProfile {
   _id: string;
-  name: string;
+  name: string
   email: string;
   phone: string;
   address: string;
