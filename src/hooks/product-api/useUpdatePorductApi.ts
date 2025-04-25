@@ -140,7 +140,6 @@ const useUpdatePorductApi = () => {
       };
 
       // call api to upload product
-      console.log(images);
 
       api
         .post("/api/product/update-product", finalData)

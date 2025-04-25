@@ -10,7 +10,7 @@ import { userContext } from '@/src/utils/context/ContextApi'
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import useUpdatePorductApi from '@/src/hooks/product-api/useUpdatePorductApi';
-import { PostData, PostData2, PostData22PostData2 } from '@/src/components/interface/AllInterface';
+import { PostData2, } from '@/src/components/interface/AllInterface';
 
 
 
@@ -25,7 +25,7 @@ const EditPost = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [post, setPost] = useState<PostData2>({
-        id: "",
+        productId: "",
         title: "",
         description: "",
         price: "",
@@ -46,13 +46,13 @@ const EditPost = () => {
             description: editTempInformation.postDescription,
             price: String(editTempInformation.postPrice), // Convert to string
             foodTypes: editTempInformation.postFoodType,
-            images: editTempInformation.postCoverImage,
+            images: [],
             address: editTempInformation.postLocation,
             latitude: editTempInformation.postlatitude,
             longitude: editTempInformation.postlongitude,
             availableDays: editTempInformation.postValidDay,
             mealTypes: editTempInformation.postMealTypes,
-            menuItems: editTempInformation.postMenu
+            menuItems: []
         });
         return () => {
             seteditTempInformation("");
@@ -197,6 +197,7 @@ const EditPost = () => {
     const { updateProduct } = useUpdatePorductApi()
 
     const handleSubmit = () => {
+        setUploadingProduct(true)
         updateProduct(post, setUploadingProduct, setUploadDoneModal);
     };
 
