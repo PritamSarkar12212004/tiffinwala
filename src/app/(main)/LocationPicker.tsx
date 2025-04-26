@@ -6,22 +6,21 @@ import MapView, { Marker } from 'react-native-maps'
 import * as Location from 'expo-location'
 
 interface LocationData {
-    latitude: number;
-    longitude: number;
+    latitude: number | string;
+    longitude: number | string;
     address: string;
 }
 
 const LocationPicker = () => {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const [searchQuery, setSearchQuery] = useState('');
     const [selectedLocation, setSelectedLocation] = useState({
-        latitude: 19.0760,
-        longitude: 72.8777,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421
+        latitude: "",
+        longitude: "",
+        latitudeDelta: "",
+        longitudeDelta: ""
     });
-    const [address, setAddress] = useState('');
+    const [address, setAddress] = useState<any>('');
 
     const handleLocationSelect = async (e: any) => {
         const { latitude, longitude } = e.nativeEvent.coordinate;

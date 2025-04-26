@@ -16,7 +16,7 @@ const index = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [uploadingProduct, setUploadingProduct] = useState(false)
-    const [post, setPost] = useState<PostData>({
+    const [post, setPost] = useState<any>({
         title: "",
         description: "",
         price: "",

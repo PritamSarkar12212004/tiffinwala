@@ -32,6 +32,9 @@ export const ContextProvider = ({ children }: any) => {
     // edit page temp information
     const [editTempInformation, seteditTempInformation] = useState<any>()
 
+    // mainData render temp
+    const [mainData, setMainData] = useState<any>()
+
 
 
 
@@ -60,7 +63,10 @@ export const ContextProvider = ({ children }: any) => {
                 productReloader,
                 setProductReloader,
                 editTempInformation,
-                seteditTempInformation
+                seteditTempInformation,
+                // mai data rw render
+                mainData,
+                setMainData
             }}
         >
             {children}

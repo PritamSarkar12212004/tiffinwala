@@ -12,7 +12,7 @@ interface LocationData {
 
 interface UserProfile {
   _id: string;
-  name: string
+  name: string;
   email: string;
   phone: string;
   address: string;
@@ -42,6 +42,8 @@ interface ContextType {
   setProductReloader: React.Dispatch<React.SetStateAction<boolean>>;
   editTempInformation: any;
   seteditTempInformation: React.Dispatch<React.SetStateAction<any>>;
+  mainData: any;
+  setMainData: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface Profile {

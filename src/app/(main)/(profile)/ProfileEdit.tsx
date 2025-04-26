@@ -9,7 +9,6 @@ import * as ImagePicker from 'expo-image-picker';
 import useUpdateProfile from '@/src/hooks/profile/useUpdateProfile'
 
 const ProfileEdit = () => {
-
     const { userProfile } = userContext()
     const [profile, setProfile] = useState<Profile>({
         name: userProfile?.User_Name || "",
@@ -22,7 +21,9 @@ const ProfileEdit = () => {
         latitude: userProfile?.User_Address?.latitude || null,
         longitude: userProfile?.User_Address?.longitude || null
     });
+
     const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
     const [locationDetails, setLocationDetails] = useState<{
         street?: string;
         city?: string;
@@ -55,20 +56,19 @@ const ProfileEdit = () => {
             const location = await Location.getCurrentPositionAsync({
                 accuracy: Location.Accuracy.High
             });
+
             setProfile(prev => ({
                 ...prev,
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude
             }));
 
-            // Get address from coordinates with more detailed options
             const [address] = await Location.reverseGeocodeAsync({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude
             });
 
             if (address) {
-                // Create a more detailed address object
                 const detailedAddress = {
                     street: address.street?.replace(/^\d+\s*/, '') || undefined,
                     city: address.city || undefined,
@@ -83,7 +83,6 @@ const ProfileEdit = () => {
 
                 setLocationDetails(detailedAddress);
 
-                // Create a more detailed formatted address
                 const addressParts = [
                     address.name?.replace(/^\d+\s*/, ''),
                     address.street?.replace(/^\d+\s*/, ''),
@@ -108,14 +107,28 @@ const ProfileEdit = () => {
         }
     };
 
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setProfile(prev => ({
+                ...prev,
+                profileImage: result.assets[0].uri
+            }));
+        }
+    };
+
     const formFields = [
         {
             title: "Profile Picture",
             type: "image",
             icon: "camera-outline",
-            action: () => {
-                pickImage()
-            }
+            action: pickImage
         },
         {
             title: "Full Name",
@@ -175,39 +188,18 @@ const ProfileEdit = () => {
         }
     ];
 
-
-    // call hooks 
-
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-
-        if (!result.canceled) {
-            setProfile(prev => ({
-                ...prev,
-                profileImage: result.assets[0].uri
-            }));
-        }
-    };
-
     const { updateProfile } = useUpdateProfile()
-    const [isLoading, setIsLoading] = useState(false)
+
     const updateProfileFunction = async () => {
         setIsLoading(true)
-        updateProfile(profile, setIsLoading)
+        await updateProfile(profile, setIsLoading)
     }
-
 
     return (
         <SettingsPageLayout title="Edit Profile">
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 <View className="items-center mb-6">
-                    <View className="">
+                    <View>
                         <View className="w-36 h-36 rounded-full bg-zinc-800 items-center justify-center mb-4">
                             {profile.profileImage ? (
                                 <Image
@@ -218,12 +210,11 @@ const ProfileEdit = () => {
                                 <Ionicons name="person-outline" size={40} color="#FFD700" />
                             )}
                         </View>
-
                     </View>
                 </View>
 
                 <View className="flex gap-3">
-                    {formFields.map((field, index) => (
+                    {formFields.map((field) => (
                         <View key={field.title} className="bg-zinc-800 rounded-xl p-4">
                             <View className="flex-row items-center mb-2">
                                 <View className="w-10 h-10 rounded-full bg-zinc-700 items-center justify-center mr-3">
@@ -231,6 +222,7 @@ const ProfileEdit = () => {
                                 </View>
                                 <Text className="text-white text-lg">{field.title}</Text>
                             </View>
+
                             {field.type === 'select' ? (
                                 <View className="flex-row gap-2">
                                     {field.options?.map((option) => (
@@ -242,22 +234,17 @@ const ProfileEdit = () => {
                                                 : 'bg-zinc-700'
                                                 }`}
                                         >
-                                            <Text
-                                                className={`text-center ${profile[field.title.toLowerCase() as keyof Profile] === option
-                                                    ? 'text-black font-semibold'
-                                                    : 'text-white'
-                                                    }`}
-                                            >
+                                            <Text className={`text-center ${profile[field.title.toLowerCase() as keyof Profile] === option
+                                                ? 'text-black font-semibold'
+                                                : 'text-white'
+                                                }`}>
                                                 {option}
                                             </Text>
                                         </TouchableOpacity>
                                     ))}
                                 </View>
                             ) : field.type === 'image' ? (
-                                <TouchableOpacity
-                                    onPress={field.action}
-                                    className="py-2"
-                                >
+                                <TouchableOpacity onPress={field.action} className="py-2">
                                     <Text className="text-[#FFD700] text-center">Change Profile Picture</Text>
                                 </TouchableOpacity>
                             ) : field.type === 'location' ? (
@@ -300,10 +287,10 @@ const ProfileEdit = () => {
                                     value={field.value}
                                     onChangeText={field.onChange}
                                     placeholder={field.placeholder}
-                                    placeholderTextColor="#71717a"
+                                    placeholderTextColor="#888"
                                     className="text-white bg-zinc-700 rounded-lg p-3"
-                                    multiline={field.multiline}
                                     keyboardType={field.keyboardType}
+                                    multiline={field.multiline}
                                 />
                             )}
                         </View>
@@ -311,19 +298,19 @@ const ProfileEdit = () => {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-[#FFD700] rounded-xl h-14 flex items-center justify-center mt-6 mb-6"
-                    activeOpacity={0.8}
-                    onPress={() => isLoading ? null : updateProfileFunction()}
+                    onPress={updateProfileFunction}
+                    disabled={isLoading}
+                    className="bg-[#FFD700] mt-6 p-4 rounded-full items-center justify-center"
                 >
                     {isLoading ? (
-                        <ActivityIndicator color="black" />
+                        <ActivityIndicator color="#000" />
                     ) : (
-                        <Text className="text-black text-lg font-semibold text-center">Save Changes</Text>
+                        <Text className="text-black font-bold text-lg">Save Changes</Text>
                     )}
                 </TouchableOpacity>
             </ScrollView>
         </SettingsPageLayout>
-    )
-}
+    );
+};
 
-export default ProfileEdit 
+export default ProfileEdit;

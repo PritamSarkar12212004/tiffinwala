@@ -6,14 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { userContext } from '@/src/utils/context/ContextApi'
 import { useNavigation, useRouter } from 'expo-router';
 
-const MainTiffinCard = () => {
-    const router = useRouter();
+const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     const navigation = useNavigation()
     const [isLiked, setIsLiked] = useState(false);
-    const { bottomSheetRef2 } = userContext();
+    const { bottomSheetRef2, setMainData } = userContext();
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
     const bottomSheetHandler = () => {
+        setBottomSheetData(item.postMenu)
         bottomSheetRef2.current?.expand()
     }
 
@@ -34,14 +34,12 @@ const MainTiffinCard = () => {
     }
 
     const handleCardPress = () => {
-        navigation.navigate('ShowProduct');
+        setMainData(item)
+        navigation.navigate('ShowProduct' as never);
     }
 
-    const tags = ["Veg", "Home Delivery", "Monthly", "Lunch + Dinner"];
     const rating = 4.5;
-    const time = "30-40 min";
-    const location = "2.5 km away";
-    const reviews = "1.2k+ reviews";
+
 
     return (
         <TouchableOpacity
@@ -70,32 +68,29 @@ const MainTiffinCard = () => {
                 </Animated.View>
             </View>
             <Image
-                source={{ uri: "https://i.pinimg.com/736x/69/91/94/69919422977bb1d5b05e8481d3921b5f.jpg" }}
+                source={{ uri: item.postCoverImage[0] }}
                 className='w-full h-72 rounded-t-[20px]'
                 resizeMode='cover'
             />
             <View className='w-full rounded-b-[20px] px-3 pb-5 pt-3 bg-zinc-800'>
                 <View className='w-full flex flex-row border-b-[2px] pb-3 border-zinc-700 justify-between items-center'>
                     <View>
-                        <Text className='text-2xl tracking-widest font-extrabold text-white'>Sai Mess</Text>
-                        <View className='flex-row items-center mt-1'>
-                            <Ionicons name="location" size={14} color="#FFD700" />
-                            <Text className='text-zinc-400 ml-1'>{location}</Text>
-                        </View>
+                        <Text className='text-2xl tracking-widest font-extrabold text-white'>{item.postTitle}</Text>
+
                     </View>
                     <View className='px-3 py-2 bg-green-600 rounded-xl'>
-                        <Text className='text-sm font-extrabold text-white'>₹ 1000/Mon</Text>
+                        <Text className='text-sm font-extrabold text-white'>₹ {item.postPrice}/Mon</Text>
                     </View>
                 </View>
 
                 {/* Tags Section */}
                 <View className='flex-row flex-wrap gap-2 mt-3'>
-                    {tags.map((tag, index) => (
+                    {item.postMealTypes.map((item, index) => (
                         <View
                             key={index}
                             className='bg-zinc-700/50 px-3 py-1 rounded-full'
                         >
-                            <Text className='text-white text-xs font-medium'>{tag}</Text>
+                            <Text className='text-white text-xs font-medium'>{item}</Text>
                         </View>
                     ))}
                 </View>
@@ -103,13 +98,10 @@ const MainTiffinCard = () => {
                 {/* Additional Info Section */}
                 <View className='flex-row justify-between items-center mt-4'>
                     <View className='flex-row items-center gap-4'>
-                        <View className='flex-row items-center'>
-                            <Ionicons name="time-outline" size={16} color="#FFD700" />
-                            <Text className='text-zinc-400 ml-1'>{time}</Text>
-                        </View>
+
                         <View className='flex-row items-center'>
                             <Ionicons name="chatbubble-outline" size={16} color="#FFD700" />
-                            <Text className='text-zinc-400 ml-1'>{reviews}</Text>
+                            <Text className='text-zinc-400 ml-1'>{item.productLikes}</Text>
                         </View>
                     </View>
                     <TouchableOpacity
