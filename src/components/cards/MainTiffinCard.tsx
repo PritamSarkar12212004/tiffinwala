@@ -38,67 +38,72 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
         navigation.navigate('ShowProduct' as never);
     }
 
-    const rating = 4.5;
-
-
     return (
         <TouchableOpacity
             onPress={handleCardPress}
             activeOpacity={0.8}
-            className='w-full rounded-[20px] relative mb-4'
-            style={{ backgroundColor: BgColor.Secondary }}
+            className='w-full rounded-2xl relative mb-4 overflow-hidden'
+            style={{ 
+                backgroundColor: BgColor.Secondary,
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+            }}
         >
             <View className='w-full flex flex-row items-center justify-between gap-3 px-5 absolute top-3 z-10'>
                 <View className='bg-black/50 px-4 py-2 rounded-full flex-row items-center'>
                     <Ionicons name="star" size={14} color="#FFD700" />
-                    <Text className='text-white ml-1 font-bold'>{rating}</Text>
+                    <Text className='text-white ml-1 font-bold'>4.5</Text>
                 </View>
                 <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                     <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={likeHandler}
-                        className='bg-zinc-200/80 rounded-full h-14 opacity-60 w-14 items-center justify-center'
+                        className='bg-black/50 rounded-full h-12 w-12 items-center justify-center'
                     >
                         <AntDesign
                             name={isLiked ? "heart" : "hearto"}
-                            size={30}
+                            size={24}
                             color={isLiked ? "#FF4B4B" : "#FFD700"}
                         />
                     </TouchableOpacity>
                 </Animated.View>
             </View>
+
             <Image
                 source={{ uri: item.postCoverImage[0] }}
-                className='w-full h-72 rounded-t-[20px]'
+                className='w-full h-72'
                 resizeMode='cover'
             />
-            <View className='w-full rounded-b-[20px] px-3 pb-5 pt-3 bg-zinc-800'>
-                <View className='w-full flex flex-row border-b-[2px] pb-3 border-zinc-700 justify-between items-center'>
-                    <View>
-                        <Text className='text-2xl tracking-widest font-extrabold text-white'>{item.postTitle}</Text>
 
+            <View className='w-full px-5 pb-5 pt-4 bg-zinc-800/95'>
+                <View className='w-full flex flex-row justify-between items-center mb-3'>
+                    <View className='flex-1'>
+                        <Text className='text-2xl font-bold text-white' numberOfLines={1}>{item.postTitle}</Text>
                     </View>
-                    <View className='px-3 py-2 bg-green-600 rounded-xl'>
-                        <Text className='text-sm font-extrabold text-white'>₹ {item.postPrice}/Mon</Text>
+                    <View className='px-4 py-2 bg-[#FFD700] rounded-xl ml-3'>
+                        <Text className='text-sm font-bold text-black'>₹{item.postPrice}/Mon</Text>
                     </View>
                 </View>
 
-                {/* Tags Section */}
-                <View className='flex-row flex-wrap gap-2 mt-3'>
-                    {item.postMealTypes.map((item, index) => (
+                <View className='flex-row flex-wrap gap-2 mb-4'>
+                    {item.postMealTypes.map((mealType: string, index: number) => (
                         <View
                             key={index}
-                            className='bg-zinc-700/50 px-3 py-1 rounded-full'
+                            className='bg-zinc-700/50 px-3 py-1.5 rounded-full'
                         >
-                            <Text className='text-white text-xs font-medium'>{item}</Text>
+                            <Text className='text-white text-xs font-medium'>{mealType}</Text>
                         </View>
                     ))}
                 </View>
 
-                {/* Additional Info Section */}
-                <View className='flex-row justify-between items-center mt-4'>
+                <View className='flex-row justify-between items-center'>
                     <View className='flex-row items-center gap-4'>
-
                         <View className='flex-row items-center'>
                             <Ionicons name="chatbubble-outline" size={16} color="#FFD700" />
                             <Text className='text-zinc-400 ml-1'>{item.productLikes}</Text>
@@ -106,10 +111,10 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
                     </View>
                     <TouchableOpacity
                         activeOpacity={0.8}
-                        onPress={() => bottomSheetHandler()}
-                        className='bg-zinc-700 px-4 py-2 rounded-full'
+                        onPress={bottomSheetHandler}
+                        className='bg-[#FFD700] px-5 py-2.5 rounded-full'
                     >
-                        <Text className='text-white font-semibold'>View Menu</Text>
+                        <Text className='text-black font-bold'>View Menu</Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, StyleSheet, Image, ActivityIndicator, } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, ScrollView, StyleSheet, Image, ActivityIndicator, Animated } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import MainPageHeader from '@/src/components/headers/MainPageHeader'
 import MainPageLayout from '@/src/components/layout/MainPageLayout'
@@ -16,72 +16,123 @@ const index = () => {
   const { bottomSheetRef2 } = userContext()
   const [mainData, setMainData] = useState<any>()
   const [bottomSheetData, setBottomSheetData] = useState<any>()
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const { fetchMainData } = useMainDataFetch()
-
 
   const fetchData = () => {
     setLoading(!loading)
     fetchMainData(setMainData, setLoading)
   }
+
   useEffect(() => {
     fetchData()
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
     return () => {
       setMainData(undefined)
       setBottomSheetData(null)
     }
   }, [])
+
   return (
-    <View className='w-full h-full' style={{ backgroundColor: BgColor.Primary }}>
+    <Animated.View style={{
+      flex: 1,
+      opacity: fadeAnim,
+      backgroundColor: BgColor.Primary
+    }}>
       <MainPageHeader />
-      <MainPageLayout >
+      <MainPageLayout>
         <Searhmain fetchData={fetchData} />
         {
           loading ? (
-
-            <ActivityIndicator size="large" className='mt-10' color="red" />
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color="#FFD700" />
+              <Text className="text-white mt-4 text-lg">Loading delicious meals...</Text>
+            </View>
           ) : !mainData || mainData.length === 0 ? (
-            <Text className="text-white text-3xl  font-extrabold text-center mt-4">No Data Available</Text>
+            <View className="flex-1 items-center justify-center">
+              <Text className="text-white text-3xl font-bold text-center mb-2">No Data Available</Text>
+              <Text className="text-zinc-400 text-center">Try searching for something else</Text>
+            </View>
           ) : (
             <MainCardShow mainData={mainData} setBottomSheetData={setBottomSheetData} />
           )
         }
-
       </MainPageLayout>
+
       <BottomSheet
         ref={bottomSheetRef2}
-        style={{ marginBottom: 80, zIndex: 10 }} // Adjust the margin to move it above the tab bar
+        style={styles.bottomSheet}
         snapPoints={['70%']}
         index={-1}
         enablePanDownToClose={true}
         handleStyle={{ backgroundColor: BgColor.Primary }}
-        handleIndicatorStyle={{ backgroundColor: Color.Third, }}
+        handleIndicatorStyle={{ backgroundColor: Color.Third }}
         backgroundStyle={{ backgroundColor: BgColor.Primary }}
         enableHandlePanningGesture={true}
-
-
       >
         <BottomSheetScrollView style={styles.contentContainer}>
-          <View className='w-full h-full items-center justify-between  flex flex-row flex-wrap p-3 mb-32'>
-            {
-              bottomSheetData?.map((item: any, index: any) => (
-                <View key={index} className='w-[48%] mb-10 flex gap-2' style={{ aspectRatio: 1 }}>
-                  <Image source={{ uri: item.image }} className='w-full  h-full rounded-lg' resizeMode='cover' />
-                  <Text className='text-white text-center text-sm font-bold'>{item.title}</Text>
+          <View className='w-full h-full p-4 mb-32'>
+            <Text className="text-white text-xl font-bold mb-4">Menu Items</Text>
+            <View className='flex-row flex-wrap justify-between'>
+              {bottomSheetData?.map((item: any, index: number) => (
+                <View
+                  key={index}
+                  className='w-[48%] mb-6'
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                  }}
+                >
+                  <View className='aspect-square rounded-xl overflow-hidden bg-zinc-800'>
+                    <Image
+                      source={{ uri: item.image }}
+                      className='w-full h-full'
+                      resizeMode='cover'
+                    />
+                  </View>
+                  <View className='mt-2'>
+                    <Text className='text-white text-center text-sm font-bold' numberOfLines={1}>
+                      {item.title}
+                    </Text>
+                    {item.description && (
+                      <Text className='text-zinc-400 text-center text-xs mt-1' numberOfLines={2}>
+                        {item.description}
+                      </Text>
+                    )}
+                  </View>
                 </View>
-              ))
-            }
+              ))}
+            </View>
           </View>
         </BottomSheetScrollView>
       </BottomSheet>
-    </View>
+    </Animated.View>
   )
 }
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'grey',
-    zIndex: 9,
+  bottomSheet: {
+    marginBottom: 80,
+    zIndex: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   contentContainer: {
     flex: 1,

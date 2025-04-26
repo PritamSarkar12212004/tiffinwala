@@ -1,5 +1,5 @@
-import { View, Text, Image, StatusBar, SafeAreaView, StyleSheet, ScrollView, FlatList, Dimensions, TouchableOpacity, Linking, TextInput, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, Image, StatusBar, SafeAreaView, StyleSheet, ScrollView, FlatList, Dimensions, TouchableOpacity, Linking, TextInput, ActivityIndicator, Animated } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
 import ShowProductNavigation from '@/src/components/navigation/ShowProductNavigation'
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -15,24 +15,61 @@ const ShowProduct = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { bottomSheetRef, setMainData, mainData } = userContext()
     const [bottomSheetIndex, setBottomSheetIndex] = useState(-1)
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const translateY = useRef(new Animated.Value(50)).current;
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(translateY, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+            })
+        ]).start();
+    }, []);
+
     const openBottomSheet = () => {
         bottomSheetRef.current?.snapToIndex(1)
     }
     const bottomSheetHandleChange = (index: number) => {
         setBottomSheetIndex(index)
     }
+    const [mapRegion, setMapRegion] = useState({
+        latitude: mainData?.postlatitude ? Number(mainData.postlatitude) : 19.0760,
+        longitude: mainData?.postlongitude ? Number(mainData.postlongitude) : 72.8777,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+    });
+
     const markerCoordinate = {
-        latitude: 19.0760 | mainData?.postlatitude,
-        longitude: 72.8777 | mainData?.postlongitude,
+        latitude: mainData?.postlatitude ? Number(mainData.postlatitude) : 19.0760,
+        longitude: mainData?.postlongitude ? Number(mainData.postlongitude) : 72.8777,
     };
 
+    useEffect(() => {
+        if (mainData?.postlatitude && mainData?.postlongitude) {
+            setMapRegion({
+                latitude: Number(mainData.postlatitude),
+                longitude: Number(mainData.postlongitude),
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+            });
+        }
+    }, [mainData]);
+
     const openGoogleMaps = () => {
-        const url = `https://www.google.com/maps/search/?api=1&query=${markerCoordinate.latitude},${markerCoordinate.longitude}`;
-        Linking.openURL(url);
+        if (markerCoordinate.latitude && markerCoordinate.longitude) {
+            const url = `https://www.google.com/maps/search/?api=1&query=${markerCoordinate.latitude},${markerCoordinate.longitude}`;
+            Linking.openURL(url);
+        }
     };
 
     const [venderData, setVenderData] = useState<any>(null)
-
 
     useEffect(() => {
         fetchUserData(mainData.postVendorId, setVenderData)
@@ -41,17 +78,13 @@ const ShowProduct = () => {
             setMainData(null)
         }
     }, [mainData])
-    useEffect(() => {
-
-
-    }, [bottomSheetIndex])
 
     return (
         <View className='w-full h-full relative bg-black'>
             <StatusBar barStyle="light-content" />
             <SafeAreaView className="flex-1">
                 {bottomSheetIndex === -1 && <ShowProductNavigation />}
-                <View className="">
+                <View className="relative">
                     <FlatList
                         horizontal={true}
                         data={mainData.postCoverImage}
@@ -62,21 +95,22 @@ const ShowProduct = () => {
                             const newIndex = Math.round(event.nativeEvent.contentOffset.x / width);
                             setCurrentIndex(newIndex);
                         }}
-                        renderItem={({ item, }) => (
+                        renderItem={({ item }) => (
                             <View style={{ width: width }}>
                                 <Image
                                     source={{ uri: item }}
                                     style={{ width: width, height: 400 }}
-                                    className='rounded-b-[30px]'
+                                    className='rounded-b-[40px]'
                                     resizeMode="cover"
                                 />
+                                <View className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
                             </View>
                         )}
                     />
 
-                    {/* Image Counter */}
-                    <View className="absolute bottom-4 right-4 bg-black/50 px-3 py-1 rounded-full">
-                        <Text className="text-white text-sm">
+                    <View className="absolute bottom-4 right-4 bg-black/50 px-4 py-2 rounded-full flex-row items-center gap-2">
+                        <Ionicons name="images" size={16} color="white" />
+                        <Text className="text-white text-sm font-medium">
                             {currentIndex + 1}/{mainData.postCoverImage.length}
                         </Text>
                     </View>
@@ -85,8 +119,8 @@ const ShowProduct = () => {
                         {mainData.postCoverImage.map((_, index) => (
                             <View
                                 key={index}
-                                className={`h-1 rounded-full transition-all duration-300 ${currentIndex === index
-                                    ? 'w-6 bg-white'
+                                className={`h-1.5 rounded-full transition-all duration-300 ${currentIndex === index
+                                    ? 'w-8 bg-[#FFD700]'
                                     : 'w-2 bg-white/50'
                                     }`}
                             />
@@ -94,74 +128,89 @@ const ShowProduct = () => {
                     </View>
                 </View>
 
-                <ScrollView className='flex-1 px-4 relative' showsVerticalScrollIndicator={false}>
-                    <View className="mt-4">
+                <Animated.ScrollView
+                    className='flex-1 px-4 relative'
+                    showsVerticalScrollIndicator={false}
+                    style={{
+                        opacity: fadeAnim,
+                        transform: [{ translateY }]
+                    }}
+                >
+                    <View className="mt-6">
                         <View className="flex-row justify-between items-center">
-                            <Text className="text-white text-2xl font-bold">{mainData.postTitle}</Text>
-                            <View className="flex-row items-center gap-1">
+                            <Text className="text-white text-3xl font-bold">{mainData.postTitle}</Text>
+                            <View className="flex-row items-center gap-2 bg-black/50 px-4 py-2 rounded-full">
                                 <Ionicons name="star" size={20} color="#FFD700" />
-                                <Text className="text-white">4.5</Text>
-                            </View>
-                        </View>
-
-                        {/* Food Type Section */}
-                        <View className="mt-4">
-                            <Text className="text-white text-lg font-semibold mb-3">Food Types & Pricing</Text>
-                            <View className="flex-row gap-3 mb-4">
-                                {mainData.postFoodType.map((item, index) => (
-                                    <View key={index} className="bg-zinc-800 px-4 py-2 rounded-full flex-row items-center gap-2">
-                                        <View className="w-2 h-2 rounded-full" />
-                                        <Text className="text-white">{item}</Text>
-                                    </View>
-                                ))}
-                            </View>
-                            <View className="flex-row justify-between bg-zinc-800 p-4 rounded-xl">
-                                <View>
-                                    <Text className="text-zinc-400 text-sm">Monthly</Text>
-                                    <Text className="text-white text-lg">{mainData.postPrice}</Text>
-                                </View>
-
+                                <Text className="text-white font-semibold">4.5</Text>
                             </View>
                         </View>
 
                         <View className="mt-6">
-                            <Text className="text-white text-lg font-semibold mb-2">About Product</Text>
-                            <Text className="text-zinc-400">
-                                {
-                                    mainData.postDescription
-                                }
+                            <Text className="text-white text-xl font-semibold mb-4">Food Types & Pricing</Text>
+                            <View className="flex-row flex-wrap gap-3 mb-6">
+                                {mainData.postFoodType.map((item: string, index: number) => (
+                                    <View key={index} className="bg-zinc-800/50 px-5 py-2.5 rounded-full border border-zinc-700">
+                                        <Text className="text-white font-medium">{item}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                            <View className="bg-gradient-to-r from-zinc-800 to-zinc-900 p-6 rounded-2xl border border-zinc-700">
+                                <View className="flex-row justify-between items-center">
+                                    <View>
+                                        <Text className="text-zinc-400 text-sm">Monthly Plan</Text>
+                                        <Text className="text-white text-2xl font-bold mt-1">₹{mainData.postPrice}</Text>
+                                    </View>
+                                    <View className="bg-[#FFD700] px-6 py-3 rounded-xl">
+                                        <Text className="text-black font-bold">Order Now</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View className="mt-8">
+                            <Text className="text-white text-xl font-semibold mb-4">About Product</Text>
+                            <Text className="text-zinc-400 leading-6">
+                                {mainData.postDescription}
                             </Text>
                         </View>
                     </View>
 
-                    {/* Mess Menu Section */}
-                    <View className='w-full mt-6'>
-                        <Text className='text-white text-lg font-semibold mb-4'>Mess Menu</Text>
+                    <View className='w-full mt-8'>
+                        <Text className='text-white text-2xl font-bold mb-6'>Menu Items</Text>
                         <FlatList
                             data={mainData.postMenu}
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item }) => (
-                                <View className='mr-4' style={{ width: width * 0.7 }}>
-                                    <Image
-                                        source={{ uri: item.image }}
-                                        className='w-full h-48 rounded-xl'
-                                        resizeMode="cover"
-                                    />
-                                    <Text className='text-white mt-2 text-lg font-medium'>{item.title}</Text>
+                                <View className='mr-6' style={{ width: width * 0.75 }}>
+                                    <View className="relative">
+                                        <Image
+                                            source={{ uri: item.image }}
+                                            className='w-full h-56 rounded-3xl'
+                                            resizeMode="cover"
+                                        />
+                                        <View className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent rounded-3xl" />
+                                        <View className="absolute bottom-4 left-4 right-4">
+                                            <Text className='text-white text-xl font-bold'>{item.title}</Text>
+                                            {item.description && (
+                                                <Text className='text-zinc-300 text-sm mt-1' numberOfLines={2}>
+                                                    {item.description}
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </View>
                                 </View>
                             )}
                         />
                     </View>
 
-                    {/* Reviews Section */}
-                    <View className='w-full mt-6'>
+                    <View className='w-full mt-8'>
                         <View className="flex-row justify-between items-center mb-4">
                             <View>
-                                <Text className='text-white text-lg font-semibold'>Reviews</Text>
-                                <View className="flex-row items-center gap-2 mt-1">
-                                    <View className="flex-row items-center">
+                                <Text className='text-white text-2xl font-bold'>Customer Reviews</Text>
+                                <View className="flex-row items-center gap-2 mt-2">
+                                    <View className="flex-row items-center bg-black/50 px-4 py-2 rounded-full">
                                         <Ionicons name="star" size={20} color="#FFD700" />
                                         <Text className="text-white text-lg font-bold ml-1">4.5</Text>
                                     </View>
@@ -169,17 +218,20 @@ const ShowProduct = () => {
                                 </View>
                             </View>
                         </View>
-
-                        {/* Top Reviews Preview */}
-
                     </View>
 
-                    <View className='w-full mb-6 mt-6 flex items-center justify-center px-5'>
-                        <TouchableOpacity activeOpacity={0.8} onPress={() => openBottomSheet()} className='w-full flex-row gap-2 rounded-full flex items-center justify-center py-4' style={{ backgroundColor: BgColor.Secondary }}>
-                            <Text className='text-white text-lg font-semibold'>View Contact Details</Text>
+                    <View className='w-full my-8'>
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            onPress={openBottomSheet}
+                            className='w-full flex-row gap-3 rounded-3xl flex items-center justify-center py-5 bg-zinc-700'
+
+                        >
+                            <Ionicons name="call" size={28} color="orange" />
+                            <Text className='text-white text-xl font-bold'>View Contact Details</Text>
                         </TouchableOpacity>
                     </View>
-                </ScrollView>
+                </Animated.ScrollView>
 
                 <BottomSheet
                     ref={bottomSheetRef}
@@ -195,10 +247,9 @@ const ShowProduct = () => {
                 >
                     <BottomSheetScrollView style={styles.contentContainer}>
                         {
-                            venderData ? <View className="p-4 z-10">
-                                {/* Owner Profile Section */}
-                                <View className="flex-row items-center gap-4 mb-6">
-                                    <View className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#FFD700]">
+                            venderData ? <View className="p-6 z-10">
+                                <View className="flex-row items-center gap-4 mb-8">
+                                    <View className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#FFD700]">
                                         <Image
                                             source={{ uri: venderData.User_Image }}
                                             className="w-full h-full"
@@ -206,62 +257,62 @@ const ShowProduct = () => {
                                         />
                                     </View>
                                     <View className="flex-1">
-                                        <Text className="text-white text-xl font-bold">{venderData.User_Name}</Text>
-                                        <View className="flex-row items-center gap-2 mt-1">
-                                            <Ionicons name="star" size={16} color="#FFD700" />
-                                            <Text className="text-white">4.5 (120 reviews)</Text>
+                                        <Text className="text-white text-2xl font-bold">{venderData.User_Name}</Text>
+                                        <View className="flex-row items-center gap-2 mt-2">
+                                            <View className="flex-row items-center bg-black/50 px-4 py-2 rounded-full">
+                                                <Ionicons name="star" size={18} color="#FFD700" />
+                                                <Text className="text-white text-lg font-bold ml-1">4.5</Text>
+                                            </View>
+                                            <Text className="text-zinc-400">(120 reviews)</Text>
                                         </View>
                                     </View>
                                 </View>
-                                {/* Contact Information */}
-                                <View className="flex gap-2 mb-6">
-                                    <Text className="text-white text-lg font-semibold mb-3">Contact Information</Text>
 
-                                    <View className="flex-row items-center gap-3">
-                                        <View className="w-12 h-12 rounded-full bg-zinc-800 items-center justify-center">
-                                            <Ionicons name="call" size={24} color="#FFD700" />
+                                <View className="flex gap-4 mb-8">
+                                    <Text className="text-white text-xl font-bold mb-4">Contact Information</Text>
+
+                                    <View className="flex-row items-center gap-4 bg-zinc-800/50 p-4 rounded-2xl border border-zinc-700">
+                                        <View className="w-14 h-14 rounded-full bg-zinc-800 items-center justify-center">
+                                            <Ionicons name="call" size={28} color="#FFD700" />
                                         </View>
                                         <View>
                                             <Text className="text-zinc-400 text-sm">Phone Number</Text>
-                                            <Text className="text-white text-lg">+91 {venderData.User_Phone_Number}</Text>
+                                            <Text className="text-white text-lg font-semibold">+91 {venderData.User_Phone_Number}</Text>
                                         </View>
                                     </View>
 
-                                    <View className="flex-row items-center gap-3">
-                                        <View className="w-12 h-12 rounded-full bg-zinc-800 items-center justify-center">
-                                            <Ionicons name="logo-whatsapp" size={24} color="#FFD700" />
+                                    <View className="flex-row items-center gap-4 bg-zinc-800/50 p-4 rounded-2xl border border-zinc-700">
+                                        <View className="w-14 h-14 rounded-full bg-zinc-800 items-center justify-center">
+                                            <Ionicons name="logo-whatsapp" size={28} color="#FFD700" />
                                         </View>
                                         <View>
                                             <Text className="text-zinc-400 text-sm">WhatsApp</Text>
-                                            <Text className="text-white text-lg">+91 {venderData.User_Phone_Number}</Text>
+                                            <Text className="text-white text-lg font-semibold">+91 {venderData.User_Phone_Number}</Text>
                                         </View>
                                     </View>
 
-                                    <View className="flex-row items-center gap-3">
-                                        <View className="w-12 h-12 rounded-full bg-zinc-800 items-center justify-center">
-                                            <Ionicons name="mail" size={24} color="#FFD700" />
+                                    <View className="flex-row items-center gap-4 bg-zinc-800/50 p-4 rounded-2xl border border-zinc-700">
+                                        <View className="w-14 h-14 rounded-full bg-zinc-800 items-center justify-center">
+                                            <Ionicons name="mail" size={28} color="#FFD700" />
                                         </View>
                                         <View>
                                             <Text className="text-zinc-400 text-sm">Email</Text>
-                                            <Text className="text-white text-lg">{venderData.User_Email}</Text>
+                                            <Text className="text-white text-lg font-semibold">{venderData.User_Email}</Text>
                                         </View>
                                     </View>
                                 </View>
 
-                                {/* Address Section */}
-                                <View className="mb-6">
-                                    <Text className="text-white text-lg font-semibold mb-3">Address</Text>
-                                    <View className="bg-zinc-800 p-4 rounded-xl">
-                                        <Text className="text-white">{venderData.User_Address?.address}</Text>
-
+                                <View className="mb-8">
+                                    <Text className="text-white text-xl font-bold mb-4">Address</Text>
+                                    <View className="bg-zinc-800/50 p-5 rounded-2xl border border-zinc-700">
+                                        <Text className="text-white text-lg">{venderData.User_Address?.address}</Text>
                                     </View>
                                 </View>
 
-                                {/* Map Section */}
-                                <View className="mb-6">
-                                    <Text className="text-white text-lg font-semibold mb-3">Location</Text>
+                                <View className="mb-8">
+                                    <Text className="text-white text-xl font-bold mb-4">Location</Text>
                                     <TouchableOpacity activeOpacity={0.8} onPress={openGoogleMaps}>
-                                        <View className="w-full rounded-3xl overflow-hidden">
+                                        <View className="w-full rounded-3xl overflow-hidden border border-zinc-700">
                                             <MapView
                                                 provider={PROVIDER_GOOGLE}
                                                 style={styles.map}
@@ -284,31 +335,57 @@ const ShowProduct = () => {
                                                     pinColor="#FFD700"
                                                 />
                                             </MapView>
-                                            <View className="absolute bottom-2 right-2 bg-black/50 px-3 py-1 rounded-full flex-row items-center gap-1">
-                                                <Ionicons name="open-outline" size={16} color="white" />
-                                                <Text className="text-white text-sm">Open in Maps</Text>
+                                            <View className="absolute bottom-4 right-4 bg-black/50 px-4 py-2 rounded-full flex-row items-center gap-2">
+                                                <Ionicons name="open-outline" size={18} color="white" />
+                                                <Text className="text-white text-sm font-medium">Open in Maps</Text>
                                             </View>
                                         </View>
                                     </TouchableOpacity>
                                 </View>
 
-                                {/* Action Buttons */}
                                 <View className="w-full flex gap-4">
-                                    <TouchableOpacity activeOpacity={0.8}
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
                                         onPress={() => Linking.openURL('tel:+919876543210')}
-                                        className="bg-[#FFD700] py-4 rounded-xl flex-row items-center justify-center gap-2">
-                                        <Ionicons name="call" size={24} color="black" />
-                                        <Text className="text-black font-semibold text-lg">Call Now</Text>
+                                        className="bg-[#FFD700] py-5 rounded-2xl flex-row items-center justify-center gap-3"
+                                        style={{
+                                            shadowColor: "#FFD700",
+                                            shadowOffset: {
+                                                width: 0,
+                                                height: 4,
+                                            },
+                                            shadowOpacity: 0.3,
+                                            shadowRadius: 4.65,
+                                            elevation: 8,
+                                        }}
+                                    >
+                                        <Ionicons name="call" size={28} color="black" />
+                                        <Text className="text-black font-bold text-xl">Call Now</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity activeOpacity={0.8}
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
                                         onPress={() => Linking.openURL('https://wa.me/919876543210')}
-                                        className="bg-[#25D366] py-4 rounded-xl flex-row items-center justify-center gap-2">
-                                        <Ionicons name="logo-whatsapp" size={24} color="white" />
-                                        <Text className="text-white font-semibold text-lg">WhatsApp</Text>
+                                        className="bg-[#25D366] py-5 rounded-2xl flex-row items-center justify-center gap-3"
+                                        style={{
+                                            shadowColor: "#25D366",
+                                            shadowOffset: {
+                                                width: 0,
+                                                height: 4,
+                                            },
+                                            shadowOpacity: 0.3,
+                                            shadowRadius: 4.65,
+                                            elevation: 8,
+                                        }}
+                                    >
+                                        <Ionicons name="logo-whatsapp" size={28} color="white" />
+                                        <Text className="text-white font-bold text-xl">WhatsApp</Text>
                                     </TouchableOpacity>
                                 </View>
-                            </View> : <ActivityIndicator size={'large'} color={"red"} />
+                            </View> : <View className="flex-1 items-center justify-center">
+                                <ActivityIndicator size={'large'} color={"#FFD700"} />
+                                <Text className="text-white mt-4 text-lg">Loading contact details...</Text>
+                            </View>
                         }
                     </BottomSheetScrollView>
                 </BottomSheet>
@@ -318,15 +395,6 @@ const ShowProduct = () => {
 }
 
 const styles = StyleSheet.create({
-    page: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    container: {
-        flex: 1,
-        backgroundColor: 'grey',
-        zIndex: 1,
-    },
     contentContainer: {
         flex: 1,
         zIndex: 10,
@@ -335,12 +403,7 @@ const styles = StyleSheet.create({
         height: 400,
         width: width,
         borderRadius: 10
-    },
-    loaderContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    }
 });
 
 export default ShowProduct

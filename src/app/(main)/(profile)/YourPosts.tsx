@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import SettingsPageLayout from '@/src/components/layout/SettingsPageLayout';
@@ -50,111 +50,117 @@ const YourPosts = () => {
         updateStatus(post._id, setStatusLoading, post.postStatus);
     };
 
-    /**
-     * Renders a post item in the user's posts list with detailed information and interactive options.
-     * 
-     * @param {Object} params - The parameters for rendering a post.
-     * @param {Post} params.item - The post data to be rendered.
-     * @param {number} params.index - The index of the post in the list.
-     * @returns {JSX.Element} A view component representing a single post with edit, delete, and status options.
-     */
     const renderPost = ({ item, index }: { item: Post; index: number }) => (
-        <View className="bg-zinc-900 rounded-2xl shadow-md overflow-hidden mb-6 border border-zinc-700 relative">
-            {/* Options Button */}
-            <View className="absolute top-3 right-3 z-10">
+        <View className="bg-zinc-900 rounded-2xl overflow-hidden mb-6 border border-zinc-700">
+            <View className="absolute top-4 right-4 z-10">
                 {selectedPostIndex === index ? (
-                    <AntDesign onPress={() => handleOptions(index)} name="close" size={22} color="white" />
+                    <TouchableOpacity 
+                        onPress={() => handleOptions(index)}
+                        className="w-10 h-10 rounded-full bg-zinc-800 items-center justify-center"
+                    >
+                        <AntDesign name="close" size={22} color="white" />
+                    </TouchableOpacity>
                 ) : (
-                    <Entypo onPress={() => handleOptions(index)} name="dots-three-vertical" size={20} color="white" />
+                    <TouchableOpacity 
+                        onPress={() => handleOptions(index)}
+                        className="w-10 h-10 rounded-full bg-zinc-800 items-center justify-center"
+                    >
+                        <Entypo name="dots-three-vertical" size={20} color="white" />
+                    </TouchableOpacity>
                 )}
             </View>
 
-            {/* Dropdown Menu */}
             {selectedPostIndex === index && (
-                <View className="absolute top-10 right-3 bg-zinc-800 rounded-lg shadow-md z-20 border border-zinc-700">
-                    <TouchableOpacity onPress={() => deleteLoading ? null : handleDelete(item)} className="px-4 py-2 border-b border-zinc-700">
-                        {
-                            deleteLoading ? <ActivityIndicator size={'small'} color={"red"} /> : <Text className="text-red-400 font-medium">Delete</Text>
-
-                        }
+                <View className="absolute top-16 right-4 bg-zinc-800 rounded-xl z-20 border border-zinc-700">
+                    <TouchableOpacity 
+                        onPress={() => deleteLoading ? null : handleDelete(item)} 
+                        className="px-5 py-3 border-b border-zinc-700"
+                    >
+                        {deleteLoading ? (
+                            <ActivityIndicator size={'small'} color={"#FF4444"} />
+                        ) : (
+                            <Text className="text-red-400 font-semibold">Delete</Text>
+                        )}
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => statusLoading ? null : handleDeactivate(item)} className="px-4 py-2">
-                        {
-                            statusLoading ? <ActivityIndicator size={'small'} color={"red"} /> : <Text className="text-yellow-400 font-medium">
-                                {
-                                    item.postStatus == 'Active' ? 'Deactivate' : 'Activate'
-                                }
+                    <TouchableOpacity 
+                        onPress={() => statusLoading ? null : handleDeactivate(item)} 
+                        className="px-5 py-3"
+                    >
+                        {statusLoading ? (
+                            <ActivityIndicator size={'small'} color={"#FFD700"} />
+                        ) : (
+                            <Text className="text-yellow-400 font-semibold">
+                                {item.postStatus === 'Active' ? 'Deactivate' : 'Activate'}
                             </Text>
-
-                        }
+                        )}
                     </TouchableOpacity>
                 </View>
-            )
-            }
+            )}
 
-            {/* Post Image */}
-            <View className="w-full h-48 bg-zinc-700 items-center justify-center">
+            <View className="w-full h-52 bg-zinc-800 items-center justify-center">
                 {item.postCoverImage[0] ? (
-                    <Image source={{ uri: item.postCoverImage[0] }} className="w-full h-full" />
+                    <Image 
+                        source={{ uri: item.postCoverImage[0] }} 
+                        className="w-full h-full" 
+                        resizeMode="cover"
+                    />
                 ) : (
                     <Ionicons name="image-outline" size={40} color="#FFD700" />
                 )}
             </View>
 
-            {/* Post Content */}
-            <View className="p-4">
-                <View className="flex-row justify-between items-start mb-2">
-                    <View className="flex-1 pr-2">
-                        <Text className="text-white text-lg font-semibold">{item.postTitle}</Text>
-                        <Text className="text-zinc-400 text-sm mt-1">{item.postDescription}</Text>
+            <View className="p-5">
+                <View className="flex-row justify-between items-start mb-3">
+                    <View className="flex-1 pr-4">
+                        <Text className="text-white text-xl font-bold mb-2">{item.postTitle}</Text>
+                        <Text 
+                            className="text-zinc-400 text-sm" 
+                            numberOfLines={3}
+                        >
+                            {item.postDescription}
+                        </Text>
                     </View>
                     <View
-                        className={`px-2 py-1 rounded-full ${item.postStatus == 'Active' ? 'bg-green-500/20' : 'bg-red-500/20'
-                            }`}
+                        className={`px-3 py-1.5 rounded-full ${item.postStatus === 'Active' ? 'bg-green-500/20' : 'bg-red-500/20'}`}
                     >
                         <Text
-                            className={`text-xs ${item.postStatus == 'Active' ? 'text-green-500' : 'text-red-500'
-                                }`}
+                            className={`text-xs font-semibold ${item.postStatus === 'Active' ? 'text-green-400' : 'text-red-400'}`}
                         >
-                            {item.postStatus == 'Active' ? 'Active' : 'Deactive'}
+                            {item.postStatus === 'Active' ? 'Active' : 'Inactive'}
                         </Text>
                     </View>
                 </View>
 
-                {/* Likes and Price */}
                 <View className="flex-row justify-between items-center mt-4">
-                    <View className="flex-row items-center">
+                    <View className="flex-row items-center gap-2">
                         <Ionicons name="heart-outline" size={20} color="#FFD700" />
-                        <Text className="text-zinc-400 ml-1">{item.productLikes || 0}</Text>
+                        <Text className="text-zinc-300 font-medium">{item.productLikes || 0}</Text>
                     </View>
-                    <Text className="text-[#FFD700] font-semibold text-base">₹ {item.postPrice}</Text>
+                    <Text className="text-[#FFD700] font-bold text-lg">₹{item.postPrice}</Text>
                 </View>
 
-                {/* Edit Button */}
-                <View className="flex-row gap-2 mt-4">
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => editFunctionPage(item)}
-                        className="flex-1 bg-zinc-700 py-3 rounded-lg flex-row items-center justify-center"
-                    >
-                        <Text className="text-white text-lg font-bold tracking-widest">Edit Post</Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => editFunctionPage(item)}
+                    className="mt-5 bg-[#FFD700] py-4 rounded-xl flex-row items-center justify-center"
+                >
+                    <Text className="text-black font-bold text-lg">Edit Post</Text>
+                </TouchableOpacity>
             </View>
-        </View >
+        </View>
     );
 
     return (
         <SettingsPageLayout title="Your Posts">
             <View className="flex-row justify-between items-center mb-6">
-                <Text className="text-zinc-400 text-sm">Manage your posts</Text>
+                <Text className="text-zinc-400 text-base">Manage your posts</Text>
                 <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={() => router.push('/(main)/(product)/NewPost')}
-                    className="bg-[#FFD700] px-4 py-2 rounded-lg flex-row items-center"
+                    className="bg-[#FFD700] px-5 py-3 rounded-xl flex-row items-center"
                 >
-                    <Ionicons name="add-outline" size={20} color="black" />
-                    <Text className="text-black font-semibold ml-2">New Post</Text>
+                    <Ionicons name="add-outline" size={24} color="black" />
+                    <Text className="text-black font-bold text-lg ml-2">New Post</Text>
                 </TouchableOpacity>
             </View>
 

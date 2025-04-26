@@ -10,13 +10,31 @@ import Modal from 'react-native-modal';
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
 
+interface PostState {
+    title: string;
+    description: string;
+    price: string;
+    foodTypes: string[];
+    images: string[];
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    availableDays: string[];
+    mealTypes: string[];
+    menuItems: Array<{
+        title: string;
+        description: string;
+        image: string;
+    }>;
+}
+
 const index = () => {
     const router = useRouter();
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [uploadingProduct, setUploadingProduct] = useState(false)
-    const [post, setPost] = useState<any>({
+    const [post, setPost] = useState<PostState>({
         title: "",
         description: "",
         price: "",
@@ -29,13 +47,24 @@ const index = () => {
         mealTypes: [],
         menuItems: []
     });
+    const [locationDetails, setLocationDetails] = useState<{
+        street?: string;
+        city?: string;
+        region?: string;
+        country?: string;
+        district?: string;
+        subregion?: string;
+        postalCode?: string;
+        name?: string;
+        isoCountryCode?: string;
+    } | null>(null);
     const progressAnimation = useRef(new Animated.Value(0)).current;
 
     const foodTypeOptions = ["Veg", "Non-Veg", "Vegan"];
     const dayOptions = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const mealTypeOptions = ["Breakfast", "Lunch", "Dinner", "All Day"];
 
-    const validateField = (key: keyof PostData, value: any): string => {
+    const validateField = (key: keyof PostState, value: any): string => {
         switch (key) {
             case 'title':
                 if (!value.trim()) return 'Title is required';
@@ -77,8 +106,8 @@ const index = () => {
         }
     };
 
-    const handleChange = (key: keyof PostData, value: any) => {
-        setPost(prev => ({
+    const handleChange = (key: keyof PostState, value: any) => {
+        setPost((prev: PostState) => ({
             ...prev,
             [key]: value
         }));
@@ -119,7 +148,7 @@ const index = () => {
             });
 
             if (!result.canceled) {
-                setPost(prev => ({
+                setPost((prev: PostState) => ({
                     ...prev,
                     images: [...prev.images, result.assets[0].uri]
                 }));
@@ -145,11 +174,15 @@ const index = () => {
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Permission Denied', 'Please allow location access to use this feature.');
+                setIsLocationLoading(false);
                 return;
             }
 
-            const location = await Location.getCurrentPositionAsync({});
-            setPost(prev => ({
+            const location = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.High
+            });
+
+            setPost((prev: PostState) => ({
                 ...prev,
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude
@@ -161,14 +194,33 @@ const index = () => {
             });
 
             if (address) {
-                const formattedAddress = [
-                    address.street,
-                    address.city,
-                    address.region,
-                    address.country
-                ].filter(Boolean).join(', ');
+                const detailedAddress = {
+                    street: address.street?.replace(/^\d+\s*/, '') || undefined,
+                    city: address.city || undefined,
+                    region: address.region || undefined,
+                    country: address.country || undefined,
+                    district: address.district || undefined,
+                    subregion: address.subregion || undefined,
+                    postalCode: address.postalCode || undefined,
+                    name: address.name?.replace(/^\d+\s*/, '') || undefined,
+                    isoCountryCode: address.isoCountryCode || undefined
+                };
 
-                setPost(prev => ({
+                setLocationDetails(detailedAddress);
+
+                const addressParts = [
+                    address.name?.replace(/^\d+\s*/, ''),
+                    address.street?.replace(/^\d+\s*/, ''),
+                    address.district,
+                    address.city,
+                    address.subregion,
+                    address.region,
+                    address.postalCode,
+                    address.country
+                ].filter(Boolean);
+
+                const formattedAddress = addressParts.join(', ');
+                setPost((prev: PostState) => ({
                     ...prev,
                     address: formattedAddress
                 }));
@@ -185,7 +237,7 @@ const index = () => {
             pathname: '/(main)/LocationPicker',
             params: {
                 onSelect: JSON.stringify((location: { latitude: number; longitude: number; address: string }) => {
-                    setPost(prev => ({
+                    setPost((prev: PostState) => ({
                         ...prev,
                         latitude: location.latitude,
                         longitude: location.longitude,
@@ -196,19 +248,13 @@ const index = () => {
         });
     };
 
-    const toggleArrayItem = (key: keyof PostData, item: string) => {
-        setPost(prev => {
-            // Type guard to ensure we're working with an array
-            if (Array.isArray(prev[key])) {
-                const currentArray = prev[key] as string[];
-                return {
-                    ...prev,
-                    [key]: currentArray.includes(item)
-                        ? currentArray.filter(i => i !== item)
-                        : [...currentArray, item]
-                };
-            }
-            return prev;
+    const toggleArrayItem = (key: keyof PostState, item: string) => {
+        setPost((prev: PostState) => {
+            const currentArray = prev[key] as string[];
+            const newArray = currentArray.includes(item)
+                ? currentArray.filter(i => i !== item)
+                : [...currentArray, item];
+            return { ...prev, [key]: newArray };
         });
     };
 
@@ -241,7 +287,7 @@ const index = () => {
             });
 
             if (!result.canceled) {
-                setPost(prev => ({
+                setPost((prev: PostState) => ({
                     ...prev,
                     menuItems: [...prev.menuItems, {
                         title: "",
@@ -266,7 +312,7 @@ const index = () => {
     };
 
     const removeMenuItem = (index: number) => {
-        setPost(prev => ({
+        setPost((prev: PostState) => ({
             ...prev,
             menuItems: prev.menuItems.filter((_, i) => i !== index)
         }));
@@ -281,12 +327,11 @@ const index = () => {
     };
 
     const updateMenuItem = (index: number, field: 'title' | 'description', value: string) => {
-        setPost(prev => ({
-            ...prev,
-            menuItems: prev.menuItems.map((item, i) =>
-                i === index ? { ...item, [field]: value } : item
-            )
-        }));
+        setPost((prev: PostState) => {
+            const newMenuItems = [...prev.menuItems];
+            newMenuItems[index] = { ...newMenuItems[index], [field]: value };
+            return { ...prev, menuItems: newMenuItems };
+        });
 
         // Validate menu items after update
         const updatedMenuItems = post.menuItems.map((item, i) =>
@@ -310,7 +355,7 @@ const index = () => {
         let hasErrors = false;
 
         Object.keys(post).forEach((key) => {
-            const error = validateField(key as keyof PostData, post[key as keyof PostData]);
+            const error = validateField(key as keyof PostState, post[key as keyof PostState]);
             if (error) {
                 newErrors[key] = error;
                 hasErrors = true;
@@ -346,6 +391,13 @@ const index = () => {
             <Text className="text-red-500 ml-1 text-sm">{message}</Text>
         </View>
     );
+
+    const addMenuItem = () => {
+        setPost((prev: PostState) => ({
+            ...prev,
+            menuItems: [...prev.menuItems, { title: '', description: '', image: '' }]
+        }));
+    };
 
     return (
         <View className="flex-1 bg-zinc-900">
@@ -461,7 +513,7 @@ const index = () => {
                                     />
                                     <TouchableOpacity
                                         onPress={() => {
-                                            setPost(prev => ({
+                                            setPost((prev: PostState) => ({
                                                 ...prev,
                                                 images: prev.images.filter((_, i) => i !== index)
                                             }));
@@ -567,6 +619,19 @@ const index = () => {
                             className={`text-white bg-zinc-700 rounded-lg p-3 mb-3 ${errors.address ? 'border-2 border-red-500' : ''}`}
                             multiline
                         />
+                        {locationDetails && (
+                            <View className="bg-zinc-700 rounded-lg p-3 mb-3">
+                                <Text className="text-[#FFD700] font-semibold mb-1">Location Details:</Text>
+                                {locationDetails.name && <Text className="text-white">Place: {locationDetails.name}</Text>}
+                                {locationDetails.street && <Text className="text-white">Street: {locationDetails.street}</Text>}
+                                {locationDetails.district && <Text className="text-white">District: {locationDetails.district}</Text>}
+                                {locationDetails.city && <Text className="text-white">City: {locationDetails.city}</Text>}
+                                {locationDetails.subregion && <Text className="text-white">Sub Region: {locationDetails.subregion}</Text>}
+                                {locationDetails.region && <Text className="text-white">Region: {locationDetails.region}</Text>}
+                                {locationDetails.postalCode && <Text className="text-white">Postal Code: {locationDetails.postalCode}</Text>}
+                                {locationDetails.country && <Text className="text-white">Country: {locationDetails.country}</Text>}
+                            </View>
+                        )}
                         <View className="flex-row gap-3">
                             <TouchableOpacity
                                 onPress={getCurrentLocation}
@@ -589,7 +654,7 @@ const index = () => {
                                 activeOpacity={0.8}
                             >
                                 <Ionicons name="map-outline" size={22} color="#FFD700" />
-                                <Text className="text-white ml-2 font-medium">Pick from Map</Text>
+                                <Text className="text-white ml-2 font-medium">Pick on Map</Text>
                             </TouchableOpacity>
                         </View>
                         {errors.address && <ErrorMessage message={errors.address} />}

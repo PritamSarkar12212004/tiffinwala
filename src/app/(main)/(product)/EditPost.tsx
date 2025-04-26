@@ -23,6 +23,18 @@ const EditPost = () => {
 
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [isLocationLoading, setIsLocationLoading] = useState(false);
+    const [locationDetails, setLocationDetails] = useState<{
+        street?: string;
+        city?: string;
+        region?: string;
+        country?: string;
+        district?: string;
+        subregion?: string;
+        postalCode?: string;
+        name?: string;
+        isoCountryCode?: string;
+    } | null>(null);
 
     const [post, setPost] = useState<PostData2>({
         productId: "",
@@ -38,6 +50,8 @@ const EditPost = () => {
         mealTypes: [],
         menuItems: []
     });
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         setPost({
@@ -65,12 +79,67 @@ const EditPost = () => {
 
 
 
+    const validateField = (key: keyof PostData2, value: any): string => {
+        switch (key) {
+            case 'title':
+                if (!value.trim()) return 'Title is required';
+                if (value.length < 5) return 'Title must be at least 5 characters';
+                return '';
+            case 'description':
+                if (!value.trim()) return 'Description is required';
+                if (value.length < 20) return 'Description must be at least 20 characters';
+                return '';
+            case 'price':
+                if (!value.trim()) return 'Price is required';
+                if (isNaN(Number(value))) return 'Price must be a valid number';
+                if (Number(value) <= 0) return 'Price must be greater than 0';
+                return '';
+            case 'foodTypes':
+                if (value.length === 0) return 'At least one food type is required';
+                return '';
+            case 'images':
+                if (value.length === 0) return 'At least one image is required';
+                return '';
+            case 'address':
+                if (!value.trim()) return 'Address is required';
+                return '';
+            case 'availableDays':
+                if (value.length === 0) return 'At least one day must be selected';
+                return '';
+            case 'mealTypes':
+                if (value.length === 0) return 'At least one meal type is required';
+                return '';
+            case 'menuItems':
+                if (value.length === 0) return 'At least one menu item is required';
+                for (const item of value) {
+                    if (!item.title.trim()) return 'Menu item title is required';
+                    if (!item.description.trim()) return 'Menu item description is required';
+                }
+                return '';
+            default:
+                return '';
+        }
+    };
+
     const handleChange = (key: keyof PostData2, value: any) => {
         setPost(prev => ({
             ...prev,
             [key]: value
         }));
+
+        const error = validateField(key, value);
+        setErrors(prev => ({
+            ...prev,
+            [key]: error
+        }));
     };
+
+    const ErrorMessage = ({ message }: { message: string }) => (
+        <View className="flex-row items-center mt-1">
+            <Ionicons name="alert-circle" size={16} color="#ef4444" />
+            <Text className="text-red-500 ml-1 text-sm">{message}</Text>
+        </View>
+    );
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -90,13 +159,18 @@ const EditPost = () => {
 
     const getCurrentLocation = async () => {
         try {
+            setIsLocationLoading(true);
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Permission Denied', 'Please allow location access to use this feature.');
+                setIsLocationLoading(false);
                 return;
             }
 
-            const location = await Location.getCurrentPositionAsync({});
+            const location = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.High
+            });
+
             setPost(prev => ({
                 ...prev,
                 latitude: location.coords.latitude,
@@ -109,7 +183,32 @@ const EditPost = () => {
             });
 
             if (address) {
-                const formattedAddress = `${address.street || ''} ${address.city || ''} ${address.region || ''} ${address.country || ''}`;
+                const detailedAddress = {
+                    street: address.street?.replace(/^\d+\s*/, '') || undefined,
+                    city: address.city || undefined,
+                    region: address.region || undefined,
+                    country: address.country || undefined,
+                    district: address.district || undefined,
+                    subregion: address.subregion || undefined,
+                    postalCode: address.postalCode || undefined,
+                    name: address.name?.replace(/^\d+\s*/, '') || undefined,
+                    isoCountryCode: address.isoCountryCode || undefined
+                };
+
+                setLocationDetails(detailedAddress);
+
+                const addressParts = [
+                    address.name?.replace(/^\d+\s*/, ''),
+                    address.street?.replace(/^\d+\s*/, ''),
+                    address.district,
+                    address.city,
+                    address.subregion,
+                    address.region,
+                    address.postalCode,
+                    address.country
+                ].filter(Boolean);
+
+                const formattedAddress = addressParts.join(', ');
                 setPost(prev => ({
                     ...prev,
                     address: formattedAddress
@@ -117,6 +216,8 @@ const EditPost = () => {
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to get location. Please try again.');
+        } finally {
+            setIsLocationLoading(false);
         }
     };
     const pickMenuImage = async () => {
@@ -186,18 +287,46 @@ const EditPost = () => {
     };
 
     const toggleArrayItem = (key: keyof PostData2, item: string) => {
-        setPost(prev => ({
-            ...prev,
-            [key]: prev[key].includes(item)
-                ? prev[key].filter(i => i !== item)
-                : [...prev[key], item]
-        }));
+        setPost(prev => {
+            const currentArray = prev[key] as string[];
+            if (Array.isArray(currentArray)) {
+                const newArray = currentArray.includes(item)
+                    ? currentArray.filter(i => i !== item)
+                    : [...currentArray, item];
+                return { ...prev, [key]: newArray };
+            }
+            return prev;
+        });
     };
 
     const { updateProduct } = useUpdatePorductApi()
 
     const handleSubmit = () => {
-        setUploadingProduct(true)
+        // Validate all fields
+        const newErrors: Record<string, string> = {};
+        let hasErrors = false;
+
+        Object.keys(post).forEach((key) => {
+            const error = validateField(key as keyof PostData2, post[key as keyof PostData2]);
+            if (error) {
+                newErrors[key] = error;
+                hasErrors = true;
+            }
+        });
+
+        setErrors(newErrors);
+
+        if (hasErrors) {
+            Alert.alert(
+                'Validation Error',
+                'Please fix the following errors:\n\n' +
+                Object.values(newErrors).filter(Boolean).join('\n'),
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
+        setUploadingProduct(true);
         updateProduct(post, setUploadingProduct, setUploadDoneModal);
     };
 
@@ -269,8 +398,9 @@ const EditPost = () => {
                             onChangeText={(value) => handleChange('title', value)}
                             placeholder="Enter post title"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.title ? 'border border-red-500' : ''}`}
                         />
+                        {errors.title && <ErrorMessage message={errors.title} />}
                     </View>
 
                     {/* Description */}
@@ -281,23 +411,25 @@ const EditPost = () => {
                             onChangeText={(value) => handleChange('description', value)}
                             placeholder="Describe your tiffin service"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.description ? 'border border-red-500' : ''}`}
                             multiline
                             numberOfLines={4}
                         />
+                        {errors.description && <ErrorMessage message={errors.description} />}
                     </View>
 
                     {/* Price */}
                     <View className="bg-zinc-800 rounded-xl p-4">
                         <Text className="text-white text-lg mb-2">Price</Text>
                         <TextInput
-                            value={String(post.price)} // Ensure value is a string
-                            onChangeText={(value) => handleChange('price', value)} // Update state
+                            value={String(post.price)}
+                            onChangeText={(value) => handleChange('price', value)}
                             placeholder="Enter price"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 ${errors.price ? 'border border-red-500' : ''}`}
                             keyboardType="numeric"
                         />
+                        {errors.price && <ErrorMessage message={errors.price} />}
                     </View>
 
                     {/* Food Types */}
@@ -308,8 +440,7 @@ const EditPost = () => {
                                 <TouchableOpacity
                                     key={type}
                                     onPress={() => toggleArrayItem('foodTypes', type)}
-                                    className={`px-4 py-2 rounded-lg ${post.foodTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'
-                                        }`}
+                                    className={`px-4 py-2 rounded-lg ${post.foodTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
                                 >
                                     <Text className={post.foodTypes.includes(type) ? 'text-black font-semibold' : 'text-white'}>
                                         {type}
@@ -317,6 +448,7 @@ const EditPost = () => {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {errors.foodTypes && <ErrorMessage message={errors.foodTypes} />}
                     </View>
 
                     {/* Images */}
@@ -327,10 +459,18 @@ const EditPost = () => {
                                 <View key={index} className="relative">
                                     <Image source={{ uri }} className="w-24 h-24 rounded-lg" />
                                     <TouchableOpacity
-                                        onPress={() => setPost(prev => ({
-                                            ...prev,
-                                            images: prev.images.filter((_, i) => i !== index)
-                                        }))}
+                                        onPress={() => {
+                                            setPost(prev => ({
+                                                ...prev,
+                                                images: prev.images.filter((_, i) => i !== index)
+                                            }));
+                                            if (post.images.length === 1) {
+                                                setErrors(prev => ({
+                                                    ...prev,
+                                                    images: 'At least one image is required'
+                                                }));
+                                            }
+                                        }}
                                         className="absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 items-center justify-center"
                                     >
                                         <Ionicons name="close" size={16} color="white" />
@@ -344,6 +484,7 @@ const EditPost = () => {
                                 <Ionicons name="add" size={32} color="#FFD700" />
                             </TouchableOpacity>
                         </ScrollView>
+                        {errors.images && <ErrorMessage message={errors.images} />}
                     </View>
                     <View className="bg-zinc-800 rounded-xl p-4">
                         <Text className="text-white text-lg mb-3 font-semibold">Menu Items</Text>
@@ -391,39 +532,62 @@ const EditPost = () => {
                                 disabled={isLoading}
                                 className="flex-row items-center justify-center bg-zinc-700 rounded-lg p-4"
                             >
-
                                 <Ionicons name="add-circle" size={30} color="#FFD700" />
                                 <Text className="text-white ml-2 text-lg font-medium">Add Menu Item</Text>
-
                             </TouchableOpacity>
                         </View>
+                        {errors.menuItems && <ErrorMessage message={errors.menuItems} />}
                     </View>
 
                     {/* Location */}
                     <View className="bg-zinc-800 rounded-xl p-4">
-                        <Text className="text-white text-lg mb-2">Location</Text>
+                        <Text className="text-white text-lg mb-3 font-semibold">Location</Text>
+                        <Text className="text-zinc-400 mb-3">Add your delivery location</Text>
                         <TextInput
                             value={post.address}
                             onChangeText={(value) => handleChange('address', value)}
                             placeholder="Enter your address"
                             placeholderTextColor="#71717a"
-                            className="text-white bg-zinc-700 rounded-lg p-3 mb-2"
+                            className={`text-white bg-zinc-700 rounded-lg p-3 mb-3 ${errors.address ? 'border-2 border-red-500' : ''}`}
                             multiline
                         />
-                        <View className="flex-row gap-2">
+                        {errors.address && <ErrorMessage message={errors.address} />}
+                        {locationDetails && (
+                            <View className="bg-zinc-700 rounded-lg p-3 mb-3">
+                                <Text className="text-[#FFD700] font-semibold mb-1">Location Details:</Text>
+                                {locationDetails.name && <Text className="text-white">Place: {locationDetails.name}</Text>}
+                                {locationDetails.street && <Text className="text-white">Street: {locationDetails.street}</Text>}
+                                {locationDetails.district && <Text className="text-white">District: {locationDetails.district}</Text>}
+                                {locationDetails.city && <Text className="text-white">City: {locationDetails.city}</Text>}
+                                {locationDetails.subregion && <Text className="text-white">Sub Region: {locationDetails.subregion}</Text>}
+                                {locationDetails.region && <Text className="text-white">Region: {locationDetails.region}</Text>}
+                                {locationDetails.postalCode && <Text className="text-white">Postal Code: {locationDetails.postalCode}</Text>}
+                                {locationDetails.country && <Text className="text-white">Country: {locationDetails.country}</Text>}
+                            </View>
+                        )}
+                        <View className="flex-row gap-3">
                             <TouchableOpacity
                                 onPress={getCurrentLocation}
-                                className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
+                                className="flex-1 bg-zinc-700 py-3 rounded-lg flex-row items-center justify-center"
+                                disabled={isLocationLoading}
+                                activeOpacity={0.8}
                             >
-                                <Ionicons name="navigate-outline" size={20} color="#FFD700" />
-                                <Text className="text-white ml-2">Current Location</Text>
+                                {isLocationLoading ? (
+                                    <ActivityIndicator color="#FFD700" />
+                                ) : (
+                                    <>
+                                        <Ionicons name="navigate-outline" size={22} color="#FFD700" />
+                                        <Text className="text-white ml-2 font-medium">Current Location</Text>
+                                    </>
+                                )}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={pickLocationFromMap}
-                                className="flex-1 bg-zinc-700 py-2 rounded-lg flex-row items-center justify-center"
+                                className="flex-1 bg-zinc-700 py-3 rounded-lg flex-row items-center justify-center"
+                                activeOpacity={0.8}
                             >
-                                <Ionicons name="map-outline" size={20} color="#FFD700" />
-                                <Text className="text-white ml-2">Pick from Map</Text>
+                                <Ionicons name="map-outline" size={22} color="#FFD700" />
+                                <Text className="text-white ml-2 font-medium">Pick on Map</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -436,8 +600,7 @@ const EditPost = () => {
                                 <TouchableOpacity
                                     key={day}
                                     onPress={() => toggleArrayItem('availableDays', day)}
-                                    className={`px-4 py-2 rounded-lg ${post.availableDays.includes(day) ? 'bg-[#FFD700]' : 'bg-zinc-700'
-                                        }`}
+                                    className={`px-4 py-2 rounded-lg ${post.availableDays.includes(day) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
                                 >
                                     <Text className={post.availableDays.includes(day) ? 'text-black font-semibold' : 'text-white'}>
                                         {day}
@@ -445,6 +608,7 @@ const EditPost = () => {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {errors.availableDays && <ErrorMessage message={errors.availableDays} />}
                     </View>
 
                     {/* Meal Types */}
@@ -455,8 +619,7 @@ const EditPost = () => {
                                 <TouchableOpacity
                                     key={type}
                                     onPress={() => toggleArrayItem('mealTypes', type)}
-                                    className={`px-4 py-2 rounded-lg ${post.mealTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'
-                                        }`}
+                                    className={`px-4 py-2 rounded-lg ${post.mealTypes.includes(type) ? 'bg-[#FFD700]' : 'bg-zinc-700'}`}
                                 >
                                     <Text className={post.mealTypes.includes(type) ? 'text-black font-semibold' : 'text-white'}>
                                         {type}
@@ -464,6 +627,7 @@ const EditPost = () => {
                                 </TouchableOpacity>
                             ))}
                         </View>
+                        {errors.mealTypes && <ErrorMessage message={errors.mealTypes} />}
                     </View>
 
 
