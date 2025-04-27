@@ -8,11 +8,10 @@ import { useNavigation } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons';
 import UtilsToken from '@/src/constants/token/UtilsToken'
 import { removeLocationData, setLocationData } from '@/src/functions/storage/Storage'
-import api from '@/src/utils/api/Axios'
 import { userContext } from '@/src/utils/context/ContextApi'
 
 const LocationPage = () => {
-    const { userProfile, setUserTemLocation } = userContext()
+    const { setUserTemLocation } = userContext()
     const navigation = useNavigation()
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -69,14 +68,14 @@ const LocationPage = () => {
         await setLocationData(UtilsToken.Location, locationDetails)
         setUserTemLocation(locationDetails)
 
-        api.post("/api/user/location-update", {
-            address: locationDetails,
-            userProfile: userProfile?._id
-        }).then((res) => {
-            navigation.goBack()
-        }).catch((err) => {
-            Alert.alert("Error", "Something went wrong")
-        })
+        // api.post("/api/user/location-update", {
+        //     address: locationDetails,
+        //     userProfile: userProfile?._id
+        // }).then((res) => {
+        navigation.goBack()
+        // }).catch((err) => {
+        //     Alert.alert("Error", "Something went wrong")
+        // })
     }
 
     useEffect(() => {

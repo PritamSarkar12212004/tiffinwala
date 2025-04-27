@@ -1,16 +1,27 @@
 import { View, Text, TouchableOpacity, Image, Animated } from 'react-native'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Ionicons } from '@expo/vector-icons';
 import { userContext } from '@/src/utils/context/ContextApi'
 import { useNavigation, useRouter } from 'expo-router';
+import useLikeProductApi from '@/src/hooks/product-api/useLikeProductApi';
+import likeFetchData from '@/src/hooks/product-api/likeFetchData';
 
 const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     const navigation = useNavigation()
     const [isLiked, setIsLiked] = useState(false);
     const { bottomSheetRef2, setMainData } = userContext();
     const scaleAnim = useRef(new Animated.Value(1)).current;
+    const { likeController } = useLikeProductApi();
+    const { likeProductFetch } = likeFetchData();
+
+    useEffect(() => {
+        likeProductFetch(item.postVendorId, item._id, setIsLiked)
+        return () => {
+            setIsLiked(false)
+        }
+    }, [item.productLikes])
 
     const bottomSheetHandler = () => {
         setBottomSheetData(item.postMenu)
@@ -18,6 +29,7 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     }
 
     const likeHandler = () => {
+        likeController(item.postVendorId, item._id, isLiked, setIsLiked)
         setIsLiked(!isLiked);
         Animated.sequence([
             Animated.timing(scaleAnim, {
@@ -43,7 +55,7 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
             onPress={handleCardPress}
             activeOpacity={0.8}
             className='w-full rounded-2xl relative mb-4 overflow-hidden'
-            style={{ 
+            style={{
                 backgroundColor: BgColor.Secondary,
                 shadowColor: "#000",
                 shadowOffset: {

@@ -9,31 +9,31 @@ const HelpSupport = () => {
             title: "FAQs",
             description: "Find answers to common questions",
             icon: "help-circle-outline",
-            action: () => {}
+            action: () => Linking.openURL('https://tiffinwala.com/faqs')
         },
         {
             title: "Contact Support",
             description: "Get in touch with our support team",
             icon: "headset-outline",
-            action: () => {}
+            action: () => Linking.openURL('tel:+917620876689')
         },
         {
             title: "Report a Problem",
             description: "Help us improve by reporting issues",
             icon: "bug-outline",
-            action: () => {}
+            action: () => Linking.openURL('mailto:report@tiffinwala.com')
         },
         {
             title: "Terms of Service",
             description: "Read our terms and conditions",
             icon: "document-text-outline",
-            action: () => {}
+            action: () => Linking.openURL('https://tiffinwala.com/terms')
         },
         {
             title: "Privacy Policy",
             description: "Learn about our privacy practices",
             icon: "shield-outline",
-            action: () => {}
+            action: () => Linking.openURL('https://tiffinwala.com/privacy')
         }
     ];
 
@@ -47,7 +47,8 @@ const HelpSupport = () => {
 
                 <View className="flex gap-3">
                     {supportOptions.map((option) => (
-                        <TouchableOpacity 
+                        <TouchableOpacity
+                            activeOpacity={0.8}
                             key={option.title}
                             onPress={option.action}
                             className="bg-zinc-800 rounded-xl p-4 flex-row items-center"
@@ -68,16 +69,18 @@ const HelpSupport = () => {
                     <Text className="text-white text-lg font-semibold mb-2">Quick Actions</Text>
                     <Text className="text-zinc-400 text-sm mb-4">Get help faster with these options</Text>
                     <View className="flex-row gap-2">
-                        <TouchableOpacity 
+                        <TouchableOpacity
+                            activeOpacity={0.8}
                             className="flex-1 bg-zinc-700 py-3 rounded-lg items-center"
-                            onPress={() => Linking.openURL('mailto:support@tiffinwala.com')}
+                            onPress={() => Linking.openURL('mailto:tiffinwala2004@gmail.com')}
                         >
                             <Ionicons name="mail-outline" size={20} color="#FFD700" />
                             <Text className="text-white mt-1">Email Us</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity 
+                        <TouchableOpacity
+                            activeOpacity={0.8}
                             className="flex-1 bg-zinc-700 py-3 rounded-lg items-center"
-                            onPress={() => Linking.openURL('tel:+1234567890')}
+                            onPress={() => Linking.openURL('tel:+917620876689')}
                         >
                             <Ionicons name="call-outline" size={20} color="#FFD700" />
                             <Text className="text-white mt-1">Call Us</Text>

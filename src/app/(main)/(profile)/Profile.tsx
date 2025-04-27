@@ -2,20 +2,14 @@ import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'r
 import React from 'react'
 import PageNavigation from '@/src/components/navigation/PageNavigation'
 import ProfilePost from '@/src/components/layout/ProfilePost';
-import ProfilePromotion from '@/src/components/layout/ProfilePromotion';
 import ProfileOptions from '@/src/components/layout/ProfileOptions';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { userContext } from '@/src/utils/context/ContextApi';
 const index = () => {
     const navigation = useNavigation()
-    const { userProfile, userTemLocation } = userContext()
-    const stats = [
-        { label: "Posts", value: "24" },
-        { label: "Reviews", value: "156" },
-        { label: "Orders", value: "89" },
-        { label: "Points", value: "1.2k" }
-    ];
+    const { userProfile, userTemLocation, product } = userContext()
+
 
     return (
         <View className='flex-1 bg-black'>
@@ -56,7 +50,7 @@ const index = () => {
                         {/* Stats Section */}
                         <View className="flex-row justify-between mt-6 bg-zinc-800 p-4 px-10 rounded-xl">
                             <View className="items-center">
-                                <Text className="text-white text-xl font-bold">2</Text>
+                                <Text className="text-white text-xl font-bold">{product.length}</Text>
                                 <Text className="text-zinc-400 text-sm">Post</Text>
                             </View>
                             <View className="items-center">
@@ -77,7 +71,10 @@ const index = () => {
                                 <Ionicons name="pencil" size={20} color="black" />
                                 <Text className="text-black font-semibold">Edit Profile</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity className="w-12 h-12 bg-zinc-800 rounded-xl items-center justify-center">
+                            <TouchableOpacity className="w-12 h-12 bg-zinc-800 rounded-xl items-center justify-center"
+                                activeOpacity={0.8}
+                                onPress={() => navigation.navigate("ProfileEdit" as never)}
+                            >
                                 <Ionicons name="settings-outline" size={24} color="white" />
                             </TouchableOpacity>
                         </View>

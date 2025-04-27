@@ -22,7 +22,7 @@ const ProfileOptions = () => {
             showSwitch: true,
             isEnabled: notifications,
             func: () => {
-                navigation.navigate("Notifications")
+                navigation.navigate("Notifications" as never)
             }
         },
         {
@@ -32,24 +32,16 @@ const ProfileOptions = () => {
             showSwitch: true,
             isEnabled: isDarkMode,
             func: () => {
-                navigation.navigate("DarkMode")
+                navigation.navigate("DarkMode" as never)
             }
         },
 
-        {
-            title: "Privacy Settings",
-            icon: "shield-checkmark-outline",
-            description: "Manage your privacy preferences",
-            func: () => {
-                navigation.navigate("Privacy")
-            }
-        },
         {
             title: "Help & Support",
             icon: "help-circle-outline",
             description: "Get help and contact support",
             func: () => {
-                navigation.navigate("HelpSupport")
+                navigation.navigate("HelpSupport" as never)
             }
         },
         {
@@ -57,7 +49,7 @@ const ProfileOptions = () => {
             icon: "information-circle-outline",
             description: "App version and information",
             func: () => {
-                navigation.navigate("About")
+                navigation.navigate("About" as never)
             }
         },
         {

@@ -48,29 +48,7 @@ const About = () => {
                 }
             ]
         },
-        {
-            title: "Legal",
-            items: [
-                {
-                    title: "Terms of Service",
-                    value: "Read our terms",
-                    icon: "document-text-outline",
-                    action: () => { }
-                },
-                {
-                    title: "Privacy Policy",
-                    value: "View privacy policy",
-                    icon: "shield-outline",
-                    action: () => { }
-                },
-                {
-                    title: "Cookie Policy",
-                    value: "Learn about cookies",
-                    icon: "cafe-outline",
-                    action: () => { }
-                }
-            ]
-        }
+
     ];
 
     return (

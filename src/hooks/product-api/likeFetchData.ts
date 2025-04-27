@@ -11,7 +11,6 @@ const likeFetchData = () => {
         userId,
         productId,
       });
-      console.log(res.data.isLiked);
       if (res.data.isLiked) {
         setIsFavorite(true);
       } else {

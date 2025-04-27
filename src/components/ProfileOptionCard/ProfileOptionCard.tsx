@@ -13,18 +13,19 @@ interface ProfileOptionCardProps {
     onToggle?: () => void;
 }
 
-const ProfileOptionCard = ({ 
-    title, 
-    icon, 
-    func, 
+const ProfileOptionCard = ({
+    title,
+    icon,
+    func,
     description,
     showArrow = true,
     showSwitch = false,
     isEnabled = false,
 }: ProfileOptionCardProps) => {
     return (
-        <TouchableOpacity 
-            onPress={func} 
+        <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={func}
             className='w-full bg-zinc-800 rounded-xl overflow-hidden mb-2'
         >
             <View className='flex-row items-center justify-between p-4'>
@@ -42,7 +43,7 @@ const ProfileOptionCard = ({
                 {showArrow && !showSwitch && (
                     <Ionicons name="chevron-forward" size={20} color="#FFD700" />
                 )}
-               
+
             </View>
         </TouchableOpacity>
     )
