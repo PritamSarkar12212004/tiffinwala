@@ -1,7 +1,6 @@
 import AuthToken from "@/src/constants/token/AuthToken";
 import { getFullData } from "@/src/functions/storage/Storage";
 import api from "@/src/utils/api/Axios";
-import { userContext } from "@/src/utils/context/ContextApi";
 
 const useFetchProduct = () => {
   const fetchProduct = async ({ setProduct, setLoading }: any) => {

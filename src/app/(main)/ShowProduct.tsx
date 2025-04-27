@@ -83,7 +83,7 @@ const ShowProduct = () => {
         <View className='w-full h-full relative bg-black'>
             <StatusBar barStyle="light-content" />
             <SafeAreaView className="flex-1">
-                {bottomSheetIndex === -1 && <ShowProductNavigation />}
+                {bottomSheetIndex === -1 && <ShowProductNavigation userId={mainData?.postVendorId} productId={mainData._id} likeData={mainData.productLikes} />}
                 <View className="relative">
                     <FlatList
                         horizontal={true}
