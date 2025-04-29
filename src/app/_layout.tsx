@@ -1,17 +1,20 @@
-import "../../global.css"
-import React from 'react'
-import { Stack } from 'expo-router'
-import { ContextProvider } from "../utils/context/ContextApi"
+import "../../global.css";
 
-const _layout = () => {
-  return <ContextProvider><MainLayout /></ContextProvider>
-}
-const MainLayout = () => {
+import React from 'react';
+import { Stack } from 'expo-router';
+import { ContextProvider, userContext } from "../utils/context/ContextApi";
+
+export default function Layout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-    </Stack>
-  )
+    <ContextProvider>
+      <Stack screenOptions={{ headerShown: false }} >
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </ContextProvider>
+  );
 }
-
-export default _layout

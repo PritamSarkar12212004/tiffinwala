@@ -1,5 +1,5 @@
 import { View, Text, StatusBar } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import BgColor from '../constants/color/BgColor'
@@ -8,10 +8,9 @@ import { useRouter } from 'expo-router'
 import { getFullData, getTemData, } from '../functions/storage/Storage'
 import AuthToken from '../constants/token/AuthToken'
 import { userContext } from '../utils/context/ContextApi'
+
 const index = () => {
     const router = useRouter()
-
-    // call hooks
     const { setUserProfile, setUserTemLocation } = userContext()
 
     const authChaker = async () => {
@@ -35,6 +34,7 @@ const index = () => {
     useEffect(() => {
         loading()
     }, [])
+
     return (
         <>
             <StatusBar barStyle='light-content' backgroundColor={BgColor.Primary} />
@@ -47,7 +47,6 @@ const index = () => {
                 </View>
             </View>
         </>
-
     )
 }
 

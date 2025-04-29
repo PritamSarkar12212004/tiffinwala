@@ -1,49 +1,22 @@
 import { View, Text, TouchableOpacity, Image, Animated } from 'react-native'
-import React, { useState, useRef, useEffect } from 'react'
+import React from 'react'
 import BgColor from '@/src/constants/color/BgColor'
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { Ionicons } from '@expo/vector-icons';
 import { userContext } from '@/src/utils/context/ContextApi'
 import { useNavigation, useRouter } from 'expo-router';
-import useLikeProductApi from '@/src/hooks/product-api/useLikeProductApi';
-import likeFetchData from '@/src/hooks/product-api/likeFetchData';
 
 const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     const navigation = useNavigation()
-    const [isLiked, setIsLiked] = useState(false);
     const { bottomSheetRef2, setMainData } = userContext();
-    const scaleAnim = useRef(new Animated.Value(1)).current;
-    const { likeController } = useLikeProductApi();
-    const { likeProductFetch } = likeFetchData();
 
-    useEffect(() => {
-        likeProductFetch(item.postVendorId, item._id, setIsLiked)
-        return () => {
-            setIsLiked(false)
-        }
-    }, [item.productLikes])
+
 
     const bottomSheetHandler = () => {
         setBottomSheetData(item.postMenu)
         bottomSheetRef2.current?.expand()
     }
 
-    const likeHandler = () => {
-        likeController(item.postVendorId, item._id, isLiked, setIsLiked)
-        setIsLiked(!isLiked);
-        Animated.sequence([
-            Animated.timing(scaleAnim, {
-                toValue: 1.2,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(scaleAnim, {
-                toValue: 1,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }
+
 
     const handleCardPress = () => {
         setMainData(item)
@@ -72,19 +45,7 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
                     <Ionicons name="star" size={14} color="#FFD700" />
                     <Text className='text-white ml-1 font-bold'>4.5</Text>
                 </View>
-                <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={likeHandler}
-                        className='bg-black/50 rounded-full h-12 w-12 items-center justify-center'
-                    >
-                        <AntDesign
-                            name={isLiked ? "heart" : "hearto"}
-                            size={24}
-                            color={isLiked ? "#FF4B4B" : "#FFD700"}
-                        />
-                    </TouchableOpacity>
-                </Animated.View>
+
             </View>
 
             <Image

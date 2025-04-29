@@ -44,6 +44,8 @@ interface ContextType {
   seteditTempInformation: React.Dispatch<React.SetStateAction<any>>;
   mainData: any;
   setMainData: React.Dispatch<React.SetStateAction<any>>;
+  totalLikes: any;
+  setTotalLikes: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface Profile {

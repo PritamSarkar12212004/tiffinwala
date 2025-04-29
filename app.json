@@ -15,6 +15,7 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCINS2dyuBipK8MZzOQnzyKdrS2I1_b5I4"
@@ -96,6 +97,7 @@
       "eas": {
         "projectId": "30b9a184-5754-4029-82f1-60a637003c62"
       }
-    }
+    },
+    "owner": "pritam_sarkar"
   }
 }

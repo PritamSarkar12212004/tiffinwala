@@ -1,5 +1,5 @@
-import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native'
-import React from 'react'
+import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native'
+import React, { useEffect } from 'react'
 import PageNavigation from '@/src/components/navigation/PageNavigation'
 import ProfilePost from '@/src/components/layout/ProfilePost';
 import ProfileOptions from '@/src/components/layout/ProfileOptions';
@@ -8,9 +8,12 @@ import { useNavigation } from 'expo-router';
 import { userContext } from '@/src/utils/context/ContextApi';
 const index = () => {
     const navigation = useNavigation()
-    const { userProfile, userTemLocation, product } = userContext()
-
-
+    const { userProfile, userTemLocation, product, totalLikes, setTotalLikes } = userContext()
+    useEffect(() => {
+        return () => {
+            setTotalLikes(null)
+        }
+    }, [])
     return (
         <View className='flex-1 bg-black'>
             <SafeAreaView className="flex-1">
@@ -54,7 +57,7 @@ const index = () => {
                                 <Text className="text-zinc-400 text-sm">Post</Text>
                             </View>
                             <View className="items-center">
-                                <Text className="text-white text-xl font-bold">300</Text>
+                                <Text className="text-white text-xl font-bold">{totalLikes === null ? <ActivityIndicator size="small" color="#FFD700" /> : totalLikes}</Text>
                                 <Text className="text-zinc-400 text-sm">Likes</Text>
                             </View>
                             <View className="items-center">

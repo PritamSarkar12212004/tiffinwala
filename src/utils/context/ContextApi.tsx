@@ -35,6 +35,9 @@ export const ContextProvider = ({ children }: any) => {
     // mainData render temp
     const [mainData, setMainData] = useState<any>()
 
+    // all post product Totoal Likes
+    const [totalLikes, setTotalLikes] = useState<any>(null)
+
 
 
 
@@ -66,7 +69,10 @@ export const ContextProvider = ({ children }: any) => {
                 seteditTempInformation,
                 // mai data rw render
                 mainData,
-                setMainData
+                setMainData,
+                // all post product Totoal Likes
+                totalLikes,
+                setTotalLikes
             }}
         >
             {children}

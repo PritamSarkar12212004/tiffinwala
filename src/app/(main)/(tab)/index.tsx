@@ -8,7 +8,6 @@ import MainCardShow from '@/src/components/layout/MainCardShow'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
-import { PostData } from '@/src/components/interface/AllInterface'
 import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
 
 const index = () => {
@@ -21,7 +20,7 @@ const index = () => {
   const { fetchMainData } = useMainDataFetch()
 
   const fetchData = () => {
-    setLoading(!loading)
+    setLoading(true)
     fetchMainData(setMainData, setLoading)
   }
 
@@ -36,7 +35,7 @@ const index = () => {
       setMainData(undefined)
       setBottomSheetData(null)
     }
-  }, [])
+  }, []) // Empty dependency array to run only once
 
   return (
     <Animated.View style={{
@@ -46,6 +45,7 @@ const index = () => {
     }}>
       <MainPageHeader />
       <MainPageLayout>
+
         <Searhmain fetchData={fetchData} />
         {
           loading ? (
