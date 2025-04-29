@@ -1,10 +1,19 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { AntDesign } from '@expo/vector-icons';
+import { userContext } from '@/src/utils/context/ContextApi';
 
 const FilterCard = ({ item }: { item: any }) => {
+    const { setMainData } = userContext()
+    const navigatePage = () => {
+        setMainData(item)
+        router.push('/ShowProduct')
+    }
     return (
         <TouchableOpacity
+            onPress={() => navigatePage()}
+            activeOpacity={0.8}
             className="bg-[#2D2D2D] rounded-xl p-4 mb-3"
         >
             <View className="flex-row">
@@ -24,12 +33,16 @@ const FilterCard = ({ item }: { item: any }) => {
                             </View>
                         )}
                     </View>
-                    {/* <Text className="text-gray-400 text-sm">{item.restaurant}</Text> */}
+                    <Text className="text-gray-400 text-sm">
+                        {item.postDescription.length > 20
+                            ? item.postDescription.slice(0, 20) + '...'
+                            : item.postDescription}
+                    </Text>
                     <View className="flex-row items-center mt-1">
-                        <Ionicons name="star" size={16} color="#FFD700" />
-                        <Text className="text-gray-400 ml-1">10</Text>
+                        <AntDesign name="heart" size={14} color="red" />
+                        <Text className="text-white ml-1 font-bold">{item.productLikes?.length || 0}</Text>
                         <Text className="text-white ml-4">₹{item.postPrice}</Text>
-                        {/* <Text className="text-gray-400 ml-4">{item.distance}km</Text> */}
+                        <Text className="text-gray-400 ml-4">{item.distance}km</Text>
                     </View>
                     {/* <Text className="text-gray-400 text-xs mt-1">{item.cuisine}</Text> */}
                 </View>

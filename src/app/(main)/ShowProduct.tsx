@@ -32,6 +32,9 @@ const ShowProduct = () => {
                 useNativeDriver: true,
             })
         ]).start();
+        return () => {
+            setMainData(null)
+        }
     }, []);
 
     const openBottomSheet = () => {

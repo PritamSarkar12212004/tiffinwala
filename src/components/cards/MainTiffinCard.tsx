@@ -8,21 +8,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     const navigation = useNavigation()
     const { bottomSheetRef, setMainData } = userContext();
-
-
-
     const bottomSheetHandler = () => {
         setBottomSheetData(item.postMenu)
         bottomSheetRef.current?.expand()
     }
-
-
-
     const handleCardPress = () => {
         setMainData(item)
         navigation.navigate('ShowProduct' as never);
     }
-
     return (
         <TouchableOpacity
             onPress={handleCardPress}

@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import Color from '@/src/constants/color/Color'
+import useTop3ProductApi from '@/src/hooks/product-api/useTop3ProductApi';
+import TopTiffinCard from '@/src/components/cards/TopTiffinCard';
 
 interface SearchSuggestionProps {
     onCategoryPress: (category: string) => void;
@@ -9,17 +11,6 @@ interface SearchSuggestionProps {
 }
 
 const SearchSuggestion = ({ onCategoryPress, onSuggestionPress }: SearchSuggestionProps) => {
-    const popularSearches = [
-        "North Indian",
-        "South Indian",
-        "Chinese",
-        "Fast Food",
-        "Biryani",
-        "Pizza",
-        "Burger",
-        "Desserts"
-    ];
-
     const categories = [
         { name: "Veg", icon: "leaf" },
         { name: "Non-Veg", icon: "restaurant" },
@@ -28,25 +19,29 @@ const SearchSuggestion = ({ onCategoryPress, onSuggestionPress }: SearchSuggesti
         { name: "Dinner", icon: "moon" },
         { name: "Snacks", icon: "cafe" }
     ];
+    const { top3ProductFinder } = useTop3ProductApi()
+    const [data, setData] = useState<any>(null)
+    useEffect(() => {
+        top3ProductFinder(setData)
+        return () => {
+            setData(null)
+        }
+    }, [])
 
     return (
         <View className="px-4">
-            {/* Popular Searches */}
+            {/* Top Tiffin Services */}
             <View className="mb-6">
-                <Text className="text-white text-lg font-semibold mb-3">Popular Searches</Text>
-                <ScrollView 
-                    horizontal 
+                <Text className="text-white text-lg font-semibold mb-3">Top Tiffin Services</Text>
+                <ScrollView
+                    horizontal
                     showsHorizontalScrollIndicator={false}
                     className="flex-row"
                 >
-                    {popularSearches.map((item, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            className="bg-[#2D2D2D] rounded-full px-4 py-2 mr-2"
-                            onPress={() => onSuggestionPress(item)}
-                        >
-                            <Text className="text-white">{item}</Text>
-                        </TouchableOpacity>
+                    {data?.map((item: any) => (
+                        <View key={item._id} className="w-72 mr-4">
+                            <TopTiffinCard item={item} />
+                        </View>
                     ))}
                 </ScrollView>
             </View>
@@ -69,7 +64,6 @@ const SearchSuggestion = ({ onCategoryPress, onSuggestionPress }: SearchSuggesti
                     ))}
                 </View>
             </View>
-            
         </View>
     )
 }
