@@ -1,19 +1,19 @@
 import { View, Text, TouchableOpacity, Image, Animated } from 'react-native'
 import React from 'react'
 import BgColor from '@/src/constants/color/BgColor'
-import { Ionicons } from '@expo/vector-icons';
 import { userContext } from '@/src/utils/context/ContextApi'
-import { useNavigation, useRouter } from 'expo-router';
+import { useNavigation } from 'expo-router';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     const navigation = useNavigation()
-    const { bottomSheetRef2, setMainData } = userContext();
+    const { bottomSheetRef, setMainData } = userContext();
 
 
 
     const bottomSheetHandler = () => {
         setBottomSheetData(item.postMenu)
-        bottomSheetRef2.current?.expand()
+        bottomSheetRef.current?.expand()
     }
 
 
@@ -42,8 +42,8 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
         >
             <View className='w-full flex flex-row items-center justify-between gap-3 px-5 absolute top-3 z-10'>
                 <View className='bg-black/50 px-4 py-2 rounded-full flex-row items-center'>
-                    <Ionicons name="star" size={14} color="#FFD700" />
-                    <Text className='text-white ml-1 font-bold'>4.5</Text>
+                    <AntDesign name="heart" size={14} color="red" />
+                    <Text className="text-white ml-1 font-bold">{item.productLikes?.length || 0}</Text>
                 </View>
 
             </View>
@@ -77,14 +77,11 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
 
                 <View className='flex-row justify-between items-center'>
                     <View className='flex-row items-center gap-4'>
-                        <View className='flex-row items-center'>
-                            <Ionicons name="chatbubble-outline" size={16} color="#FFD700" />
-                            <Text className='text-zinc-400 ml-1'>{item.productLikes}</Text>
-                        </View>
+
                     </View>
                     <TouchableOpacity
                         activeOpacity={0.8}
-                        onPress={bottomSheetHandler}
+                        onPress={() => bottomSheetHandler()}
                         className='bg-[#FFD700] px-5 py-2.5 rounded-full'
                     >
                         <Text className='text-black font-bold'>View Menu</Text>

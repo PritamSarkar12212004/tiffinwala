@@ -15,26 +15,26 @@ const ProfileOptions = () => {
     const { setUserProfile } = userContext()
 
     const data = [
-        {
-            title: "Notifications",
-            icon: "notifications-outline",
-            description: "Manage your notification preferences",
-            showSwitch: true,
-            isEnabled: notifications,
-            func: () => {
-                navigation.navigate("Notifications" as never)
-            }
-        },
-        {
-            title: "Theme",
-            icon: "moon-outline",
-            description: "Toggle dark/light theme",
-            showSwitch: true,
-            isEnabled: isDarkMode,
-            func: () => {
-                navigation.navigate("DarkMode" as never)
-            }
-        },
+        // {
+        //     title: "Notifications",
+        //     icon: "notifications-outline",
+        //     description: "Manage your notification preferences",
+        //     showSwitch: true,
+        //     isEnabled: notifications,
+        //     func: () => {
+        //         navigation.navigate("Notifications" as never)
+        //     }
+        // },
+        // {
+        //     title: "Theme",
+        //     icon: "moon-outline",
+        //     description: "Toggle dark/light theme",
+        //     showSwitch: true,
+        //     isEnabled: isDarkMode,
+        //     func: () => {
+        //         navigation.navigate("DarkMode" as never)
+        //     }
+        // },
 
         {
             title: "Help & Support",

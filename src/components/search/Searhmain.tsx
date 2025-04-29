@@ -44,6 +44,7 @@ const Searhmain = ({ fetchData }): any => {
                     <Ionicons name="refresh" size={34} color="white" />
                 </Animated.View>
             </TouchableOpacity>
+            
         </View>
     );
 };

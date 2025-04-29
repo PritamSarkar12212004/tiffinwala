@@ -48,6 +48,8 @@ interface ContextType {
   setTotalLikes: React.Dispatch<React.SetStateAction<any>>;
   totalViews: any;
   setTotalViews: React.Dispatch<React.SetStateAction<any>>;
+  filters: any;
+  setFilters: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface Profile {

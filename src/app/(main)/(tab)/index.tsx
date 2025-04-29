@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Image, ActivityIndicator, Animated } from 'react-native'
+import { View, Text, StyleSheet, Image, ActivityIndicator, Animated } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import MainPageHeader from '@/src/components/headers/MainPageHeader'
@@ -10,9 +10,10 @@ import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
 import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
 
+
 const index = () => {
   const [loading, setLoading] = useState<boolean>(false)
-  const { bottomSheetRef2 } = userContext()
+  const { bottomSheetRef } = userContext()
   const [mainData, setMainData] = useState<any>()
   const [bottomSheetData, setBottomSheetData] = useState<any>()
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -65,7 +66,7 @@ const index = () => {
       </MainPageLayout>
 
       <BottomSheet
-        ref={bottomSheetRef2}
+        ref={bottomSheetRef}
         style={styles.bottomSheet}
         snapPoints={['70%']}
         index={-1}

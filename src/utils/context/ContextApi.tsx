@@ -40,6 +40,12 @@ export const ContextProvider = ({ children }: any) => {
 
     // all post product Totoal Views
     const [totalViews, setTotalViews] = useState<any>(null)
+    // filter Item Modal
+    const [filters, setFilters] = useState({
+        priceRange: [0, 5000],
+        sortBy: 'rating' as 'rating' | 'price' | 'distance'
+
+    });
 
 
 
@@ -78,7 +84,10 @@ export const ContextProvider = ({ children }: any) => {
                 setTotalLikes,
                 // all post product Totoal Views
                 totalViews,
-                setTotalViews
+                setTotalViews,
+                // filter Item Modal
+                filters,
+                setFilters
             }}
         >
             {children}
