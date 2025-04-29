@@ -8,6 +8,7 @@ import Color from '@/src/constants/color/Color';
 import { userContext } from '@/src/utils/context/ContextApi';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import useUserFetchData from '@/src/hooks/profile/useUserFetchData';
+import useViewsProductApi from '@/src/hooks/product-api/useViewsProductApi';
 
 const { width } = Dimensions.get('window');
 const ShowProduct = () => {
@@ -70,8 +71,10 @@ const ShowProduct = () => {
     };
 
     const [venderData, setVenderData] = useState<any>(null)
+    const { viewsProduct } = useViewsProductApi()
 
     useEffect(() => {
+        viewsProduct(mainData._id)
         fetchUserData(mainData.postVendorId, setVenderData)
         return () => {
             setVenderData(null)

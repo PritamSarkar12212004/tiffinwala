@@ -4,7 +4,7 @@ import api from "@/src/utils/api/Axios";
 import { userContext } from "@/src/utils/context/ContextApi";
 
 const useFetchProduct = () => {
-  const { setTotalLikes } = userContext();
+  const { setTotalLikes, setTotalViews } = userContext();
   const fetchProduct = async ({ setProduct, setLoading }: any) => {
     const fullLoginId = await getFullData(AuthToken.UserInfo);
     await api
@@ -14,6 +14,8 @@ const useFetchProduct = () => {
       .then((res) => {
         setProduct(res.data.data);
         setTotalLikes(res.data?.totalLikesCount || 0);
+        setTotalViews(res.data?.totalViewsCount || 0);
+
         setLoading(false);
       })
       .catch((err) => {

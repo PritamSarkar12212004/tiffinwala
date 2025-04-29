@@ -15,7 +15,6 @@ const useMainDataFetch = () => {
         }
         setMainData(res.data.products);
         setLoading(false);
-
       })
       .catch((err) => {
         console.log(err);

@@ -8,7 +8,7 @@ import { useNavigation } from 'expo-router';
 import { userContext } from '@/src/utils/context/ContextApi';
 const index = () => {
     const navigation = useNavigation()
-    const { userProfile, userTemLocation, product, totalLikes, setTotalLikes } = userContext()
+    const { userProfile, userTemLocation, product, totalLikes, setTotalLikes, totalViews } = userContext()
     useEffect(() => {
         return () => {
             setTotalLikes(null)
@@ -61,8 +61,8 @@ const index = () => {
                                 <Text className="text-zinc-400 text-sm">Likes</Text>
                             </View>
                             <View className="items-center">
-                                <Text className="text-white text-xl font-bold">50</Text>
-                                <Text className="text-zinc-400 text-sm">Follow</Text>
+                                <Text className="text-white text-xl font-bold">{totalViews === null ? <ActivityIndicator size="small" color="#FFD700" /> : totalViews}</Text>
+                                <Text className="text-zinc-400 text-sm">Views</Text>
                             </View>
                         </View>
 

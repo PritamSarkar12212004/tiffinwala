@@ -38,6 +38,9 @@ export const ContextProvider = ({ children }: any) => {
     // all post product Totoal Likes
     const [totalLikes, setTotalLikes] = useState<any>(null)
 
+    // all post product Totoal Views
+    const [totalViews, setTotalViews] = useState<any>(null)
+
 
 
 
@@ -72,7 +75,10 @@ export const ContextProvider = ({ children }: any) => {
                 setMainData,
                 // all post product Totoal Likes
                 totalLikes,
-                setTotalLikes
+                setTotalLikes,
+                // all post product Totoal Views
+                totalViews,
+                setTotalViews
             }}
         >
             {children}
