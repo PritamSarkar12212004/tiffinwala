@@ -14,23 +14,33 @@ const index = () => {
     const { setUserProfile, setUserTemLocation } = userContext()
 
     const authChaker = async () => {
-        const tempLogin = getTemData(AuthToken.TemLogin)
-        const fullLogin = getFullData(AuthToken.UserInfo)
-        if (tempLogin) {
-            router.replace("/user-info" as any)
-        } else if (fullLogin) {
-            setUserProfile(fullLogin)
-            setUserTemLocation(fullLogin.User_Address);
-            router.replace("/(main)" as any)
-        } else {
+        try {
+            const tempLogin = getTemData(AuthToken.TemLogin)
+            const fullLogin = getFullData(AuthToken.UserInfo)
+            
+            if (tempLogin) {
+                router.replace("/user-info" as any)
+            } else if (fullLogin) {
+                setUserProfile(fullLogin)
+                if (fullLogin.User_Address) {
+                    setUserTemLocation(fullLogin.User_Address)
+                }
+                router.replace("/(main)" as any)
+            } else {
+                router.replace("/(auth)" as any)
+            }
+        } catch (error) {
+            console.error('Error during authentication check:', error)
             router.replace("/(auth)" as any)
         }
     }
+
     const loading = () => {
         setTimeout(() => {
             authChaker()
         }, 1000)
     }
+
     useEffect(() => {
         loading()
     }, [])

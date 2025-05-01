@@ -85,7 +85,10 @@
           "supportsPictureInPicture": true
         }
       ],
-      ["react-native-compressor"]
+      [
+        "react-native-compressor"
+      ],
+      "react-native-google-mobile-ads"
     ],
     "experiments": {
       "typedRoutes": true

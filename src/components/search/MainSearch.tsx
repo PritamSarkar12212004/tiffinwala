@@ -196,6 +196,7 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
                             keyExtractor={(item, index) => index.toString()}
                             showsVerticalScrollIndicator={false}
                         />
+
                     ) : (
                         <View className="items-center justify-center py-4">
                             <Text className="text-white text-lg">No results found</Text>

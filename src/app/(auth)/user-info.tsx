@@ -29,6 +29,7 @@ interface LocationData {
   state?: string;
   area?: string;
   pincode?: string;
+  formattedAddress?: string;
 }
 
 interface FormData {
@@ -91,8 +92,27 @@ const UserInfo = () => {
       });
 
       if (address) {
-        setLocation(address);
-        setFormData(prev => ({ ...prev, location: address }));
+        const locationData: LocationData = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          address: address.street || undefined,
+          city: address.city || undefined,
+          state: address.region || undefined,
+          area: address.district || undefined,
+          pincode: address.postalCode || undefined,
+          formattedAddress: [
+            address.name?.replace(/^\d+\s*/, ''),
+            address.street?.replace(/^\d+\s*/, ''),
+            address.district,
+            address.city,
+            address.subregion,
+            address.region,
+            address.postalCode,
+            address.country
+          ].filter(Boolean).join(', ')
+        };
+        setLocation(locationData);
+        setFormData(prev => ({ ...prev, location: locationData }));
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to get location. Please try again.');
@@ -289,16 +309,7 @@ const UserInfo = () => {
                   </View>
                 )}
 
-                <TouchableOpacity
-                  className="flex-row items-center bg-zinc-700 p-4 rounded-xl"
-                  onPress={() => navigation.navigate('LocationPicker' as any)}
-                >
-                  <Ionicons name="map-outline" size={24} color={BgColor.Accent} />
-                  <View className="ml-4">
-                    <Text className="text-white font-semibold">Pick on Map</Text>
-                    <Text className="text-zinc-400">Choose location from map</Text>
-                  </View>
-                </TouchableOpacity>
+
               </View>
             </View>
 

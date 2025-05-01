@@ -13,7 +13,7 @@ import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
 
 const index = () => {
   const [loading, setLoading] = useState<boolean>(false)
-  const { bottomSheetRef } = userContext()
+  const { bottomSheetRef, AddressGeterFunc } = userContext()
   const [mainData, setMainData] = useState<any>()
   const [bottomSheetData, setBottomSheetData] = useState<any>()
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -26,6 +26,7 @@ const index = () => {
   }
 
   useEffect(() => {
+    AddressGeterFunc()
     fetchData()
     Animated.timing(fadeAnim, {
       toValue: 1,

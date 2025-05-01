@@ -52,6 +52,7 @@ interface ContextType {
   setFilters: React.Dispatch<React.SetStateAction<any>>;
   locationSearch: any;
   setLocationSearch: React.Dispatch<React.SetStateAction<any>>;
+  AddressGeterFunc: () => any;
 }
 
 interface Profile {

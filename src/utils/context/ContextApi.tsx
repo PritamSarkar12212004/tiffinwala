@@ -4,9 +4,6 @@ import { ContextType, LocationData, UserProfile, UserTemLocation, PostData } fro
 import { getFullData } from "@/src/functions/storage/Storage";
 import AuthToken from "@/src/constants/token/AuthToken";
 
-
-
-
 const Context = createContext<ContextType | undefined>(undefined);
 export const ContextProvider = ({ children }: any) => {
     // Bottom Sheet Ref
@@ -46,17 +43,35 @@ export const ContextProvider = ({ children }: any) => {
     const [filters, setFilters] = useState({
         priceRange: [0, 5000],
         sortBy: 'rating' as 'rating' | 'price' | 'distance'
-
     });
 
-
     // get location 
-
     const [locationSearch, setLocationSearch] = useState<any>(null)
+
     const getLocation = () => {
         const fullLogin = getFullData(AuthToken.UserInfo)
-        setLocationSearch(fullLogin.User_Address)
+        if (fullLogin && fullLogin.User_Address) {
+            setLocationSearch(fullLogin.User_Address)
+        }
     }
+
+    // Initialize user profile data
+    const AddressGeterFunc = () => {
+        const fullLogin = getFullData(AuthToken.UserInfo)
+        if (fullLogin) {
+            setUserProfile(fullLogin)
+            if (fullLogin.User_Address) {
+                setUserTemLocation(fullLogin.User_Address)
+            }
+        }
+    }
+    useEffect(() => {
+        AddressGeterFunc()
+        return () => {
+            setUserProfile(null)
+            setUserTemLocation(null)
+        }
+    }, [])
 
     useEffect(() => {
         getLocation()
@@ -105,7 +120,9 @@ export const ContextProvider = ({ children }: any) => {
                 setFilters,
                 // location search
                 locationSearch,
-                setLocationSearch
+                setLocationSearch,
+                // get location
+                AddressGeterFunc
             }}
         >
             {children}

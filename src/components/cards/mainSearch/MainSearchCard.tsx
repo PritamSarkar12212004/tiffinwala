@@ -4,6 +4,7 @@ import { AntDesign, Entypo } from '@expo/vector-icons'
 
 const MainSearchCard = ({ item }: { item: any }) => {
     return (
+
         <TouchableOpacity
             activeOpacity={0.8}
             className="bg-[#2D2D2D] rounded-xl p-4 mb-3"
@@ -12,7 +13,7 @@ const MainSearchCard = ({ item }: { item: any }) => {
         >
             <View className="flex-row">
                 <View className="w-20 h-20 rounded-lg bg-gray-700" >
-                    <Image source={{ uri: item.postCoverImage }} className="w-full h-full rounded-lg" />
+                    <Image source={{ uri: item.postCoverImage[0] }} className="w-full h-full rounded-lg" />
                 </View>
                 <View className="flex-1 ml-3">
                     <Text className="text-gray-400 text-sm">{item.postTitle}</Text>
