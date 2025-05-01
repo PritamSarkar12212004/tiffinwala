@@ -543,14 +543,13 @@ const EditPost = () => {
                     <View className="bg-zinc-800 rounded-xl p-4">
                         <Text className="text-white text-lg mb-3 font-semibold">Location</Text>
                         <Text className="text-zinc-400 mb-3">Add your delivery location</Text>
-                        <TextInput
-                            value={post.address}
-                            onChangeText={(value) => handleChange('address', value)}
-                            placeholder="Enter your address"
-                            placeholderTextColor="#71717a"
-                            className={`text-white bg-zinc-700 rounded-lg p-3 mb-3 ${errors.address ? 'border-2 border-red-500' : ''}`}
-                            multiline
-                        />
+
+                        <Text className={`text-white bg-zinc-700 rounded-lg p-3 mb-3 ${errors.address ? 'border-2 border-red-500' : ''}`}
+
+                        >
+                            {post.address}
+                        </Text>
+
                         {errors.address && <ErrorMessage message={errors.address} />}
                         {locationDetails && (
                             <View className="bg-zinc-700 rounded-lg p-3 mb-3">
@@ -581,14 +580,7 @@ const EditPost = () => {
                                     </>
                                 )}
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={pickLocationFromMap}
-                                className="flex-1 bg-zinc-700 py-3 rounded-lg flex-row items-center justify-center"
-                                activeOpacity={0.8}
-                            >
-                                <Ionicons name="map-outline" size={22} color="#FFD700" />
-                                <Text className="text-white ml-2 font-medium">Pick on Map</Text>
-                            </TouchableOpacity>
+
                         </View>
                     </View>
 

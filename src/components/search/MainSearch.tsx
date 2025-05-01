@@ -1,13 +1,12 @@
-import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator, Modal } from 'react-native'
+import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator, Modal, Image } from 'react-native'
 import React, { useState, useCallback, useEffect } from 'react'
-import { Ionicons } from '@expo/vector-icons'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import Color from '@/src/constants/color/Color'
-import api from '@/src/utils/api/Axios'
-import { getFullData } from '@/src/functions/storage/Storage'
-import AuthToken from '@/src/constants/token/AuthToken'
+import Entypo from '@expo/vector-icons/Entypo';
 import { useRouter } from 'expo-router'
 import { userContext } from '@/src/utils/context/ContextApi'
-
+import useSearchEngine from '@/src/hooks/product-api/useSearchEngine'
+import MainSearchCard from '@/src/components/cards/mainSearch/MainSearchCard'
 interface SearchResult {
     id: string;
     title: string;
@@ -27,7 +26,7 @@ interface MainSearchProps {
 
 const MainSearch = ({ search, setSearch }: MainSearchProps) => {
     const { filters, setFilters } = userContext();
-    const [results, setResults] = useState<SearchResult[]>([]);
+    const [results, setResults] = useState<any>([]);
     const [loading, setLoading] = useState(false);
     const [recentSearches, setRecentSearches] = useState<string[]>([]);
     const [showFilters, setShowFilters] = useState(false);
@@ -38,26 +37,17 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
         setShowFilters(false);
         router.push("/(main)/(product)/ProductFilterPage");
     }
-
+    const { searchEngine } = useSearchEngine();
     // Debounced search function
     const debouncedSearch = useCallback(async (query: string) => {
         if (!query.trim()) {
             setResults([]);
             return;
         }
-
         setLoading(true);
         try {
-            const userLocation = getFullData(AuthToken.UserInfo)?.User_Address;
-            const response = await api.post('/api/product/search', {
-                query,
-                location: userLocation,
-                filters
-            });
-
-            setResults(response.data.results);
-
-            // Add to recent searches
+            setLoading(true);
+            searchEngine(query, setResults)
             if (query.trim()) {
                 setRecentSearches(prev => {
                     const newSearches = [query, ...prev.filter(s => s !== query)].slice(0, 5);
@@ -84,29 +74,6 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
         }
     }, [search, debouncedSearch]);
 
-    const renderResultItem = ({ item }: { item: SearchResult }) => (
-        <TouchableOpacity
-            className="bg-[#2D2D2D] rounded-xl p-4 mb-3"
-            onPress={() => {
-                router.push(`/product/${item.id}`);
-            }}
-        >
-            <View className="flex-row">
-                <View className="w-20 h-20 rounded-lg bg-gray-700" />
-                <View className="flex-1 ml-3">
-
-                    <Text className="text-gray-400 text-sm">{item.restaurant}</Text>
-                    <View className="flex-row items-center mt-1">
-                        <Ionicons name="star" size={16} color="#FFD700" />
-                        <Text className="text-gray-400 ml-1">{item.rating}</Text>
-                        <Text className="text-white ml-4">₹{item.price}</Text>
-                        <Text className="text-gray-400 ml-4">{item.distance}km</Text>
-                    </View>
-                    <Text className="text-gray-400 text-xs mt-1">{item.cuisine}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
 
     const renderFilters = () => (
         <Modal
@@ -175,7 +142,7 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
                         </View>
                     </View>
 
-             
+
 
                     {/* Apply Button */}
                     <TouchableOpacity
@@ -225,8 +192,8 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
                     ) : results.length > 0 ? (
                         <FlatList
                             data={results}
-                            renderItem={renderResultItem}
-                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => <MainSearchCard item={item} />}
+                            keyExtractor={(item, index) => index.toString()}
                             showsVerticalScrollIndicator={false}
                         />
                     ) : (

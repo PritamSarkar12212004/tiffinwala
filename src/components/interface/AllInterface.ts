@@ -50,6 +50,8 @@ interface ContextType {
   setTotalViews: React.Dispatch<React.SetStateAction<any>>;
   filters: any;
   setFilters: React.Dispatch<React.SetStateAction<any>>;
+  locationSearch: any;
+  setLocationSearch: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface Profile {

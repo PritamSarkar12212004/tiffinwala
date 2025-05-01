@@ -350,14 +350,11 @@ const ProfileEdit = () => {
                                         </TouchableOpacity>
                                     ))}
                                 </View>
-                                <TextInput
-                                    value={field.value}
-                                    onChangeText={field.onChange}
-                                    placeholder={field.placeholder}
-                                    placeholderTextColor="#888"
-                                    className="text-white bg-zinc-700 rounded-lg p-3 mt-2"
-                                    multiline={field.multiline}
-                                />
+
+                                <Text className="text-white bg-zinc-700 rounded-lg p-3 mt-2"
+                                >
+                                    {field.value}
+                                </Text>
                             </View>
                         ) : (
                             <TextInput

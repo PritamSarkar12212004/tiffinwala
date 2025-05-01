@@ -1,6 +1,8 @@
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { ContextType, LocationData, UserProfile, UserTemLocation, PostData } from "@/src/components/interface/AllInterface";
+import { getFullData } from "@/src/functions/storage/Storage";
+import AuthToken from "@/src/constants/token/AuthToken";
 
 
 
@@ -48,7 +50,20 @@ export const ContextProvider = ({ children }: any) => {
     });
 
 
+    // get location 
 
+    const [locationSearch, setLocationSearch] = useState<any>(null)
+    const getLocation = () => {
+        const fullLogin = getFullData(AuthToken.UserInfo)
+        setLocationSearch(fullLogin.User_Address)
+    }
+
+    useEffect(() => {
+        getLocation()
+        return () => {
+            setLocationSearch(null)
+        }
+    }, [])
 
     return (
         <Context.Provider
@@ -87,7 +102,10 @@ export const ContextProvider = ({ children }: any) => {
                 setTotalViews,
                 // filter Item Modal
                 filters,
-                setFilters
+                setFilters,
+                // location search
+                locationSearch,
+                setLocationSearch
             }}
         >
             {children}
@@ -102,3 +120,5 @@ export const userContext = () => {
     }
     return context;
 };
+
+
