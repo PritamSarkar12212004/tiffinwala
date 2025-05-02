@@ -12,6 +12,10 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyCINS2dyuBipK8MZzOQnzyKdrS2I1_b5I4"
+      },
+      "bundleIdentifier": "yes",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -66,13 +70,6 @@
         }
       ],
       [
-        "expo-video",
-        {
-          "supportsBackgroundPlayback": true,
-          "supportsPictureInPicture": true
-        }
-      ],
-      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
@@ -85,10 +82,7 @@
           "supportsPictureInPicture": true
         }
       ],
-      [
-        "react-native-compressor"
-      ],
-      "react-native-google-mobile-ads"
+      ["react-native-compressor"]
     ],
     "experiments": {
       "typedRoutes": true
