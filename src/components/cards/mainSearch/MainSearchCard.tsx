@@ -1,14 +1,23 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { AntDesign, Entypo } from '@expo/vector-icons'
+import { useNavigation, useRouter } from 'expo-router'
+import { userContext } from '@/src/utils/context/ContextApi'
 
 const MainSearchCard = ({ item }: { item: any }) => {
+    const { setMainData } = userContext()
+    const navigation = useNavigation()
+    const handelNavigate = () => {
+        setMainData(item)
+        navigation.navigate("ShowProduct" as never)
+    }
     return (
 
         <TouchableOpacity
             activeOpacity={0.8}
             className="bg-[#2D2D2D] rounded-xl p-4 mb-3"
             onPress={() => {
+                handelNavigate()
             }}
         >
             <View className="flex-row">

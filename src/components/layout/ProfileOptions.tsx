@@ -12,30 +12,21 @@ const ProfileOptions = () => {
     const [notifications, setNotifications] = useState(true);
     const navigation = useNavigation()
 
-    const { setUserProfile } = userContext()
+    const { 
+        setUserProfile, 
+        setUserTemLocation, 
+        setProduct, 
+        setProductReloader,
+        seteditTempInformation,
+        setMainData,
+        setTotalLikes,
+        setTotalViews,
+        setFilters,
+        setLocationSearch,
+        setLocation
+    } = userContext()
 
     const data = [
-        // {
-        //     title: "Notifications",
-        //     icon: "notifications-outline",
-        //     description: "Manage your notification preferences",
-        //     showSwitch: true,
-        //     isEnabled: notifications,
-        //     func: () => {
-        //         navigation.navigate("Notifications" as never)
-        //     }
-        // },
-        // {
-        //     title: "Theme",
-        //     icon: "moon-outline",
-        //     description: "Toggle dark/light theme",
-        //     showSwitch: true,
-        //     isEnabled: isDarkMode,
-        //     func: () => {
-        //         navigation.navigate("DarkMode" as never)
-        //     }
-        // },
-
         {
             title: "Help & Support",
             icon: "help-circle-outline",
@@ -57,10 +48,28 @@ const ProfileOptions = () => {
             icon: "log-out-outline",
             description: "Sign out of your account",
             func: () => {
+                // Clear all storage data
                 removeFullData(AuthToken.UserInfo)
                 removeTemData(AuthToken.TemLogin)
-                setUserProfile(null)
                 removeLocationData(UtilsToken.Location)
+
+                // Clear all context data
+                setUserProfile(null)
+                setUserTemLocation(null)
+                setProduct([])
+                setProductReloader(false)
+                seteditTempInformation(null)
+                setMainData(null)
+                setTotalLikes(null)
+                setTotalViews(null)
+                setFilters({
+                    priceRange: [0, 5000],
+                    sortBy: 'rating'
+                })
+                setLocationSearch(null)
+                setLocation(null)
+
+                // Navigate to auth screen
                 router.replace("/(auth)" as any)
             }
         }
@@ -82,8 +91,6 @@ const ProfileOptions = () => {
                         icon={item.icon}
                         func={item.func}
                         description={item.description}
-                        showSwitch={item.showSwitch}
-                        isEnabled={item.isEnabled}
                     />
                 ))}
             </View>

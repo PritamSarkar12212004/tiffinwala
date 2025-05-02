@@ -39,22 +39,19 @@ const index = () => {
   }, []) // Empty dependency array to run only once
 
   return (
-    <Animated.View style={{
-      flex: 1,
-      opacity: fadeAnim,
-      backgroundColor: BgColor.Primary
-    }}>
+
+    <View className="flex-1" style={{ backgroundColor: BgColor.Primary }}>
       <MainPageHeader />
       <MainPageLayout>
         <Searhmain fetchData={fetchData} />
         {
           loading ? (
-            <View className="flex-1 bg-white items-center justify-center">
+            <View className="h-full w-full bg-black items-center justify-center">
               <ActivityIndicator size="large" color="#FFD700" />
               <Text className="text-white mt-4 text-lg">Loading delicious meals...</Text>
             </View>
           ) : !mainData || mainData.length === 0 ? (
-            <View className="flex-1 items-center justify-center">
+            <View className="h-full w-full bg-black items-center justify-center">
               <Text className="text-white text-3xl font-bold text-center mb-2">No Data Available</Text>
               <Text className="text-zinc-400 text-center">Try searching for something else</Text>
             </View>
@@ -117,7 +114,7 @@ const index = () => {
           </View>
         </BottomSheetScrollView>
       </BottomSheet>
-    </Animated.View>
+    </View>
   )
 }
 

@@ -29,9 +29,7 @@ const MainLayout = () => {
       <StatusBar barStyle='light-content' backgroundColor={BgColor.Primary} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tab)" options={{ animation: "slide_from_bottom" }} />
-        <Stack.Screen name="SearchPage" options={{ animation: "slide_from_bottom" }} />
-        <Stack.Screen name="LocationPage" options={{ animation: "ios_from_right" }} />
-        <Stack.Screen name="(profile)" options={{ animation: "ios_from_right" }} />
+
       </Stack>
     </>
   )

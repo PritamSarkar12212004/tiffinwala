@@ -7,9 +7,7 @@ const _layout = () => {
         <Stack screenOptions={{
             headerShown: false
         }}>
-            <Stack.Screen name="NewPost" />
-            <Stack.Screen name="EditPost" />
-            <Stack.Screen name="ProductFilterPage" />
+
         </Stack>
     )
 }

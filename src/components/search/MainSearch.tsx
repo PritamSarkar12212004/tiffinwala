@@ -40,14 +40,13 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
     const { searchEngine } = useSearchEngine();
     // Debounced search function
     const debouncedSearch = useCallback(async (query: string) => {
+        setLoading(true);
         if (!query.trim()) {
             setResults([]);
             return;
         }
-        setLoading(true);
         try {
-            setLoading(true);
-            searchEngine(query, setResults)
+            searchEngine(query, setResults,setLoading)
             if (query.trim()) {
                 setRecentSearches(prev => {
                     const newSearches = [query, ...prev.filter(s => s !== query)].slice(0, 5);
@@ -57,7 +56,7 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
         } catch (error) {
             console.error('Search error:', error);
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     }, [filters]);
 
@@ -97,18 +96,21 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
                         <Text className="text-white mb-2">Price Range</Text>
                         <View className="flex-row justify-between">
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 className={`px-4 py-2 rounded-full ${filters.priceRange[1] === 2000 ? 'bg-[#FF6B35]' : 'bg-[#2D2D2D]'}`}
                                 onPress={() => setFilters(prev => ({ ...prev, priceRange: [0, 2000] }))}
                             >
                                 <Text className="text-white">Under ₹2000</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 className={`px-4 py-2 rounded-full ${filters.priceRange[1] === 3500 ? 'bg-[#FF6B35]' : 'bg-[#2D2D2D]'}`}
                                 onPress={() => setFilters(prev => ({ ...prev, priceRange: [0, 3500] }))}
                             >
                                 <Text className="text-white">Under ₹3500</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 className={`px-4 py-2 rounded-full ${filters.priceRange[1] === 5000 ? 'bg-[#FF6B35]' : 'bg-[#2D2D2D]'}`}
                                 onPress={() => setFilters(prev => ({ ...prev, priceRange: [0, 5000] }))}
                             >
@@ -122,18 +124,21 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
                         <Text className="text-white mb-2">Sort By</Text>
                         <View className="flex-row justify-between">
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 className={`px-4 py-2 rounded-full ${filters.sortBy === 'rating' ? 'bg-[#FF6B35]' : 'bg-[#2D2D2D]'}`}
                                 onPress={() => setFilters(prev => ({ ...prev, sortBy: 'rating' }))}
                             >
                                 <Text className="text-white">Rating</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 className={`px-4 py-2 rounded-full ${filters.sortBy === 'price' ? 'bg-[#FF6B35]' : 'bg-[#2D2D2D]'}`}
                                 onPress={() => setFilters(prev => ({ ...prev, sortBy: 'price' }))}
                             >
                                 <Text className="text-white">Price</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
+                                activeOpacity={0.8}
                                 className={`px-4 py-2 rounded-full ${filters.sortBy === 'distance' ? 'bg-[#FF6B35]' : 'bg-[#2D2D2D]'}`}
                                 onPress={() => setFilters(prev => ({ ...prev, sortBy: 'distance' }))}
                             >
@@ -146,6 +151,7 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
 
                     {/* Apply Button */}
                     <TouchableOpacity
+                        activeOpacity={0.8}
                         className="bg-[#FF6B35] rounded-xl p-4"
                         onPress={() => {
                             navigatePage()
@@ -170,13 +176,16 @@ const MainSearch = ({ search, setSearch }: MainSearchProps) => {
                     onChangeText={setSearch}
                 />
                 {search ? (
-                    <TouchableOpacity onPress={() => setSearch('')}>
+                    <TouchableOpacity onPress={() => setSearch('')}
+                        activeOpacity={0.8}
+                    >
                         <Ionicons name="close-circle" size={24} color={Color.Third} />
                     </TouchableOpacity>
                 ) : null}
                 <TouchableOpacity
                     className="ml-2"
                     onPress={() => setShowFilters(true)}
+                    activeOpacity={0.8}
                 >
                     <Ionicons name="options-outline" size={24} color={Color.Third} />
                 </TouchableOpacity>

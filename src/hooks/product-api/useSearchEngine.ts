@@ -3,7 +3,7 @@ import { userContext } from "@/src/utils/context/ContextApi";
 
 const useSearchEngine = () => {
   const { locationSearch } = userContext();
-  const searchEngine = (query: string, setResults: any) => {
+  const searchEngine = (query: string, setResults: any, setLoading: any) => {
     api
       .post("/api/search/main-engine", {
         query,
@@ -11,6 +11,9 @@ const useSearchEngine = () => {
       })
       .then((res) => {
         setResults(res.data.products);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       })
       .catch((err) => {
         console.log(err);
