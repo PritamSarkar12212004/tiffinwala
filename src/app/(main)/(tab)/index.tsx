@@ -49,7 +49,7 @@ const index = () => {
         <Searhmain fetchData={fetchData} />
         {
           loading ? (
-            <View className="flex-1 items-center justify-center">
+            <View className="flex-1 bg-white items-center justify-center">
               <ActivityIndicator size="large" color="#FFD700" />
               <Text className="text-white mt-4 text-lg">Loading delicious meals...</Text>
             </View>

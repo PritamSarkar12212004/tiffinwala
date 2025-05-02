@@ -14,7 +14,21 @@ const _layout = () => {
 const MainLayout = () => {
   return <SafeAreaView className='w-full h-full' style={{ backgroundColor: BgColor.Primary }}>
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="ShowProduct" />
+      <Stack.Screen name="SearchPage" />
+      <Stack.Screen name="ViewPost" />
+      <Stack.Screen name="Settings" />
+      <Stack.Screen name="Notifications" />
+      <Stack.Screen name="PromotionAnalytics" />
+      <Stack.Screen name="Promotions" />
+      <Stack.Screen name="LocationPicker" />
+      <Stack.Screen name="NewPromotion" />
+      <Stack.Screen name="HelpSupport" />
+      <Stack.Screen name="LocationPage" />
+      <Stack.Screen name="EditPromotion" />
+      <Stack.Screen name="DarkMode" />
+      <Stack.Screen name="About" />
     </Stack>
   </SafeAreaView>
 }
