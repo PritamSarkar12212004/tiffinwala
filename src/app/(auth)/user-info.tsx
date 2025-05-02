@@ -10,6 +10,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +21,8 @@ import AuthToken from '@/src/constants/token/AuthToken';
 import * as ImagePicker from 'expo-image-picker';
 import { userContext } from '@/src/utils/context/ContextApi';
 import useCreateProfile from '@/src/hooks/profile/useCreateProfile';
+import LottiAnimation from '@/src/components/layout/LottiAnimation';
+import LottiConstant from '@/src/constants/lotti/LottiConstant';
 
 interface LocationData {
   latitude: number;
@@ -124,6 +127,8 @@ const UserInfo = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const { createProfile } = useCreateProfile();
+  const [uploadingProduct, setUploadingProduct] = useState(false)
+  const [uploadDoneModal, setUploadDoneModal] = useState(false);
 
   const handleSubmit = () => {
     setIsLoading(true);
@@ -132,7 +137,8 @@ const UserInfo = () => {
       setIsLoading(false);
       return;
     }
-    createProfile(formData, image, setIsLoading);
+    setUploadingProduct(true)
+    createProfile(formData, image, setIsLoading, setUploadingProduct, setUploadDoneModal);
   };
   const handleBack = () => {
     if (navigation.canGoBack()) {
@@ -164,10 +170,31 @@ const UserInfo = () => {
       style={{ backgroundColor: BgColor.Primary }}
     >
       <ScrollView className="flex-1">
+        <Modal
+          visible={uploadingProduct}
+
+          transparent={true}
+          animationType="fade"
+        >
+          <View className="flex-1 items-center justify-center bg-black/50">
+            <View className="bg-zinc-800 rounded-2xl p-8 w-4/5 items-center">
+              <View className="w-24 flex items-center justify-center">
+                <LottiAnimation width={150} height={150} bg={"transparent"} path={uploadDoneModal ? LottiConstant.productUploadDone : LottiConstant.productUpload} />
+              </View>
+
+              <Text className="text-white text-xl font-bold mb-4 text-center">Uploading Your Tiffin Service</Text>
+
+              <Text className="text-zinc-400 text-center">
+                Please wait while we upload your tiffin service details. This may take a moment.
+              </Text>
+            </View>
+          </View>
+        </Modal>
         <View className="flex-1 pt-6 px-3">
           {/* Header with Back Arrow */}
           <View className="flex-row items-center mb-6">
             <TouchableOpacity
+              activeOpacity={0.8}
               onPress={() =>
                 handleBack()
               }
@@ -186,7 +213,9 @@ const UserInfo = () => {
           </View>
 
           {/* Profile Picture */}
-          <TouchableOpacity className="items-center mb-8" onPress={pickImage}>
+          <TouchableOpacity className="items-center mb-8" onPress={pickImage}
+            activeOpacity={0.8}
+          >
             <View className="relative">
               {image ? (
                 <Image
@@ -250,6 +279,7 @@ const UserInfo = () => {
               <View className="flex-row gap-2">
                 {['Male', 'Female', 'Other'].map((gender) => (
                   <TouchableOpacity
+                    activeOpacity={0.8}
                     key={gender}
                     className={`flex-1 py-3 rounded-xl ${formData.gender === gender ? 'bg-blue-500' : 'bg-zinc-700'
                       }`}
@@ -283,6 +313,7 @@ const UserInfo = () => {
               <Text className="text-zinc-400 mb-2">Location *</Text>
               <View className="flex gap-2">
                 <TouchableOpacity
+                  activeOpacity={0.8}
                   className="flex-row items-center bg-zinc-700 p-4 rounded-xl"
                   onPress={getCurrentLocation}
                   disabled={isLoadingLocation}

@@ -17,7 +17,6 @@ const SearchPage = () => {
     const handleCategoryPress = (category: string) => {
         setSearch(category)
     }
-
     const handleSuggestionPress = (suggestion: string) => {
         setSearch(suggestion)
     }

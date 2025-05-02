@@ -18,7 +18,9 @@ const useCreateProfile = () => {
   const createProfile = async (
     formData: any,
     image: any,
-    setIsLoading: any
+    setIsLoading: any,
+    setUploadingProduct: any,
+    setUploadDoneModal: any
   ) => {
     setIsLoading(true);
     const compressImageFunction = await compressImage(image);
@@ -40,12 +42,14 @@ const useCreateProfile = () => {
         .then((res) => {
           setFullData(AuthToken.UserInfo, res.data.data);
           setUserProfile(res.data.data);
-
           setLocationData(UtilsToken.Location, res.data.data.User_Address);
           setUserTemLocation(res.data.data.User_Address);
           removeTemData(AuthToken.TemLogin);
           setIsLoading(false);
-          router.replace("/(main)/(tab)" as any);
+          setUploadDoneModal(true);
+          setTimeout(() => {
+            router.replace("/(main)/(tab)" as any);
+          }, 1000);
         })
         .catch((err) => {
           if (err.status === 400) {
@@ -54,9 +58,11 @@ const useCreateProfile = () => {
             Alert.alert("Error", "Server Error");
           }
           setIsLoading(false);
+          setUploadingProduct(false);
         })
         .finally(() => {
           setIsLoading(false);
+          setUploadingProduct(false);
         });
     }
   };

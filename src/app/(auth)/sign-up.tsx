@@ -127,7 +127,7 @@ const SignUp = () => {
                   activeOpacity={0.8}
                   style={{ backgroundColor: BgColor.Accent }}
                 >
-                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> : <Text className="text-white text-center font-semibold text-lg">Send OTP</Text>}
+                  {isLoading ? <ActivityIndicator size="large" color={"white"} /> : <Text className="text-white text-center font-semibold text-lg">Send OTP</Text>}
                 </TouchableOpacity>
               </View>
             ) : (
@@ -159,7 +159,7 @@ const SignUp = () => {
                   onPress={() => isLoading ? null : handleVerifyOtp()}
                   style={{ backgroundColor: BgColor.Accent }}
                 >
-                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> : <Text className="text-white text-center font-semibold text-lg">
+                  {isLoading ? <ActivityIndicator size="large" color={"white"} /> : <Text className="text-white text-center font-semibold text-lg">
                     Verify OTP
                   </Text>}
                 </TouchableOpacity>
