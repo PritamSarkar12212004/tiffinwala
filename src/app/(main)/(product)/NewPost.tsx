@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
-import { PostData } from '@/src/components/interface/AllInterface'
 import useCreateProductApi from '@/src/hooks/product-api/useCreateProductApi'
 import Modal from 'react-native-modal';
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
@@ -392,12 +391,7 @@ const index = () => {
         </View>
     );
 
-    const addMenuItem = () => {
-        setPost((prev: PostState) => ({
-            ...prev,
-            menuItems: [...prev.menuItems, { title: '', description: '', image: '' }]
-        }));
-    };
+
 
     return (
         <View className="flex-1 bg-zinc-900">
@@ -646,7 +640,7 @@ const index = () => {
                                     </>
                                 )}
                             </TouchableOpacity>
-                           
+
                         </View>
                         {errors.address && <ErrorMessage message={errors.address} />}
                     </View>

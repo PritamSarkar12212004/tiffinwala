@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Image, Alert, ActivityIndicator, Modal } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import SettingsPageLayout from '@/src/components/layout/SettingsPageLayout'
@@ -7,6 +7,8 @@ import { userContext } from '@/src/utils/context/ContextApi'
 import { Profile } from '@/src/components/interface/AllInterface'
 import * as ImagePicker from 'expo-image-picker';
 import useUpdateProfile from '@/src/hooks/profile/useUpdateProfile'
+import LottiAnimation from '@/src/components/layout/LottiAnimation'
+import LottiConstant from '@/src/constants/lotti/LottiConstant'
 
 const ProfileEdit = () => {
     const { userProfile } = userContext()
@@ -254,19 +256,45 @@ const ProfileEdit = () => {
     ];
 
     const { updateProfile } = useUpdateProfile()
+    const [uploadingProduct, setUploadingProduct] = useState(false)
+    const [uploadDoneModal, setUploadDoneModal] = useState(false);
+
 
     const updateProfileFunction = async () => {
         if (!validateForm()) {
             Alert.alert('Validation Error', 'Please check all fields and try again');
             return;
         }
-
+        setUploadingProduct(true)
         setIsLoading(true)
-        await updateProfile(profile, setIsLoading)
+        await updateProfile(profile, setIsLoading, setUploadingProduct, setUploadDoneModal)
     }
 
+
+
     return (
-        <SettingsPageLayout title="Edit Profile">
+        <SettingsPageLayout title="Edit Profile " >
+            <Modal
+                visible={uploadingProduct}
+
+                transparent={true}
+                animationType="fade"
+            >
+                <View className="flex-1 items-center justify-center bg-black/50">
+                    <View className="bg-zinc-800 rounded-2xl p-8 w-4/5 items-center">
+                        <View className="w-24 flex items-center justify-center">
+                            <LottiAnimation width={150} height={150} bg={"transparent"} path={uploadDoneModal ? LottiConstant.productUploadDone : LottiConstant.productUpload} />
+                        </View>
+
+                        <Text className="text-white text-xl font-bold mb-4 text-center">Uploading Your Tiffin Service</Text>
+
+                        <Text className="text-zinc-400 text-center">
+                            Please wait while we upload your tiffin service details. This may take a moment.
+                        </Text>
+                    </View>
+                </View>
+            </Modal>
+
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 <View className="items-center mb-6">
                     <View>

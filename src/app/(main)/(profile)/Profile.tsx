@@ -42,7 +42,7 @@ const index = () => {
                                 </View>
                                 <View className="flex-row  justify-center gap-2 mt-1">
                                     <Ionicons name="location" size={16} color="#FFD700" />
-                                    <Text className="text-zinc-400 text-sm">
+                                    <Text className="flex-auto text-zinc-400 text-sm">
                                         {userTemLocation?.formattedAddress ? userTemLocation?.formattedAddress : userTemLocation?.address}
 
                                     </Text>

@@ -11,9 +11,6 @@ import LottiAnimation from '@/src/components/layout/LottiAnimation'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import useUpdatePorductApi from '@/src/hooks/product-api/useUpdatePorductApi';
 import { PostData2, } from '@/src/components/interface/AllInterface';
-
-
-
 const EditPost = () => {
     const { editTempInformation, seteditTempInformation } = userContext()
 

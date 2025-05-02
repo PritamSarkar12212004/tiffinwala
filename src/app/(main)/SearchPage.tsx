@@ -1,12 +1,14 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import MainSearch from '@/src/components/search/MainSearch'
 import SearchSuggestion from '@/src/components/search/SearchSuggestion'
 import PageNavigation from '@/src/components/navigation/PageNavigation'
+import { userContext } from '@/src/utils/context/ContextApi'
 
 
 const SearchPage = () => {
     const [search, setSearch] = useState("")
+    const { AddressGeterFunc } = userContext()
 
     const handleSearch = useCallback((query: string) => {
         setSearch(query)
@@ -19,7 +21,10 @@ const SearchPage = () => {
     const handleSuggestionPress = (suggestion: string) => {
         setSearch(suggestion)
     }
+    useEffect(() => {
+        AddressGeterFunc()
 
+    }, [])
     return (
         <View className='w-full h-full bg-black'>
             <PageNavigation path="Search" />

@@ -144,7 +144,6 @@ const useCreateProductApi = () => {
         .post("/api/product/create-product", finalData)
         .then((res) => {
           setProductReloader(res.data);
-
           setUploadDoneModal(true);
           setTimeout(() => {
             setUploadingProduct(false);

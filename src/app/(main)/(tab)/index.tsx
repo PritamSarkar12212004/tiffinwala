@@ -10,7 +10,6 @@ import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
 import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
 
-
 const index = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const { bottomSheetRef, AddressGeterFunc } = userContext()
@@ -47,7 +46,6 @@ const index = () => {
     }}>
       <MainPageHeader />
       <MainPageLayout>
-
         <Searhmain fetchData={fetchData} />
         {
           loading ? (

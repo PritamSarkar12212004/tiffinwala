@@ -16,7 +16,12 @@ import UtilsToken from "@/src/constants/token/UtilsToken";
 const useUpdateProfile = () => {
   const { userProfile, setUserProfile } = userContext();
   const navigation = useNavigation();
-  const updateProfile = async (profile: any, setIsLoading: any) => {
+  const updateProfile = async (
+    profile: any,
+    setIsLoading: any,
+    setUploadingProduct: any,
+    setUploadDoneModal: any
+  ) => {
     try {
       const { profileImage } = profile;
       const compressImageFunction = await compressImage(profileImage);
@@ -43,14 +48,20 @@ const useUpdateProfile = () => {
           removeLocationData(UtilsToken.Location);
           setLocationData(UtilsToken.Location, response.data.data.User_Address);
 
-          setIsLoading(false);
-          navigation.goBack();
+          setUploadDoneModal(true);
+          setTimeout(() => {
+            setUploadingProduct(false);
+            setIsLoading(false);
+            navigation.goBack();
+          }, 1000);
         } else {
+          setUploadingProduct(false);
           Alert.alert("Error", "Failed to update profile");
           setIsLoading(false);
         }
       }
     } catch (error) {
+      setUploadingProduct(false);
       console.log(error);
       Alert.alert("Error", "Something went wrong. Please try again.");
       setIsLoading(false);
