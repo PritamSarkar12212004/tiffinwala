@@ -9,7 +9,7 @@ import { userContext } from '@/src/utils/context/ContextApi';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import useUserFetchData from '@/src/hooks/profile/useUserFetchData';
 import useViewsProductApi from '@/src/hooks/product-api/useViewsProductApi';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 const { width } = Dimensions.get('window');
 const ShowProduct = () => {
     const { fetchUserData } = useUserFetchData()
@@ -146,8 +146,8 @@ const ShowProduct = () => {
                         <View className="flex-row justify-between items-center">
                             <Text className="text-white text-3xl font-bold">{mainData.postTitle}</Text>
                             <View className="flex-row items-center gap-2 bg-black/50 px-4 py-2 rounded-full">
-                                <Ionicons name="star" size={20} color="#FFD700" />
-                                <Text className="text-white font-semibold">4.5</Text>
+                                <AntDesign name="heart" size={24} color="red" />
+                                <Text className="text-white font-semibold">{mainData.productLikes?.length}</Text>
                             </View>
                         </View>
 
@@ -166,9 +166,7 @@ const ShowProduct = () => {
                                         <Text className="text-zinc-400 text-sm">Monthly Plan</Text>
                                         <Text className="text-white text-2xl font-bold mt-1">₹{mainData.postPrice}</Text>
                                     </View>
-                                    <View className="bg-[#FFD700] px-6 py-3 rounded-xl">
-                                        <Text className="text-black font-bold">Order Now</Text>
-                                    </View>
+
                                 </View>
                             </View>
                         </View>
@@ -211,20 +209,7 @@ const ShowProduct = () => {
                         />
                     </View>
 
-                    <View className='w-full mt-8'>
-                        <View className="flex-row justify-between items-center mb-4">
-                            <View>
-                                <Text className='text-white text-2xl font-bold'>Customer Reviews</Text>
-                                <View className="flex-row items-center gap-2 mt-2">
-                                    <View className="flex-row items-center bg-black/50 px-4 py-2 rounded-full">
-                                        <Ionicons name="star" size={20} color="#FFD700" />
-                                        <Text className="text-white text-lg font-bold ml-1">4.5</Text>
-                                    </View>
-                                    <Text className="text-zinc-400">(120 reviews)</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+
 
                     <View className='w-full my-8'>
                         <TouchableOpacity
@@ -264,13 +249,7 @@ const ShowProduct = () => {
                                     </View>
                                     <View className="flex-1">
                                         <Text className="text-white text-2xl font-bold">{venderData.User_Name}</Text>
-                                        <View className="flex-row items-center gap-2 mt-2">
-                                            <View className="flex-row items-center bg-black/50 px-4 py-2 rounded-full">
-                                                <Ionicons name="star" size={18} color="#FFD700" />
-                                                <Text className="text-white text-lg font-bold ml-1">4.5</Text>
-                                            </View>
-                                            <Text className="text-zinc-400">(120 reviews)</Text>
-                                        </View>
+
                                     </View>
                                 </View>
 

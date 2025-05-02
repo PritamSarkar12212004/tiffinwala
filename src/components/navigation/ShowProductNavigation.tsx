@@ -1,9 +1,11 @@
-import { View, Text, StatusBar, TouchableOpacity, Animated } from 'react-native'
+import { View, TouchableOpacity, Animated } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import Feather from '@expo/vector-icons/Feather';
 import { useNavigation } from 'expo-router';
 import useLikeProductApi from '@/src/hooks/product-api/useLikeProductApi';
 import likeFetchData from '@/src/hooks/product-api/likeFetchData';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 
 const ShowProductNavigation = ({ userId, productId, likeData }: { userId: string, productId: string, likeData: any }) => {
   const navigation = useNavigation()
@@ -52,11 +54,8 @@ const ShowProductNavigation = ({ userId, productId, likeData }: { userId: string
           onPress={() => handleFavorite()}
           className='w-14 h-14 bg-zinc-600/60 rounded-full flex items-center justify-center border-2 border-zinc-500'
         >
-          <Feather
-            name="heart"
-            size={30}
-            color={isFavorite ? "#FF4444" : "white"}
-          />
+          <AntDesign name="heart" size={24} color={isFavorite ? "#FF4444" : "white"} />
+
         </TouchableOpacity>
       </Animated.View>
     </View>
