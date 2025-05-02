@@ -10,6 +10,8 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Modal,
+  Animated,
 } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +22,44 @@ import { setFullData, setLocationData } from '@/src/functions/storage/Storage';
 import AuthToken from '@/src/constants/token/AuthToken';
 import { userContext } from '@/src/utils/context/ContextApi';
 import UtilsToken from '@/src/constants/token/UtilsToken';
+import LottiAnimation from '@/src/components/layout/LottiAnimation';
+import LottiConstant from '@/src/constants/lotti/LottiConstant';
+
+const LoadingModal = ({ visible }: { visible: boolean }) => {
+  return (
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+    >
+      <View style={{
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <View style={{
+          backgroundColor: BgColor.Primary,
+          padding: 20,
+          borderRadius: 15,
+          alignItems: 'center',
+          width: '80%',
+          maxWidth: 300,
+        }}>
+          <LottiAnimation width={150} height={150} bg={"transparent"} path={LottiConstant.productUpload} />
+          <Text style={{
+            color: '#FFFFFF',
+            fontSize: 18,
+            marginTop: 16,
+            textAlign: 'center',
+          }}>
+            Verifying your number...
+          </Text>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const index = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -27,13 +67,11 @@ const index = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const navigation = useNavigation();
-
   const [isLoading, setIsLoading] = useState(false);
   const [responseOtp, setResponseotp] = useState('');
   const { setUserProfile, setUserTemLocation } = userContext();
 
   const handleSendOtp = () => {
-
     setIsLoading(true)
     if (phoneNumber.length < 10) {
       setIsLoading(false)
@@ -56,8 +94,8 @@ const index = () => {
         setIsLoading(false)
       })
     }
-
   };
+
   const handleVerifyOtp = () => {
     setIsLoading(true)
     if (responseOtp == otp) {
@@ -69,7 +107,6 @@ const index = () => {
           setUserProfile(res.data.data)
           setLocationData(UtilsToken.Location, res.data.data.User_Address);
           setUserTemLocation(res.data.data.User_Address);
-
           cleanup()
           router.replace('/(main)/(tab)' as any);
         }
@@ -94,38 +131,42 @@ const index = () => {
     setOtp("");
     setPhoneNumber("");
   }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1"
       style={{ backgroundColor: BgColor.Primary }}
     >
-      <ScrollView className="flex-1">
-        <View className="flex-1 py-6 px-3">
+      <LoadingModal visible={isLoading} />
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="flex-1 py-6 px-4">
           {/* Logo and Welcome Text */}
-          <View className="items-center mt-16 mb-12">
-            <Image
-              source={LogoContant.logo3}
-              className="w-32 h-32 rounded-full mb-6 border-4"
-              style={{ borderColor: BgColor.Accent }}
-            />
-            <Text className="text-3xl font-bold text-white mb-2">Welcome to TiffinWala</Text>
-            <Text className="text-zinc-400 text-center">
+          <View className="items-center mt-12 mb-16">
+            <View className="w-32 h-32 rounded-full mb-6 border-4 overflow-hidden" style={{ borderColor: BgColor.Accent }}>
+              <Image
+                source={LogoContant.logo3}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            </View>
+            <Text className="text-4xl font-bold text-white mb-3 text-center">Welcome to TiffinWala</Text>
+            <Text className="text-zinc-400 text-center text-lg">
               Your daily dose of homemade happiness
             </Text>
           </View>
 
           {/* Sign In Form */}
-          <View className="bg-zinc-800 p-6 rounded-2xl shadow-lg">
+          <View className="bg-zinc-800/50 p-6 rounded-3xl shadow-2xl backdrop-blur-lg">
             {!showOtpInput ? (
               // Phone Number Input
               <View>
-                <View className="mb-6">
-                  <Text className="text-zinc-400 mb-2">Phone Number</Text>
-                  <View className="flex-row items-center bg-zinc-700 rounded-xl px-4 py-3">
-                    <Ionicons name="call-outline" size={20} color={BgColor.Accent} />
+                <View className="mb-8">
+                  <Text className="text-zinc-400 mb-3 text-lg">Phone Number</Text>
+                  <View className="flex-row items-center bg-zinc-700/50 rounded-2xl px-4 py-4 border border-zinc-600">
+                    <Ionicons name="call-outline" size={24} color={BgColor.Accent} />
                     <TextInput
-                      className="flex-1 ml-3 text-white"
+                      className="flex-1 ml-3 text-white text-lg"
                       placeholder="Enter your phone number"
                       placeholderTextColor="#666"
                       value={phoneNumber}
@@ -136,12 +177,14 @@ const index = () => {
                   </View>
                 </View>
                 <TouchableOpacity
-                  className="bg-blue-500 h-14 flex items-center justify-center rounded-xl mb-6"
+                  className="h-16 flex items-center justify-center rounded-2xl mb-6"
                   onPress={() => isLoading ? null : handleSendOtp()}
                   style={{ backgroundColor: BgColor.Accent }}
+                  activeOpacity={0.8}
                 >
-                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> :
-                    <Text className="text-white text-center font-semibold text-lg">
+                  {isLoading ? 
+                    <ActivityIndicator size="large" color={BgColor.Primary} /> :
+                    <Text className="text-white text-center font-bold text-lg">
                       Send OTP
                     </Text>
                   }
@@ -150,12 +193,12 @@ const index = () => {
             ) : (
               // OTP Verification
               <View>
-                <View className="mb-6">
-                  <Text className="text-zinc-400 mb-2">Enter OTP</Text>
-                  <View className="flex-row items-center bg-zinc-700 rounded-xl px-4 py-3">
-                    <Ionicons name="key-outline" size={20} color={BgColor.Accent} />
+                <View className="mb-8">
+                  <Text className="text-zinc-400 mb-3 text-lg">Enter OTP</Text>
+                  <View className="flex-row items-center bg-zinc-700/50 rounded-2xl px-4 py-4 border border-zinc-600">
+                    <Ionicons name="key-outline" size={24} color={BgColor.Accent} />
                     <TextInput
-                      className="flex-1 ml-3 text-white"
+                      className="flex-1 ml-3 text-white text-lg"
                       placeholder="Enter 6-digit OTP"
                       placeholderTextColor="#666"
                       value={otp}
@@ -165,19 +208,21 @@ const index = () => {
                     />
                   </View>
                   {otpSent && (
-                    <Text className="text-green-400 text-sm mt-2">
+                    <Text className="text-green-400 text-base mt-3">
                       OTP sent to {phoneNumber}
                     </Text>
                   )}
                 </View>
 
                 <TouchableOpacity
-                  className="bg-blue-500 h-14 flex items-center justify-center rounded-xl mb-6"
+                  className="h-16 flex items-center justify-center rounded-2xl mb-6"
                   onPress={() => isLoading ? null : handleVerifyOtp()}
                   style={{ backgroundColor: BgColor.Accent }}
+                  activeOpacity={0.8}
                 >
-                  {isLoading ? <ActivityIndicator size="large" color={BgColor.Accent} /> :
-                    <Text className="text-white text-center font-semibold text-lg">
+                  {isLoading ? 
+                    <ActivityIndicator size="large" color={BgColor.Primary} /> :
+                    <Text className="text-white text-center font-bold text-lg">
                       Verify OTP
                     </Text>
                   }
@@ -186,43 +231,44 @@ const index = () => {
                 <TouchableOpacity
                   className="flex-row justify-center items-center mb-6"
                   onPress={() => setShowOtpInput(false)}
+                  activeOpacity={0.8}
                 >
-                  <Ionicons name="arrow-back" size={20} color={BgColor.Accent} />
-                  <Text className="text-zinc-400 ml-2">Change phone number</Text>
+                  <Ionicons name="arrow-back" size={24} color={BgColor.Accent} />
+                  <Text className="text-zinc-400 ml-2 text-base">Change phone number</Text>
                 </TouchableOpacity>
               </View>
             )}
 
             {/* Sign Up Link */}
             <View className="flex-row justify-center">
-              <Text className="text-zinc-400">Don't have an account? </Text>
+              <Text className="text-zinc-400 text-base">Don't have an account? </Text>
               <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('sign-up' as never)}>
-                <Text className="text-blue-400 font-semibold">Sign Up</Text>
+                <Text className="text-blue-400 font-bold text-base">Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Tiffin Mess Features */}
-          <View className="mt-8 flex-row flex-wrap justify-between">
-            <View className="bg-zinc-800 p-4 rounded-xl w-[48%] mb-4">
-              <Ionicons name="restaurant-outline" size={24} color={BgColor.Accent} />
-              <Text className="text-white mt-2">Daily Fresh Food</Text>
-              <Text className="text-zinc-400 text-sm">Made with love</Text>
+          {/* Features Grid */}
+          <View className="mt-12 flex-row flex-wrap justify-between">
+            <View className="bg-zinc-800/50 p-6 rounded-3xl w-[48%] mb-6 border border-zinc-700">
+              <Ionicons name="restaurant-outline" size={28} color={BgColor.Accent} />
+              <Text className="text-white mt-3 text-lg font-semibold">Daily Fresh Food</Text>
+              <Text className="text-zinc-400 text-base">Made with love</Text>
             </View>
-            <View className="bg-zinc-800 p-4 rounded-xl w-[48%] mb-4">
-              <Ionicons name="time-outline" size={24} color={BgColor.Accent} />
-              <Text className="text-white mt-2">On-Time Delivery</Text>
-              <Text className="text-zinc-400 text-sm">Always punctual</Text>
+            <View className="bg-zinc-800/50 p-6 rounded-3xl w-[48%] mb-6 border border-zinc-700">
+              <Ionicons name="time-outline" size={28} color={BgColor.Accent} />
+              <Text className="text-white mt-3 text-lg font-semibold">On-Time Delivery</Text>
+              <Text className="text-zinc-400 text-base">Always punctual</Text>
             </View>
-            <View className="bg-zinc-800 p-4 rounded-xl w-[48%]">
-              <Ionicons name="nutrition-outline" size={24} color={BgColor.Accent} />
-              <Text className="text-white mt-2">Healthy Options</Text>
-              <Text className="text-zinc-400 text-sm">Balanced diet</Text>
+            <View className="bg-zinc-800/50 p-6 rounded-3xl w-[48%] border border-zinc-700">
+              <Ionicons name="nutrition-outline" size={28} color={BgColor.Accent} />
+              <Text className="text-white mt-3 text-lg font-semibold">Healthy Options</Text>
+              <Text className="text-zinc-400 text-base">Balanced diet</Text>
             </View>
-            <View className="bg-zinc-800 p-4 rounded-xl w-[48%]">
-              <Ionicons name="heart-outline" size={24} color={BgColor.Accent} />
-              <Text className="text-white mt-2">Home Style</Text>
-              <Text className="text-zinc-400 text-sm">Just like mom's</Text>
+            <View className="bg-zinc-800/50 p-6 rounded-3xl w-[48%] border border-zinc-700">
+              <Ionicons name="heart-outline" size={28} color={BgColor.Accent} />
+              <Text className="text-white mt-3 text-lg font-semibold">Home Style</Text>
+              <Text className="text-zinc-400 text-base">Just like mom's</Text>
             </View>
           </View>
         </View>

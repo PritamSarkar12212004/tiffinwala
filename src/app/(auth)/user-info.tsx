@@ -44,6 +44,42 @@ interface FormData {
   location: LocationData | null;
 }
 
+const LoadingModal = ({ visible, message }: { visible: boolean; message: string }) => {
+  return (
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+    >
+      <View style={{
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <View style={{
+          backgroundColor: BgColor.Primary,
+          padding: 20,
+          borderRadius: 15,
+          alignItems: 'center',
+          width: '80%',
+          maxWidth: 300,
+        }}>
+          <LottiAnimation width={150} height={150} bg={"transparent"} path={LottiConstant.productUpload} />
+          <Text style={{
+            color: '#FFFFFF',
+            fontSize: 18,
+            marginTop: 16,
+            textAlign: 'center',
+          }}>
+            {message}
+          </Text>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 const UserInfo = () => {
   const navigation = useNavigation();
   const { location, setLocation } = userContext();
@@ -57,6 +93,10 @@ const UserInfo = () => {
   });
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [image, setImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { createProfile } = useCreateProfile();
+  const [uploadingProduct, setUploadingProduct] = useState(false);
+  const [uploadDoneModal, setUploadDoneModal] = useState(false);
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, location }));
@@ -69,7 +109,6 @@ const UserInfo = () => {
   const getCurrentLocation = async () => {
     setIsLoadingLocation(true);
     try {
-      // Check if location services are enabled
       const enabled = await Location.hasServicesEnabledAsync();
       if (!enabled) {
         Alert.alert('Error', 'Location services are disabled. Please enable them in your device settings.');
@@ -88,7 +127,6 @@ const UserInfo = () => {
         accuracy: Location.Accuracy.High
       });
 
-      // Get address from coordinates
       const [address] = await Location.reverseGeocodeAsync({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude
@@ -124,12 +162,6 @@ const UserInfo = () => {
     }
   };
 
-
-  const [isLoading, setIsLoading] = useState(false);
-  const { createProfile } = useCreateProfile();
-  const [uploadingProduct, setUploadingProduct] = useState(false)
-  const [uploadDoneModal, setUploadDoneModal] = useState(false);
-
   const handleSubmit = () => {
     setIsLoading(true);
     if (!formData.username || !formData.gender || !formData.location || !formData.bio) {
@@ -137,67 +169,47 @@ const UserInfo = () => {
       setIsLoading(false);
       return;
     }
-    setUploadingProduct(true)
+    setUploadingProduct(true);
     createProfile(formData, image, setIsLoading, setUploadingProduct, setUploadDoneModal);
   };
+
   const handleBack = () => {
     if (navigation.canGoBack()) {
-      removeTemData(AuthToken.TemLogin)
+      removeTemData(AuthToken.TemLogin);
       navigation.goBack();
     } else {
-      removeTemData(AuthToken.TemLogin)
+      removeTemData(AuthToken.TemLogin);
       router.replace("/(auth)");
     }
-  }
+  };
+
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 4],
       quality: 1,
     });
 
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1"
       style={{ backgroundColor: BgColor.Primary }}
     >
-      <ScrollView className="flex-1">
-        <Modal
-          visible={uploadingProduct}
-
-          transparent={true}
-          animationType="fade"
-        >
-          <View className="flex-1 items-center justify-center bg-black/50">
-            <View className="bg-zinc-800 rounded-2xl p-8 w-4/5 items-center">
-              <View className="w-24 flex items-center justify-center">
-                <LottiAnimation width={150} height={150} bg={"transparent"} path={uploadDoneModal ? LottiConstant.productUploadDone : LottiConstant.productUpload} />
-              </View>
-
-              <Text className="text-white text-xl font-bold mb-4 text-center">Uploading Your Tiffin Service</Text>
-
-              <Text className="text-zinc-400 text-center">
-                Please wait while we upload your tiffin service details. This may take a moment.
-              </Text>
-            </View>
-          </View>
-        </Modal>
-        <View className="flex-1 pt-6 px-3">
+      <LoadingModal visible={uploadingProduct} message="Uploading Your Tiffin Service" />
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="flex-1 pt-6 px-4">
           {/* Header with Back Arrow */}
-          <View className="flex-row items-center mb-6">
+          <View className="flex-row items-center mb-8">
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() =>
-                handleBack()
-              }
+              onPress={handleBack}
               className="mr-4"
             >
               <Ionicons name="arrow-back" size={30} color={BgColor.Accent} />
@@ -206,14 +218,16 @@ const UserInfo = () => {
 
           {/* Header */}
           <View className="items-center mb-12">
-            <Text className="text-3xl font-bold text-white mb-2">Complete Your Profile</Text>
-            <Text className="text-zinc-400 text-center">
+            <Text className="text-4xl font-bold text-white mb-3 text-center">Complete Your Profile</Text>
+            <Text className="text-zinc-400 text-center text-lg">
               Help us personalize your tiffin experience
             </Text>
           </View>
 
           {/* Profile Picture */}
-          <TouchableOpacity className="items-center mb-8" onPress={pickImage}
+          <TouchableOpacity 
+            className="items-center mb-10" 
+            onPress={pickImage}
             activeOpacity={0.8}
           >
             <View className="relative">
@@ -228,26 +242,28 @@ const UserInfo = () => {
                   source={{ uri: 'https://via.placeholder.com/120' }}
                   className="w-40 h-40 rounded-full mb-4 border-4"
                   style={{ borderColor: BgColor.Accent }}
-                />)}
+                />
+              )}
               <TouchableOpacity
                 className="absolute bottom-0 right-0 bg-zinc-700 p-3 rounded-full border-2"
                 style={{ borderColor: BgColor.Accent }}
+                activeOpacity={0.8}
               >
                 <Ionicons name="camera-outline" size={24} color={BgColor.Accent} />
               </TouchableOpacity>
             </View>
-            <Text className="text-zinc-400 text-center mt-2">Tap to change profile photo</Text>
+            <Text className="text-zinc-400 text-center mt-2 text-base">Tap to change profile photo</Text>
           </TouchableOpacity>
 
           {/* User Info Form */}
-          <View className="bg-zinc-800 p-6 rounded-2xl shadow-lg">
+          <View className="bg-zinc-800/50 p-6 rounded-3xl shadow-2xl backdrop-blur-lg">
             {/* Username */}
-            <View className="mb-4">
-              <Text className="text-zinc-400 mb-2">Username *</Text>
-              <View className="flex-row items-center bg-zinc-700 rounded-xl px-4 py-3">
-                <Ionicons name="person-outline" size={20} color={BgColor.Accent} />
+            <View className="mb-6">
+              <Text className="text-zinc-400 mb-3 text-lg">Username *</Text>
+              <View className="flex-row items-center bg-zinc-700/50 rounded-2xl px-4 py-4 border border-zinc-600">
+                <Ionicons name="person-outline" size={24} color={BgColor.Accent} />
                 <TextInput
-                  className="flex-1 ml-3 text-white"
+                  className="flex-1 ml-3 text-white text-lg"
                   placeholder="Enter your username"
                   placeholderTextColor="#666"
                   value={formData.username}
@@ -257,12 +273,12 @@ const UserInfo = () => {
             </View>
 
             {/* Email */}
-            <View className="mb-4">
-              <Text className="text-zinc-400 mb-2">Email (Optional)</Text>
-              <View className="flex-row items-center bg-zinc-700 rounded-xl px-4 py-3">
-                <Ionicons name="mail-outline" size={20} color={BgColor.Accent} />
+            <View className="mb-6">
+              <Text className="text-zinc-400 mb-3 text-lg">Email (Optional)</Text>
+              <View className="flex-row items-center bg-zinc-700/50 rounded-2xl px-4 py-4 border border-zinc-600">
+                <Ionicons name="mail-outline" size={24} color={BgColor.Accent} />
                 <TextInput
-                  className="flex-1 ml-3 text-white"
+                  className="flex-1 ml-3 text-white text-lg"
                   placeholder="Enter your email (optional)"
                   placeholderTextColor="#666"
                   value={formData.email}
@@ -274,30 +290,33 @@ const UserInfo = () => {
             </View>
 
             {/* Gender */}
-            <View className="mb-4">
-              <Text className="text-zinc-400 mb-2">Gender *</Text>
-              <View className="flex-row gap-2">
+            <View className="mb-6">
+              <Text className="text-zinc-400 mb-3 text-lg">Gender *</Text>
+              <View className="flex-row gap-3">
                 {['Male', 'Female', 'Other'].map((gender) => (
                   <TouchableOpacity
                     activeOpacity={0.8}
                     key={gender}
-                    className={`flex-1 py-3 rounded-xl ${formData.gender === gender ? 'bg-blue-500' : 'bg-zinc-700'
-                      }`}
+                    className={`flex-1 py-4 rounded-2xl border ${
+                      formData.gender === gender 
+                        ? 'bg-blue-500 border-blue-400' 
+                        : 'bg-zinc-700/50 border-zinc-600'
+                    }`}
                     onPress={() => handleInputChange('gender', gender)}
                   >
-                    <Text className="text-white text-center">{gender}</Text>
+                    <Text className="text-white text-center text-lg font-semibold">{gender}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
 
             {/* Bio */}
-            <View className="mb-4">
-              <Text className="text-zinc-400 mb-2">Bio</Text>
-              <View className="flex-row items-center bg-zinc-700 rounded-xl px-4 py-3">
-                <Ionicons name="document-text-outline" size={20} color={BgColor.Accent} />
+            <View className="mb-6">
+              <Text className="text-zinc-400 mb-3 text-lg">Bio *</Text>
+              <View className="flex-row items-center bg-zinc-700/50 rounded-2xl px-4 py-4 border border-zinc-600">
+                <Ionicons name="document-text-outline" size={24} color={BgColor.Accent} />
                 <TextInput
-                  className="flex-1 ml-3 text-white"
+                  className="flex-1 ml-3 text-white text-lg"
                   placeholder="Tell us about yourself"
                   placeholderTextColor="#666"
                   value={formData.bio}
@@ -309,19 +328,19 @@ const UserInfo = () => {
             </View>
 
             {/* Location Selection */}
-            <View className="mb-6">
-              <Text className="text-zinc-400 mb-2">Location *</Text>
-              <View className="flex gap-2">
+            <View className="mb-8">
+              <Text className="text-zinc-400 mb-3 text-lg">Location *</Text>
+              <View className="flex gap-3">
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  className="flex-row items-center bg-zinc-700 p-4 rounded-xl"
+                  className="flex-row items-center bg-zinc-700/50 p-4 rounded-2xl border border-zinc-600"
                   onPress={getCurrentLocation}
                   disabled={isLoadingLocation}
                 >
                   <Ionicons name="location-outline" size={24} color={BgColor.Accent} />
                   <View className="ml-4 flex-1">
-                    <Text className="text-white font-semibold">Use Current Location</Text>
-                    <Text className="text-zinc-400">Automatically detect your location</Text>
+                    <Text className="text-white font-semibold text-lg">Use Current Location</Text>
+                    <Text className="text-zinc-400 text-base">Automatically detect your location</Text>
                   </View>
                   {isLoadingLocation ? (
                     <ActivityIndicator color={BgColor.Accent} />
@@ -331,35 +350,30 @@ const UserInfo = () => {
                 </TouchableOpacity>
 
                 {formData.location && (
-                  <View className="bg-zinc-700 p-4 rounded-xl">
-                    <Text className="text-white font-semibold mb-2">Selected Location:</Text>
-                    {formData.location && (
-                      <Text className="text-zinc-400 mb-2">{formData.location.formattedAddress}</Text>
-                    )}
-
+                  <View className="bg-zinc-700/50 p-4 rounded-2xl border border-zinc-600">
+                    <Text className="text-white font-semibold mb-2 text-lg">Selected Location:</Text>
+                    <Text className="text-zinc-400 text-base">{formData.location.formattedAddress}</Text>
                   </View>
                 )}
-
-
               </View>
             </View>
 
             {/* Submit Button */}
             <TouchableOpacity
               activeOpacity={0.8}
-              className="bg-blue-500 h-14 flex items-center justify-center rounded-xl"
+              className="h-16 flex items-center justify-center rounded-2xl"
               onPress={handleSubmit}
               disabled={isLoading}
               style={{ backgroundColor: BgColor.Accent }}
             >
-              <Text className="text-white text-center font-semibold text-lg">
+              <Text className="text-white text-center font-bold text-lg">
                 {isLoading ? <ActivityIndicator color={BgColor.Primary} /> : "Complete Profile"}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView >
-    </KeyboardAvoidingView >
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
