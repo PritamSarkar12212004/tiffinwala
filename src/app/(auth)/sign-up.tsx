@@ -21,8 +21,10 @@ import { setTemData } from '@/src/functions/storage/Storage';
 import AuthToken from '@/src/constants/token/AuthToken';
 import LottiAnimation from '@/src/components/layout/LottiAnimation';
 import LottiConstant from '@/src/constants/lotti/LottiConstant';
+import { userContext } from '@/src/utils/context/ContextApi';
 
 const LoadingModal = ({ visible }: { visible: boolean }) => {
+
   return (
     <Modal
       transparent
@@ -67,12 +69,17 @@ const SignUp = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
+  const { setIsAuthNotificationVisible } = userContext();
+
 
   const handleSendOtp = () => {
     setIsLoading(true)
     if (phoneNumber.length < 10) {
       setIsLoading(false)
-      Alert.alert('Error', 'Please enter a valid phone number');
+      setIsAuthNotificationVisible({
+        status: true,
+        message: "Please enter a valid phone number"
+      })
     } else {
       api.post("/api/otp/signup", {
         number: phoneNumber
@@ -83,11 +90,17 @@ const SignUp = () => {
           setShowOtpInput(true);
           setIsLoading(false)
         } else {
-          Alert.alert("Otp Ricived Error")
+          setIsAuthNotificationVisible({
+            status: true,
+            message: "Otp Ricived Error"
+          })
           setIsLoading(false)
         }
       }).catch((err) => {
-        Alert.alert(err.response.data.message)
+        setIsAuthNotificationVisible({
+          status: true,
+          message: err.response.data.message
+        })
         setIsLoading(false)
       })
     }
@@ -99,7 +112,10 @@ const SignUp = () => {
       router.push('/user-info');
       cleanup()
     } else {
-      Alert.alert("Invalid Otp Please Enter valid Otp")
+      setIsAuthNotificationVisible({
+        status: true,
+        message: "Invalid Otp Please Enter valid Otp"
+      })
     }
   };
 

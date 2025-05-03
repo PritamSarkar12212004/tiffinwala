@@ -53,6 +53,16 @@ interface ContextType {
   locationSearch: any;
   setLocationSearch: React.Dispatch<React.SetStateAction<any>>;
   AddressGeterFunc: () => any;
+  isAuthNotificationVisible: {
+    status: boolean;
+    message: string;
+  };
+  setIsAuthNotificationVisible: React.Dispatch<
+    React.SetStateAction<{
+      status: boolean;
+      message: string;
+    }>
+  >;
 }
 
 interface Profile {

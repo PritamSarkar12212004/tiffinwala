@@ -37,6 +37,12 @@ export const ContextProvider = ({ children }: any) => {
     // all post product Totoal Likes
     const [totalLikes, setTotalLikes] = useState<any>(null)
 
+    // auth notification
+    const [isAuthNotificationVisible, setIsAuthNotificationVisible] = useState({
+        status: false,
+        message: ""
+    })
+
     // all post product Totoal Views
     const [totalViews, setTotalViews] = useState<any>(null)
     // filter Item Modal
@@ -122,7 +128,10 @@ export const ContextProvider = ({ children }: any) => {
                 locationSearch,
                 setLocationSearch,
                 // get location
-                AddressGeterFunc
+                AddressGeterFunc,
+                // auth notification
+                isAuthNotificationVisible,
+                setIsAuthNotificationVisible
             }}
         >
             {children}

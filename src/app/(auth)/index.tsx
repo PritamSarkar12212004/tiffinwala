@@ -69,13 +69,17 @@ const index = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [responseOtp, setResponseotp] = useState('');
-  const { setUserProfile, setUserTemLocation } = userContext();
+  const { setUserProfile, setUserTemLocation, setIsAuthNotificationVisible } = userContext();
+
 
   const handleSendOtp = () => {
     setIsLoading(true)
     if (phoneNumber.length < 10) {
       setIsLoading(false)
-      Alert.alert('Error', 'Please enter a valid phone number');
+      setIsAuthNotificationVisible({
+        status: true,
+        message: "Please enter a valid phone number"
+      })
     } else {
       api.post("/api/otp/signin", {
         number: phoneNumber
@@ -86,11 +90,17 @@ const index = () => {
           setShowOtpInput(true);
           setIsLoading(false)
         } else {
-          Alert.alert("Otp Ricived Error")
+          setIsAuthNotificationVisible({
+            status: true,
+            message: "Otp Ricived Error"
+          })
           setIsLoading(false)
         }
       }).catch((err) => {
-        Alert.alert(err.response.data.message)
+        setIsAuthNotificationVisible({
+          status: true,
+          message: err.response.data.message
+        })
         setIsLoading(false)
       })
     }
@@ -112,14 +122,23 @@ const index = () => {
         }
       }).catch((err) => {
         if (err.status === 400) {
-          Alert.alert("Error", "User Not exists Please Sign Up");
+          setIsAuthNotificationVisible({
+            status: true,
+            message: "User Not exists Please Sign Up"
+          })
         } else if (err.status === 500) {
-          Alert.alert("Error", "Server Error");
+          setIsAuthNotificationVisible({
+            status: true,
+            message: "Server Error"
+          })
         }
         setIsLoading(false)
       })
     } else {
-      Alert.alert("Invalid Otp Please Enter valid Otp")
+      setIsAuthNotificationVisible({
+        status: true,
+        message: "Invalid Otp Please Enter valid Otp"
+      })
       setIsLoading(false)
     }
   };

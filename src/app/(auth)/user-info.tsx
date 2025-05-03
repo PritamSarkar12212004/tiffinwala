@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
   Modal,
 } from 'react-native';
@@ -81,6 +80,8 @@ const LoadingModal = ({ visible, message }: { visible: boolean; message: string 
 };
 
 const UserInfo = () => {
+  const { setIsAuthNotificationVisible } = userContext();
+
   const navigation = useNavigation();
   const { location, setLocation } = userContext();
   const [formData, setFormData] = useState<FormData>({
@@ -111,14 +112,20 @@ const UserInfo = () => {
     try {
       const enabled = await Location.hasServicesEnabledAsync();
       if (!enabled) {
-        Alert.alert('Error', 'Location services are disabled. Please enable them in your device settings.');
+        setIsAuthNotificationVisible({
+          status: true,
+          message: 'Location services are disabled. Please enable them in your device settings.'
+        })
         setIsLoadingLocation(false);
         return;
       }
 
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Please allow location access to use this feature.');
+        setIsAuthNotificationVisible({
+          status: true,
+          message: 'Permission Denied, Please allow location access to use this feature.'
+        })
         setIsLoadingLocation(false);
         return;
       }
@@ -156,7 +163,10 @@ const UserInfo = () => {
         setFormData(prev => ({ ...prev, location: locationData }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to get location. Please try again.');
+      setIsAuthNotificationVisible({
+        status: true,
+        message: 'Failed to get location. Please try again.'
+      })
     } finally {
       setIsLoadingLocation(false);
     }
@@ -165,7 +175,10 @@ const UserInfo = () => {
   const handleSubmit = () => {
     setIsLoading(true);
     if (!formData.username || !formData.gender || !formData.location || !formData.bio) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      setIsAuthNotificationVisible({
+        status: true,
+        message: 'Please fill in all required fields'
+      })
       setIsLoading(false);
       return;
     }
@@ -225,8 +238,8 @@ const UserInfo = () => {
           </View>
 
           {/* Profile Picture */}
-          <TouchableOpacity 
-            className="items-center mb-10" 
+          <TouchableOpacity
+            className="items-center mb-10"
             onPress={pickImage}
             activeOpacity={0.8}
           >
@@ -297,11 +310,10 @@ const UserInfo = () => {
                   <TouchableOpacity
                     activeOpacity={0.8}
                     key={gender}
-                    className={`flex-1 py-4 rounded-2xl border ${
-                      formData.gender === gender 
-                        ? 'bg-blue-500 border-blue-400' 
-                        : 'bg-zinc-700/50 border-zinc-600'
-                    }`}
+                    className={`flex-1 py-4 rounded-2xl border ${formData.gender === gender
+                      ? 'bg-blue-500 border-blue-400'
+                      : 'bg-zinc-700/50 border-zinc-600'
+                      }`}
                     onPress={() => handleInputChange('gender', gender)}
                   >
                     <Text className="text-white text-center text-lg font-semibold">{gender}</Text>

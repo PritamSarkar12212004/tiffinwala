@@ -2,11 +2,13 @@ import { Stack } from 'expo-router';
 import React from 'react';
 import BgColor from '@/src/constants/color/BgColor';
 import { SafeAreaView, StatusBar } from 'react-native';
-
+import AuthNotificationWraper from '@/src/components/layout/AuthNotificationWraper';
 const AuthLayout = () => {
   return (
     <SafeAreaView className='w-full h-full'>
-      <MainLayout />
+      <AuthNotificationWraper>
+        <MainLayout />
+      </AuthNotificationWraper>
     </SafeAreaView>
   );
 };
