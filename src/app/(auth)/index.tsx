@@ -71,6 +71,11 @@ const index = () => {
   const [responseOtp, setResponseotp] = useState('');
   const { setUserProfile, setUserTemLocation, setIsAuthNotificationVisible } = userContext();
 
+  const handlePhoneNumberChange = (text: string) => {
+    // Only allow numbers
+    const numericValue = text.replace(/[^0-9]/g, '');
+    setPhoneNumber(numericValue);
+  };
 
   const handleSendOtp = () => {
     setIsLoading(true)
@@ -189,7 +194,7 @@ const index = () => {
                       placeholder="Enter your phone number"
                       placeholderTextColor="#666"
                       value={phoneNumber}
-                      onChangeText={setPhoneNumber}
+                      onChangeText={handlePhoneNumberChange}
                       keyboardType="phone-pad"
                       maxLength={10}
                     />
