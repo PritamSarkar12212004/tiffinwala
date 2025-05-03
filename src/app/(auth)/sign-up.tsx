@@ -77,8 +77,8 @@ const SignUp = () => {
       api.post("/api/otp/signup", {
         number: phoneNumber
       }).then((res) => {
-        if (res.data.success) {
-          setResponseotp(res.data.otp.otp)
+        if (res.data.data.otp) {
+          setResponseotp(res.data.data.otp)
           setOtpSent(true);
           setShowOtpInput(true);
           setIsLoading(false)
@@ -87,7 +87,7 @@ const SignUp = () => {
           setIsLoading(false)
         }
       }).catch((err) => {
-        Alert.alert("Otp Sending Error")
+        Alert.alert(err.response.data.message)
         setIsLoading(false)
       })
     }
@@ -169,7 +169,7 @@ const SignUp = () => {
                   style={{ backgroundColor: BgColor.Accent }}
                   activeOpacity={0.8}
                 >
-                  {isLoading ? 
+                  {isLoading ?
                     <ActivityIndicator size="large" color={BgColor.Primary} /> :
                     <Text className="text-white text-center font-bold text-lg">
                       Send OTP
@@ -207,7 +207,7 @@ const SignUp = () => {
                   style={{ backgroundColor: BgColor.Accent }}
                   activeOpacity={0.8}
                 >
-                  {isLoading ? 
+                  {isLoading ?
                     <ActivityIndicator size="large" color={BgColor.Primary} /> :
                     <Text className="text-white text-center font-bold text-lg">
                       Verify OTP
