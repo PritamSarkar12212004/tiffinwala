@@ -1,7 +1,9 @@
 import api from "@/src/utils/api/Axios";
+import { userContext } from "@/src/utils/context/ContextApi";
 import { useNavigation } from "expo-router";
 
 const useUserFetchData = () => {
+  const { setIsSubPagePopUpVisible } = userContext();
   const navigation = useNavigation();
   const fetchUserData = (userId: string, setVenderData: any) => {
     try {
@@ -13,12 +15,16 @@ const useUserFetchData = () => {
           setVenderData(res.data.data);
         })
         .catch((err) => {
-          console.log(err);
-          navigation.goBack();
+          setIsSubPagePopUpVisible({
+            status: true,
+            message: "Something went wrong",
+          });
         });
     } catch (error) {
-      console.log(error);
-      navigation.goBack();
+      setIsSubPagePopUpVisible({
+        status: true,
+        message: "Something went wrong",
+      });
     }
   };
   return {

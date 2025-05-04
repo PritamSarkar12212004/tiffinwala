@@ -43,6 +43,12 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
         message: ""
     })
 
+    // sub page pop up
+    const [isSubPagePopUpVisible, setIsSubPagePopUpVisible] = useState({
+        status: false,
+        message: ""
+    })
+
     // all post product Totoal Views
     const [totalViews, setTotalViews] = useState<number | null>(null)
 
@@ -127,6 +133,9 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 // auth notification
                 isAuthNotificationVisible,
                 setIsAuthNotificationVisible,
+                // sub page pop up
+                isSubPagePopUpVisible,
+                setIsSubPagePopUpVisible,
             }}
         >
             {children}

@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React, { useRef } from 'react'
 import LottieView from 'lottie-react-native';
 

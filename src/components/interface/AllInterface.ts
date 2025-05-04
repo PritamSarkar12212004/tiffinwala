@@ -69,7 +69,15 @@ interface ContextType {
       message: string;
     }>
   >;
-  AddressGeterFunc: () => void;
+  isSubPagePopUpVisible: {  
+    status: boolean;
+    message: string;
+  };
+  setIsSubPagePopUpVisible: React.Dispatch<
+    React.SetStateAction<{
+      status: boolean;
+      message: string;
+    }>
 }
 
 interface Profile {

@@ -1,6 +1,8 @@
 import api from "@/src/utils/api/Axios";
+import { userContext } from "@/src/utils/context/ContextApi";
 
 const likeFetchData = () => {
+  const { setIsSubPagePopUpVisible } = userContext();
   const likeProductFetch = async (
     userId: string,
     productId: string,
@@ -18,7 +20,10 @@ const likeFetchData = () => {
       }
       return res.data;
     } catch (error) {
-      console.log(error);
+      setIsSubPagePopUpVisible({
+        status: true,
+        message: "Something went wrong",
+      });
     }
   };
   return {

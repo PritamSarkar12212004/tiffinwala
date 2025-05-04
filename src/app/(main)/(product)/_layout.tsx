@@ -1,14 +1,17 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
+import SubPageWraper from '@/src/components/layout/SubPageWraper'
 
 const _layout = () => {
     return (
-        <Stack screenOptions={{
-            headerShown: false
-        }}>
+        <SubPageWraper>
 
-        </Stack>
+            <Stack screenOptions={{
+                headerShown: false
+            }}>
+            </Stack>
+        </SubPageWraper>
     )
 }
 export default _layout

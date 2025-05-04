@@ -4,7 +4,8 @@ import api from "@/src/utils/api/Axios";
 import { userContext } from "@/src/utils/context/ContextApi";
 
 const useFetchProduct = () => {
-  const { setTotalLikes, setTotalViews } = userContext();
+  const { setTotalLikes, setTotalViews, setIsSubPagePopUpVisible } =
+    userContext();
   const fetchProduct = async ({ setProduct, setLoading }: any) => {
     const fullLoginId = await getFullData(AuthToken.UserInfo);
     await api
@@ -19,7 +20,10 @@ const useFetchProduct = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setIsSubPagePopUpVisible({
+          status: true,
+          message: "Error fetching product",
+        });
       });
   };
   return { fetchProduct };

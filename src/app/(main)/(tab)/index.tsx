@@ -9,6 +9,8 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
 import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
+import LottiConstant from '@/src/constants/lotti/LottiConstant'
+import LottiAnimation from '@/src/components/layout/LottiAnimation'
 
 const index = () => {
   const [loading, setLoading] = useState<boolean>(false)
@@ -35,7 +37,7 @@ const index = () => {
       setMainData(undefined)
       setBottomSheetData(null)
     }
-  }, []) // Empty dependency array to run only once
+  }, [])
 
   return (
 
@@ -46,8 +48,8 @@ const index = () => {
         {
           loading ? (
             <View className="h-full w-full bg-black items-center justify-center">
-              <ActivityIndicator size="large" color="#FFD700" />
-              <Text className="text-white mt-4 text-lg">Loading delicious meals...</Text>
+              <LottiAnimation height={400} width={400} path={LottiConstant.productLoadingMain} bg="transparent" />
+
             </View>
           ) : !mainData || mainData.length === 0 ? (
             <View className="h-full w-full bg-black items-center justify-center">

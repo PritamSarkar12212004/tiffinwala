@@ -9,7 +9,7 @@ import { useNavigation } from "expo-router";
 import { userContext } from "@/src/utils/context/ContextApi";
 
 const useUpdatePorductApi = () => {
-  const { setProductReloader } = userContext();
+  const { setProductReloader, setIsSubPagePopUpVisible } = userContext();
 
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -57,7 +57,10 @@ const useUpdatePorductApi = () => {
             setProgress((completedSteps / totalSteps) * 100);
             return compressed;
           } catch (err) {
-            console.error("Error compressing image:", err);
+            setIsSubPagePopUpVisible({
+              status: true,
+              message: "Error compressing image",
+            });
             completedSteps++;
             setProgress((completedSteps / totalSteps) * 100);
             return image; // Return original image if compression fails
@@ -77,7 +80,10 @@ const useUpdatePorductApi = () => {
               image: compressedImage,
             };
           } catch (err) {
-            console.error("Error compressing menu item image:", err);
+            setIsSubPagePopUpVisible({
+              status: true,
+              message: "Error compressing menu item image:",
+            });
             completedSteps++;
             setProgress((completedSteps / totalSteps) * 100);
             return item; // Return original item if compression fails
@@ -93,7 +99,10 @@ const useUpdatePorductApi = () => {
             return url;
           })
           .catch((err) => {
-            console.error("Error uploading image to Cloudinary:", err);
+            setIsSubPagePopUpVisible({
+              status: true,
+              message: "Error uploading image to Cloudinary:",
+            });
             throw err;
           })
       );
@@ -106,10 +115,10 @@ const useUpdatePorductApi = () => {
             return { ...item, image: url };
           })
           .catch((err) => {
-            console.error(
-              "Error uploading menu item image to Cloudinary:",
-              err
-            );
+            setIsSubPagePopUpVisible({
+              status: true,
+              message: "Error uploading menu item image to Cloudinary:",
+            });
             throw err;
           })
       );

@@ -7,11 +7,12 @@ import { userContext } from '@/src/utils/context/ContextApi'
 import { getFullData } from '@/src/functions/storage/Storage'
 import AuthToken from '@/src/constants/token/AuthToken'
 import BgColor from '@/src/constants/color/BgColor'
+import SubPageWraper from '@/src/components/layout/SubPageWraper'
 
 const SearchPage = () => {
     const [search, setSearch] = useState("")
     const [isLoading, setIsLoading] = useState(true)
-    const { locationSearch, setLocationSearch } = userContext()
+    const { setLocationSearch } = userContext()
 
     const handleSearch = useCallback((query: string) => {
         setSearch(query)
@@ -43,7 +44,7 @@ const SearchPage = () => {
 
     useEffect(() => {
         searchLocationFinder()
-        
+
         // Cleanup function
         return () => {
             setIsLoading(true)
@@ -60,20 +61,23 @@ const SearchPage = () => {
     }
 
     return (
-        <View className='w-full h-full bg-black'>
-            <PageNavigation path="Search" />
-            <MainSearch search={search} setSearch={handleSearch} />
-            {
-                search.length <= 0 && (
-                    <View className='w-full flex gap-4 mt-10'>
-                        <SearchSuggestion
-                            onCategoryPress={handleCategoryPress}
-                            onSuggestionPress={handleSuggestionPress}
-                        />
-                    </View>
-                )
-            }
-        </View>
+        <SubPageWraper>
+            <View className='w-full h-full bg-black'>
+                <PageNavigation path="Search" />
+                <MainSearch search={search} setSearch={handleSearch} />
+                {
+                    search.length <= 0 && (
+                        <View className='w-full flex gap-4 mt-10'>
+                            <SearchSuggestion
+                                onCategoryPress={handleCategoryPress}
+                                onSuggestionPress={handleSuggestionPress}
+                            />
+                        </View>
+                    )
+                }
+            </View>
+        </SubPageWraper>
+
     )
 }
 

@@ -1,6 +1,8 @@
 import api from "@/src/utils/api/Axios";
+import { userContext } from "@/src/utils/context/ContextApi";
 
 const useLikeProductApi = () => {
+  const { setIsSubPagePopUpVisible } = userContext();
   const likeController = async (
     userId: string,
     productId: string,
@@ -21,14 +23,18 @@ const useLikeProductApi = () => {
           }
         })
         .catch((err) => {
-          console.log(err);
+          setIsSubPagePopUpVisible({
+            status: true,
+            message: "Error liking product",
+          });
         });
     } catch (error) {
-      console.log(error);
+      setIsSubPagePopUpVisible({
+        status: true,
+        message: "Error liking product",
+      });
     }
   };
-
- 
 
   return { likeController };
 };

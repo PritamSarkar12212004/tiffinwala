@@ -1,16 +1,18 @@
 import api from "@/src/utils/api/Axios";
-import { useNavigation } from "expo-router";
+import { userContext } from "@/src/utils/context/ContextApi";
 
 const useViewsProductApi = () => {
-  const navigation = useNavigation();
+  const { setIsSubPagePopUpVisible } = userContext();
   const viewsProduct = async (postId: string) => {
     try {
       await api.post("/api/product/views-product", {
         postId,
       });
     } catch (error) {
-      console.log(error);
-      navigation.goBack();
+      setIsSubPagePopUpVisible({
+        status: true,
+        message: "Something went wrong",
+      });
     }
   };
 

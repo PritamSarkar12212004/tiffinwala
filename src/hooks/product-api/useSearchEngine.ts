@@ -2,7 +2,7 @@ import api from "@/src/utils/api/Axios";
 import { userContext } from "@/src/utils/context/ContextApi";
 
 const useSearchEngine = () => {
-  const { locationSearch } = userContext();
+  const { locationSearch, setIsSubPagePopUpVisible } = userContext();
   const searchEngine = (query: string, setResults: any, setLoading: any) => {
     api
       .post("/api/search/main-engine", {
@@ -16,7 +16,10 @@ const useSearchEngine = () => {
         }, 500);
       })
       .catch((err) => {
-        console.log(err);
+        setIsSubPagePopUpVisible({
+          status: true,
+          message: "Error searching product",
+        });
       });
   };
 

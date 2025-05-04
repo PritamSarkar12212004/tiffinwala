@@ -1,7 +1,7 @@
 import api from "@/src/utils/api/Axios";
 import { userContext } from "@/src/utils/context/ContextApi";
 const useDeleteProductApi = () => {
-  const { setProductReloader } = userContext();
+  const { setProductReloader, setIsSubPagePopUpVisible } = userContext();
   const deleteProduct = async (productId: string, setDeleteLoading: any) => {
     if (!productId) console.log("productId is null");
     await api
@@ -13,7 +13,10 @@ const useDeleteProductApi = () => {
         setDeleteLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setIsSubPagePopUpVisible({
+          status: true,
+          message: "Error deleting product",
+        });
         setDeleteLoading(false);
       });
   };
