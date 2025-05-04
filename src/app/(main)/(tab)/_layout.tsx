@@ -13,7 +13,7 @@ const _layout = () => {
 
 const MainLayout = () => {
   return <SafeAreaView className='w-full h-full' style={{ backgroundColor: BgColor.Primary }}>
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <Stack.Screen name="index" />
 
     </Stack>

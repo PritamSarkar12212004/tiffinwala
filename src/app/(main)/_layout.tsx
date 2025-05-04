@@ -27,7 +27,7 @@ const MainLayout = () => {
   return (
     <>
       <StatusBar barStyle='light-content' backgroundColor={BgColor.Primary} />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
         <Stack.Screen name="(tab)" options={{ animation: "slide_from_bottom" }} />
 
       </Stack>
