@@ -31,7 +31,6 @@ interface ContextType {
   setLocation: React.Dispatch<React.SetStateAction<LocationData | null>>;
   userProfile: UserProfile | null;
   setUserProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>;
-
   userTemLocation: UserTemLocation | null;
   setUserTemLocation: React.Dispatch<
     React.SetStateAction<UserTemLocation | null>
@@ -44,15 +43,22 @@ interface ContextType {
   seteditTempInformation: React.Dispatch<React.SetStateAction<any>>;
   mainData: any;
   setMainData: React.Dispatch<React.SetStateAction<any>>;
-  totalLikes: any;
-  setTotalLikes: React.Dispatch<React.SetStateAction<any>>;
-  totalViews: any;
-  setTotalViews: React.Dispatch<React.SetStateAction<any>>;
-  filters: any;
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
-  locationSearch: any;
-  setLocationSearch: React.Dispatch<React.SetStateAction<any>>;
-  AddressGeterFunc: () => any;
+  totalLikes: number | null;
+  setTotalLikes: React.Dispatch<React.SetStateAction<number | null>>;
+  totalViews: number | null;
+  setTotalViews: React.Dispatch<React.SetStateAction<number | null>>;
+  filters: {
+    priceRange: [number, number];
+    sortBy: "rating" | "price" | "distance";
+  };
+  setFilters: React.Dispatch<
+    React.SetStateAction<{
+      priceRange: [number, number];
+      sortBy: "rating" | "price" | "distance";
+    }>
+  >;
+  locationSearch: LocationData | null;
+  setLocationSearch: React.Dispatch<React.SetStateAction<LocationData | null>>;
   isAuthNotificationVisible: {
     status: boolean;
     message: string;
@@ -63,6 +69,7 @@ interface ContextType {
       message: string;
     }>
   >;
+  AddressGeterFunc: () => void;
 }
 
 interface Profile {
@@ -76,12 +83,14 @@ interface Profile {
   latitude: number | null;
   longitude: number | null;
 }
+
 interface UserTemLocation {
   longitude: number;
   latitude: number;
   address: string;
   formattedAddress: string;
 }
+
 interface PostData {
   title: string;
   description: string;
@@ -99,6 +108,7 @@ interface PostData {
     description: string;
   }[];
 }
+
 interface PostData2 extends PostData {
   productId: string;
 }

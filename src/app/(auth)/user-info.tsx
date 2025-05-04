@@ -22,19 +22,9 @@ import { userContext } from '@/src/utils/context/ContextApi';
 import useCreateProfile from '@/src/hooks/profile/useCreateProfile';
 import LottiAnimation from '@/src/components/layout/LottiAnimation';
 import LottiConstant from '@/src/constants/lotti/LottiConstant';
+import { LocationData } from '@/src/components/interface/AllInterface';
 
-interface LocationData {
-  latitude: number;
-  longitude: number;
-  address?: string;
-  city?: string;
-  state?: string;
-  area?: string;
-  pincode?: string;
-  formattedAddress?: string;
-}
-
-interface FormData {
+export interface FormData {
   username: string;
   email: string;
   gender: string;
@@ -115,7 +105,7 @@ const UserInfo = () => {
         setIsAuthNotificationVisible({
           status: true,
           message: 'Location services are disabled. Please enable them in your device settings.'
-        })
+        });
         setIsLoadingLocation(false);
         return;
       }
@@ -125,7 +115,7 @@ const UserInfo = () => {
         setIsAuthNotificationVisible({
           status: true,
           message: 'Permission Denied, Please allow location access to use this feature.'
-        })
+        });
         setIsLoadingLocation(false);
         return;
       }
@@ -147,17 +137,7 @@ const UserInfo = () => {
           city: address.city || undefined,
           state: address.region || undefined,
           area: address.district || undefined,
-          pincode: address.postalCode || undefined,
-          formattedAddress: [
-            address.name?.replace(/^\d+\s*/, ''),
-            address.street?.replace(/^\d+\s*/, ''),
-            address.district,
-            address.city,
-            address.subregion,
-            address.region,
-            address.postalCode,
-            address.country
-          ].filter(Boolean).join(', ')
+          pincode: address.postalCode || undefined
         };
         setLocation(locationData);
         setFormData(prev => ({ ...prev, location: locationData }));
@@ -166,7 +146,7 @@ const UserInfo = () => {
       setIsAuthNotificationVisible({
         status: true,
         message: 'Failed to get location. Please try again.'
-      })
+      });
     } finally {
       setIsLoadingLocation(false);
     }
@@ -178,7 +158,7 @@ const UserInfo = () => {
       setIsAuthNotificationVisible({
         status: true,
         message: 'Please fill in all required fields'
-      })
+      });
       setIsLoading(false);
       return;
     }
@@ -364,7 +344,7 @@ const UserInfo = () => {
                 {formData.location && (
                   <View className="bg-zinc-700/50 p-4 rounded-2xl border border-zinc-600">
                     <Text className="text-white font-semibold mb-2 text-lg">Selected Location:</Text>
-                    <Text className="text-zinc-400 text-base">{formData.location.formattedAddress}</Text>
+                    <Text className="text-zinc-400 text-base">{formData.location.address}, {formData.location.city}, {formData.location.state}</Text>
                   </View>
                 )}
               </View>

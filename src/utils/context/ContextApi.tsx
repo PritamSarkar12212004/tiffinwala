@@ -5,7 +5,7 @@ import { getFullData } from "@/src/functions/storage/Storage";
 import AuthToken from "@/src/constants/token/AuthToken";
 
 const Context = createContext<ContextType | undefined>(undefined);
-export const ContextProvider = ({ children }: any) => {
+export const ContextProvider = ({ children }: { children: React.ReactNode }) => {
     // Bottom Sheet Ref
     const bottomSheetRef = useRef<BottomSheet>(null);
     const bottomSheetRef2 = useRef<BottomSheet>(null);
@@ -26,16 +26,16 @@ export const ContextProvider = ({ children }: any) => {
     const [product, setProduct] = useState<PostData[]>([]);
 
     // post product reloader
-    const [productReloader, setProductReloader] = useState<any>("")
+    const [productReloader, setProductReloader] = useState<boolean>(false)
 
     // edit page temp information
-    const [editTempInformation, seteditTempInformation] = useState<any>()
+    const [editTempInformation, seteditTempInformation] = useState<any>(null)
 
     // mainData render temp
-    const [mainData, setMainData] = useState<any>()
+    const [mainData, setMainData] = useState<any>(null)
 
     // all post product Totoal Likes
-    const [totalLikes, setTotalLikes] = useState<any>(null)
+    const [totalLikes, setTotalLikes] = useState<number | null>(null)
 
     // auth notification
     const [isAuthNotificationVisible, setIsAuthNotificationVisible] = useState({
@@ -44,7 +44,8 @@ export const ContextProvider = ({ children }: any) => {
     })
 
     // all post product Totoal Views
-    const [totalViews, setTotalViews] = useState<any>(null)
+    const [totalViews, setTotalViews] = useState<number | null>(null)
+
     // filter Item Modal
     const [filters, setFilters] = useState({
         priceRange: [0, 5000],
@@ -52,14 +53,9 @@ export const ContextProvider = ({ children }: any) => {
     });
 
     // get location 
-    const [locationSearch, setLocationSearch] = useState<any>(null)
+    const [locationSearch, setLocationSearch] = useState<LocationData | null>(null)
 
-    const getLocation = () => {
-        const fullLogin = getFullData(AuthToken.UserInfo)
-        if (fullLogin && fullLogin.User_Address) {
-            setLocationSearch(fullLogin.User_Address)
-        }
-    }
+  
 
     // Initialize user profile data
     const AddressGeterFunc = () => {
@@ -71,8 +67,8 @@ export const ContextProvider = ({ children }: any) => {
             }
         }
     }
+
     useEffect(() => {
-        AddressGeterFunc()
         return () => {
             setUserProfile(null)
             setUserTemLocation(null)
@@ -80,7 +76,6 @@ export const ContextProvider = ({ children }: any) => {
     }, [])
 
     useEffect(() => {
-        getLocation()
         return () => {
             setLocationSearch(null)
         }
@@ -131,7 +126,7 @@ export const ContextProvider = ({ children }: any) => {
                 AddressGeterFunc,
                 // auth notification
                 isAuthNotificationVisible,
-                setIsAuthNotificationVisible
+                setIsAuthNotificationVisible,
             }}
         >
             {children}

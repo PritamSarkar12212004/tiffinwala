@@ -18,7 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import BgColor from '@/src/constants/color/BgColor';
 import api from '@/src/utils/api/Axios';
 import LogoContant from '@/src/constants/logo/LogoContant';
-import { setFullData, setLocationData } from '@/src/functions/storage/Storage';
+import { getFullData, setFullData, setLocationData } from '@/src/functions/storage/Storage';
 import AuthToken from '@/src/constants/token/AuthToken';
 import { userContext } from '@/src/utils/context/ContextApi';
 import UtilsToken from '@/src/constants/token/UtilsToken';
