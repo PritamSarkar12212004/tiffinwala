@@ -2,7 +2,7 @@ import "../../global.css";
 
 import React from 'react';
 import { Stack } from 'expo-router';
-import { ContextProvider, userContext } from "../utils/context/ContextApi";
+import { ContextProvider } from "../utils/context/ContextApi";
 
 export default function Layout() {
   return (

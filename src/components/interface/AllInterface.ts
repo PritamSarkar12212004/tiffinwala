@@ -69,7 +69,7 @@ interface ContextType {
       message: string;
     }>
   >;
-  isSubPagePopUpVisible: {  
+  isSubPagePopUpVisible: {
     status: boolean;
     message: string;
   };
@@ -78,6 +78,9 @@ interface ContextType {
       status: boolean;
       message: string;
     }>
+  >;
+  isUpdateAvailable: boolean;
+  setIsUpdateAvailable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface Profile {

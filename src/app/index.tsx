@@ -8,16 +8,17 @@ import { useRouter } from 'expo-router'
 import { getFullData, getTemData, } from '../functions/storage/Storage'
 import AuthToken from '../constants/token/AuthToken'
 import { userContext } from '../utils/context/ContextApi'
+import useUpdateChack from '../hooks/check/useUpdateChack'
 
 const index = () => {
     const router = useRouter()
     const { setUserProfile, setUserTemLocation } = userContext()
+    const { checkUpdate } = useUpdateChack()
 
     const authChaker = async () => {
         try {
             const tempLogin = getTemData(AuthToken.TemLogin)
             const fullLogin = getFullData(AuthToken.UserInfo)
-            
             if (tempLogin) {
                 router.replace("/user-info" as any)
             } else if (fullLogin) {
@@ -35,10 +36,19 @@ const index = () => {
         }
     }
 
+    const updateChaker = async () => {
+        let update = await checkUpdate()
+        if (update === true) {
+            authChaker()
+        } else {
+            router.replace("/(worker)" as any)
+        }
+    }
+
     const loading = () => {
         setTimeout(() => {
-            authChaker()
-        }, 1000)
+            updateChaker()
+        }, 100)
     }
 
     useEffect(() => {

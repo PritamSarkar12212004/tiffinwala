@@ -61,7 +61,10 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     // get location 
     const [locationSearch, setLocationSearch] = useState<LocationData | null>(null)
 
-  
+    // check app update
+    const [isUpdateAvailable, setIsUpdateAvailable] = useState(true)
+
+
 
     // Initialize user profile data
     const AddressGeterFunc = () => {
@@ -136,6 +139,8 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 // sub page pop up
                 isSubPagePopUpVisible,
                 setIsSubPagePopUpVisible,
+                isUpdateAvailable,
+                setIsUpdateAvailable
             }}
         >
             {children}
