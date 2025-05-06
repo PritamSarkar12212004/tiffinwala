@@ -93,6 +93,11 @@
       },
       "eas": {
         "projectId": "30b9a184-5754-4029-82f1-60a637003c62"
+      },
+      "react-native-google-mobile-ads": {
+        "androidAppId": "ca-app-pub-6357576702874785~5284364652",
+        "iosAppId": "ca-app-pub-6357576702874785~6863678824",
+        "userTrackingUsageDescription": "This ID will be used to show you more relevant and personalized ads."
       }
     },
     "owner": "pritam_sarkar"

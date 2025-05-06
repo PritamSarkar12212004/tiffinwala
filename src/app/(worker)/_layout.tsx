@@ -7,11 +7,16 @@ const _layout = () => {
     <MainLayOut />
   )
 }
+
 const MainLayOut = () => {
   return (
     <>
-      <StatusBar hidden />
-      <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
         <Stack.Screen name="index" />
       </Stack>
     </>

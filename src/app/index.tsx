@@ -48,7 +48,7 @@ const index = () => {
     const loading = () => {
         setTimeout(() => {
             updateChaker()
-        }, 100)
+        }, 1000)
     }
 
     useEffect(() => {
