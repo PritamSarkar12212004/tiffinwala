@@ -1,21 +1,31 @@
-import { View, Text, TouchableOpacity, Image, Animated } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import { userContext } from '@/src/utils/context/ContextApi'
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
+const MainTiffinCard = ({ item, setBottomSheetData, pageAddCalculation, setPageAddCalculation }: any) => {
     const navigation = useNavigation()
+    const router = useRouter()
     const { bottomSheetRef, setMainData } = userContext();
+
     const bottomSheetHandler = () => {
         setBottomSheetData(item.postMenu)
         bottomSheetRef.current?.expand()
     }
+
     const handleCardPress = () => {
+        if (pageAddCalculation === 4) {
+            router.push('/(main)/(ads)' as never)
+            setPageAddCalculation(0)
+            return
+        }
+        setPageAddCalculation(pageAddCalculation + 1)
         setMainData(item)
-        navigation.navigate('ShowProduct' as never);
+        navigation.navigate('ShowProduct' as never)
     }
+
     return (
         <TouchableOpacity
             onPress={handleCardPress}
@@ -38,7 +48,6 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
                     <AntDesign name="heart" size={14} color="red" />
                     <Text className="text-white ml-1 font-bold">{item.productLikes?.length || 0}</Text>
                 </View>
-
             </View>
 
             <Image
@@ -70,7 +79,6 @@ const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
 
                 <View className='flex-row justify-between items-center'>
                     <View className='flex-row items-center gap-4'>
-
                     </View>
                     <TouchableOpacity
                         activeOpacity={0.8}

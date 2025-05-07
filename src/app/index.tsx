@@ -27,7 +27,7 @@ const index = () => {
                 if (fullLogin.User_Address) {
                     setUserTemLocation(fullLogin.User_Address)
                 }
-                router.replace("/(main)" as any)
+                router.replace("/(main)/(tab)" as any)
             } else {
                 router.replace("/(auth)" as any)
             }

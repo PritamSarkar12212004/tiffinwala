@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import MainTiffinCard from '../cards/MainTiffinCard';
 import BanerAds from '../ads/bannerAds/BanerAds';
 import NativeAds from '../ads/nativeAds/NativeAds';
-  
+import { userContext } from '@/src/utils/context/ContextApi';
+
 
 // Function to insert ad placeholders into data
 const insertAdsIntoData = (data: any[]) => {
@@ -45,8 +46,10 @@ const AdBanner = () => {
 // MainCardShow component
 const MainCardShow = ({ mainData, setBottomSheetData }: any) => {
     const modifiedData = insertAdsIntoData(mainData);
-
+    const [pageAddCalculation, setPageAddCalculation] = useState<number>(1)
+    console.log(pageAddCalculation)
     return (
+
         <View className="w-full px-2 flex gap-5">
             <FlatList
                 data={modifiedData}
@@ -54,17 +57,19 @@ const MainCardShow = ({ mainData, setBottomSheetData }: any) => {
                 renderItem={({ item }) => {
                     if (item.type === 'ad') {
                         return <NativeAds />;
-                    } else {
-                        return (
-                            <MainTiffinCard
-                                item={item.data}
-                                setBottomSheetData={setBottomSheetData}
-                            />
-                        );
                     }
+                    return (
+                        <MainTiffinCard
+                            pageAddCalculation={pageAddCalculation}
+                            setPageAddCalculation={setPageAddCalculation}
+                            item={item.data}
+                            setBottomSheetData={setBottomSheetData}
+                        />
+                    );
+
+
                 }}
                 showsVerticalScrollIndicator={false}
-                // onEndReached={handleEndReached}  // Trigger when the end is reached
                 onEndReachedThreshold={0.5} // Trigger when 50% of the list is visible            />
             />
         </View>
