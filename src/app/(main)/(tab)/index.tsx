@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ActivityIndicator, Animated } from 'react-native'
+import { View, Text, StyleSheet, Image, Animated, Platform } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import MainPageHeader from '@/src/components/headers/MainPageHeader'

@@ -9,6 +9,7 @@ import { getFullData, getTemData, } from '../functions/storage/Storage'
 import AuthToken from '../constants/token/AuthToken'
 import { userContext } from '../utils/context/ContextApi'
 import useUpdateChack from '../hooks/check/useUpdateChack'
+import mobileAds from 'react-native-google-mobile-ads';
 
 const index = () => {
     const router = useRouter()
@@ -37,13 +38,14 @@ const index = () => {
     }
 
     const updateChaker = async () => {
-        let update = await checkUpdate()
-        if (update === true) {
-            authChaker()
-        } else {
-            router.replace("/(worker)" as any)
-        }
+        // let update = await checkUpdate()
+        // if (update === true) {
+        authChaker()
+        // } else {
+        //     router.replace("/(worker)" as any)
+        // }
     }
+
 
     const loading = () => {
         setTimeout(() => {
@@ -53,6 +55,11 @@ const index = () => {
 
     useEffect(() => {
         loading()
+        mobileAds()
+            .initialize()
+            .then(() => {
+                console.log('AdMob initialized');
+            });
     }, [])
 
     return (

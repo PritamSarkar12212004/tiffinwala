@@ -16,6 +16,9 @@
       "bundleIdentifier": "yes",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
@@ -35,9 +38,16 @@
         "android.permission.ACCESS_MEDIA_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.pritam_sarkar.TiffinWala"
+      "package": "com.pritam_sarkar.TiffinWala",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -82,7 +92,17 @@
           "supportsPictureInPicture": true
         }
       ],
-      ["react-native-compressor"]
+      [
+        "react-native-compressor"
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -100,6 +120,9 @@
         "userTrackingUsageDescription": "This ID will be used to show you more relevant and personalized ads."
       }
     },
-    "owner": "pritam_sarkar"
+    "owner": "pritam_sarkar",
+    "updates": {
+      "url": "https://u.expo.dev/30b9a184-5754-4029-82f1-60a637003c62"
+    }
   }
 }

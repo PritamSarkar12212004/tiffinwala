@@ -167,7 +167,7 @@ const index = () => {
         <View className="flex-1 py-6 px-4">
           {/* Logo and Welcome Text */}
           <View className="items-center mt-12 mb-16">
-            <View className="w-32 h-32 rounded-full mb-6 border-4 overflow-hidden" style={{ borderColor: BgColor.Accent }}>
+            <View className="w-32 h-32 rounded-full bg-white mb-6 border-4 overflow-hidden" style={{ borderColor: BgColor.Accent }}>
               <Image
                 source={LogoContant.logo3}
                 className="w-full h-full"
