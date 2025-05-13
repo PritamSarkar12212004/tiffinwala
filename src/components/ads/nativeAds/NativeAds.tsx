@@ -12,15 +12,23 @@ import { TestIds } from 'react-native-google-mobile-ads';
 const NativeAds = () => {
     const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
     const [loading, setLoading] = useState(true);
-    const adUnitId = __DEV__ ? TestIds.NATIVE : 'ca-app-pub-6357576702874785/4482273081';
+
+    // Use test ID for development, real ID for production
+    const adUnitId = __DEV__
+        ? TestIds.NATIVE
+        : 'ca-app-pub-6357576702874785/4482273081';
+
     useEffect(() => {
-        NativeAd.createForAdRequest(adUnitId)
+        NativeAd.createForAdRequest(adUnitId, {
+            requestNonPersonalizedAdsOnly: true,
+            keywords: ['food', 'tiffin', 'delivery'],
+        })
             .then((ad) => {
                 setNativeAd(ad);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error(error);
+                console.error('Error loading native ad:', error);
                 setLoading(false);
             });
     }, []);
@@ -43,9 +51,7 @@ const NativeAds = () => {
     if (!nativeAd) return null;
 
     return (
-
         <NativeAdView nativeAd={nativeAd} style={{ marginVertical: 10, padding: 10, backgroundColor: '#1e1e1e', borderRadius: 10, width: '100%', display: "flex", justifyContent: "center", alignItems: "center" }}>
-
             <NativeMediaView resizeMode="cover" style={{ width: '100%', height: 180, borderRadius: 10, marginBottom: 10, display: "flex", justifyContent: "center", alignItems: "center" }} />
             <NativeAsset assetType={NativeAssetType.HEADLINE}>
                 <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{nativeAd.headline}</Text>
@@ -62,7 +68,6 @@ const NativeAds = () => {
                     <Text style={{ color: '#fff' }}>{nativeAd.callToAction}</Text>
                 </TouchableOpacity>
             </NativeAsset>
-
         </NativeAdView>
     );
 };

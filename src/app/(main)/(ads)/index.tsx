@@ -5,13 +5,27 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, BackHandler } from 'react-native';
 import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
 
-const adUnitId = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-6357576702874785/8879607699';
+// Use test ID for development, real ID for production
+const adUnitId = __DEV__ 
+    ? TestIds.REWARDED 
+    : 'ca-app-pub-6357576702874785/8879607699';
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
     requestNonPersonalizedAdsOnly: true,
     keywords: ['food', 'tiffin', 'delivery'],
+    serverSideVerificationOptions: {
+        userId: 'USER_ID',
+    },
 });
 
+/**
+ * Renders a rewarded ad screen with loading states and ad interaction logic.
+ * 
+ * This component manages the lifecycle of a Google Mobile Ads rewarded advertisement,
+ * handling ad loading, display, reward earning, and navigation control.
+ * 
+ * @returns {JSX.Element|null} A view displaying ad loading states or null if ad is not shown
+ */
 const index = () => {
     const [loaded, setLoaded] = useState(false);
     const [showAd, setShowAd] = useState(true);
@@ -40,14 +54,15 @@ const index = () => {
 
     useEffect(() => {
         const unsubscribeLoaded = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
+            console.log('Ad loaded successfully'); // Debug log
             setLoaded(true);
-            // Show ad immediately when loaded
             rewarded.show();
         });
 
         const unsubscribeEarned = rewarded.addAdEventListener(
             RewardedAdEventType.EARNED_REWARD,
             reward => {
+                console.log('Reward earned:', reward); // Debug log
                 setRewardEarned(true);
             },
         );
@@ -55,13 +70,15 @@ const index = () => {
         const unsubscribeClosed = rewarded.addAdEventListener(
             'closed',
             () => {
+                console.log('Ad closed'); // Debug log
                 setAdCompleted(true);
                 setShowAd(false);
                 navigation.goBack();
             },
         );
 
-        // Start loading the rewarded ad immediately
+        // Start loading the rewarded ad
+        console.log('Loading ad...'); // Debug log
         rewarded.load();
 
         // Unsubscribe from events on unmount
@@ -93,11 +110,8 @@ const index = () => {
                     />
                 </View>
             )}
-
         </View>
     );
 };
-
-
 
 export default index;

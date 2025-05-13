@@ -22,7 +22,7 @@ const MainPageHeader = () => {
                     {userTemLocation?.formattedAddress ? userTemLocation?.formattedAddress : userTemLocation?.address}
                 </Text>
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.8} onPress={() => router.push("/(main)/Profile")}>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => router.push("/(main)/Profile" as never)}>
                 <Image source={{ uri: userProfile?.User_Image }} className='w-14 h-14 rounded-full' />
             </TouchableOpacity>
         </View>

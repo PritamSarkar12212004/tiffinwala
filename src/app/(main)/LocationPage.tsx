@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
@@ -6,12 +6,10 @@ import PageNavigation from '@/src/components/navigation/PageNavigation'
 import * as Location from 'expo-location';
 import { useNavigation } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons';
-import UtilsToken from '@/src/constants/token/UtilsToken'
-import { removeLocationData, setLocationData } from '@/src/functions/storage/Storage'
-import { userContext } from '@/src/utils/context/ContextApi'
+import { getFullData, setFullData } from '@/src/functions/storage/Storage'
+import AuthToken from '@/src/constants/token/AuthToken'
 
 const LocationPage = () => {
-    const { setUserTemLocation } = userContext()
     const navigation = useNavigation()
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -54,28 +52,52 @@ const LocationPage = () => {
             }
 
 
-
         } catch (error) {
-            console.error('Location Error:', error);
+            console.
+                error('Location Error:', error);
             setErrorMsg('Failed to get location. Please try again.');
         } finally {
             setIsLoading(false);
         }
     }
-
     const locationSeter = async () => {
-        await removeLocationData(UtilsToken.Location)
-        await setLocationData(UtilsToken.Location, locationDetails)
-        setUserTemLocation(locationDetails)
+        if (location && locationDetails) {
+            const addressParts = [
+                locationDetails.name?.replace(/^\d+\s*/, ''),
+                locationDetails.street?.replace(/^\d+\s*/, ''),
+                locationDetails.district,
+                locationDetails.city,
+                locationDetails.subregion,
+                locationDetails.region,
+                locationDetails.postalCode,
+                locationDetails.country
+            ].filter(Boolean);
 
-        // api.post("/api/user/location-update", {
-        //     address: locationDetails,
-        //     userProfile: userProfile?._id
-        // }).then((res) => {
-        navigation.goBack()
-        // }).catch((err) => {
-        //     Alert.alert("Error", "Something went wrong")
-        // })
+            const formattedAddress = addressParts.join(', ');
+            const fullLogin = getFullData(AuthToken.UserInfo);
+            const data = {
+                User_Bio: fullLogin.User_Bio,
+                User_Created_At: fullLogin.User_Created_At,
+                User_Email: fullLogin.User_Email,
+                User_Gender: fullLogin.User_Gender,
+                User_Image: fullLogin.User_Image,
+                User_Name: fullLogin.User_Name,
+                User_Phone_Number: fullLogin.User_Phone_Number,
+                createdAt: fullLogin.createdAt,
+                updatedAt: fullLogin.updatedAt,
+                userPostList: fullLogin.userPostList,
+                __v: fullLogin.__v,
+                _id: fullLogin._id,
+                User_Address: {
+                    address: formattedAddress,
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                }
+            }
+
+            setFullData(AuthToken.UserInfo, data)
+            navigation.goBack()
+        }
     }
 
     useEffect(() => {
