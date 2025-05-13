@@ -28,13 +28,13 @@ const MainSearchCard = ({ item }: { item: any }) => {
                     <Text className="text-gray-400 text-sm">{item.postTitle}</Text>
                     <View className="flex-row items-center mt-1">
                         <Entypo name="heart" size={16} color="red" />
-                        <Text className="text-gray-400 ml-1">{item.totalLikes}</Text>
+                        <Text className="text-gray-400 ml-1">{item.productLikes.length}</Text>
                         <Text className="text-white ml-4">₹{item.postPrice}</Text>
                         <Text className="text-gray-400 ml-4">{item.distance}km</Text>
                     </View>
                     <View className="flex-row items-center mt-1">
                         <AntDesign name="eyeo" size={16} color="gray" />
-                        <Text className="text-gray-400 ml-1">{item.totalViews}</Text>
+                        <Text className="text-gray-400 ml-1">{item.postTotalViews}</Text>
 
                     </View>
                 </View>

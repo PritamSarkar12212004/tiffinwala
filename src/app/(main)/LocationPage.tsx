@@ -8,6 +8,7 @@ import { useNavigation } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons';
 import { getFullData, setFullData } from '@/src/functions/storage/Storage'
 import AuthToken from '@/src/constants/token/AuthToken'
+import api from '@/src/utils/api/Axios'
 
 const LocationPage = () => {
     const navigation = useNavigation()
@@ -75,6 +76,15 @@ const LocationPage = () => {
 
             const formattedAddress = addressParts.join(', ');
             const fullLogin = getFullData(AuthToken.UserInfo);
+            await api.post("/api/user/location-update", {
+                address: {
+                    address: formattedAddress,
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                },
+                userProfile: fullLogin._id,
+
+            })
             const data = {
                 User_Bio: fullLogin.User_Bio,
                 User_Created_At: fullLogin.User_Created_At,
