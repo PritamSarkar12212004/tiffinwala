@@ -134,7 +134,7 @@ const YourPosts = () => {
                 <View className="flex-row justify-between items-center mt-4">
                     <View className="flex-row items-center gap-2">
                         <Ionicons name="heart-outline" size={20} color="#FFD700" />
-                        <Text className="text-zinc-300 font-medium">{item.productLikes || 0}</Text>
+                        <Text className="text-zinc-300 font-medium">{item.productLikes.length || 0}</Text>
                     </View>
                     <Text className="text-[#FFD700] font-bold text-lg">₹{item.postPrice}</Text>
                 </View>

@@ -106,7 +106,7 @@ const ShowProduct = () => {
             <View className="relative">
                 <Image
                     source={{ uri: item.image }}
-                    className='w-full h-56 rounded-3xl'
+                    className='w-full h-44 rounded-3xl'
                     resizeMode="cover"
                 />
                 <View className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent rounded-3xl" />
