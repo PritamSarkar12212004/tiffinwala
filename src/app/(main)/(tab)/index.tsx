@@ -11,12 +11,9 @@ import Color from '@/src/constants/color/Color'
 import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
-import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
-const { width } = Dimensions.get('window');
-const ITEM_WIDTH = width * 0.85;
 
 const index = () => {
   const [loading, setLoading] = useState<boolean>(false)

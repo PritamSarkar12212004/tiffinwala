@@ -1,5 +1,5 @@
-import { View, FlatList, Text, ActivityIndicator } from 'react-native';
-import React, { useState } from 'react';
+import { View, FlatList } from 'react-native';
+import React from 'react';
 import MainTiffinCard from '../cards/MainTiffinCard';
 import NativeAds from '../ads/nativeAds/NativeAds';
 
@@ -21,7 +21,6 @@ const insertAdsIntoData = (data: any[]) => {
 // MainCardShow component
 const MainCardShow = ({ mainData, setBottomSheetData }: any) => {
     const modifiedData = insertAdsIntoData(mainData);
-    const [pageAddCalculation, setPageAddCalculation] = useState<number>(1)
     return (
 
         <View className="w-full px-2 flex gap-5">
@@ -34,8 +33,7 @@ const MainCardShow = ({ mainData, setBottomSheetData }: any) => {
                     }
                     return (
                         <MainTiffinCard
-                            pageAddCalculation={pageAddCalculation}
-                            setPageAddCalculation={setPageAddCalculation}
+
                             item={item.data}
                             setBottomSheetData={setBottomSheetData}
                         />

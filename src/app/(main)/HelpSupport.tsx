@@ -2,14 +2,16 @@ import { View, Text, TouchableOpacity, ScrollView, Linking } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import SettingsPageLayout from '@/src/components/layout/SettingsPageLayout'
+import { useRouter } from 'expo-router'
 
 const HelpSupport = () => {
+    const router = useRouter()
     const supportOptions = [
         {
             title: "FAQs",
             description: "Find answers to common questions",
             icon: "help-circle-outline",
-            action: () => Linking.openURL('https://tiffinwala.com/faqs')
+            action: () => router.push('/(worker)/FaqScreen' as never)
         },
         {
             title: "Contact Support",
@@ -21,19 +23,19 @@ const HelpSupport = () => {
             title: "Report a Problem",
             description: "Help us improve by reporting issues",
             icon: "bug-outline",
-            action: () => Linking.openURL('mailto:report@tiffinwala.com')
+            action: () => Linking.openURL('mailto:tiffinwala2004@gmail.com')
         },
         {
             title: "Terms of Service",
             description: "Read our terms and conditions",
             icon: "document-text-outline",
-            action: () => Linking.openURL('https://tiffinwala.com/terms')
+            action: () => router.push('/(worker)/TermNCondition' as never)
         },
         {
             title: "Privacy Policy",
             description: "Learn about our privacy practices",
             icon: "shield-outline",
-            action: () => Linking.openURL('https://tiffinwala.com/privacy')
+            action: () => router.push('/(worker)/PrivacyPolicyScreen' as never)
         }
     ];
 

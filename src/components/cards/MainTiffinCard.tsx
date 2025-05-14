@@ -17,11 +17,11 @@ import { BlurView } from 'expo-blur';
  * @param {Function} props.setPageAddCalculation - Function to update page calculation state
  * @returns {React.ReactElement} A touchable card displaying tiffin service information
  */
-const MainTiffinCard = ({ item, setBottomSheetData, pageAddCalculation, setPageAddCalculation }: any) => {
+const MainTiffinCard = ({ item, setBottomSheetData }: any) => {
     const navigation = useNavigation()
     const router = useRouter()
     const { bottomSheetRef, setMainData } = userContext();
-    
+
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -38,12 +38,6 @@ const MainTiffinCard = ({ item, setBottomSheetData, pageAddCalculation, setPageA
     }
 
     const handleCardPress = () => {
-        if (pageAddCalculation === 4) {
-            router.push('/(main)/(ads)' as never)
-            setPageAddCalculation(0)
-            return
-        }
-        setPageAddCalculation(pageAddCalculation + 1)
         setMainData(item)
         navigation.navigate('ShowProduct' as never)
     }
@@ -70,7 +64,7 @@ const MainTiffinCard = ({ item, setBottomSheetData, pageAddCalculation, setPageA
                         className="w-full h-64"
                         resizeMode="cover"
                     />
-                    
+
                     {/* Top Info Overlay */}
                     <BlurView intensity={20} className="absolute top-0 left-0 right-0 p-4 flex-row justify-between">
                         <View className="flex-row items-center bg-black/30 px-3 py-1.5 rounded-full">

@@ -14,7 +14,6 @@ import mobileAds from 'react-native-google-mobile-ads';
 const index = () => {
     const router = useRouter()
     const { setUserProfile, setUserTemLocation } = userContext()
-    const { checkUpdate } = useUpdateChack()
 
     const authChaker = async () => {
         try {

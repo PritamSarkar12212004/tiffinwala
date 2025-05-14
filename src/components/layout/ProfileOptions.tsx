@@ -8,14 +8,12 @@ import { userContext } from '@/src/utils/context/ContextApi';
 import UtilsToken from '@/src/constants/token/UtilsToken';
 
 const ProfileOptions = () => {
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const [notifications, setNotifications] = useState(true);
     const navigation = useNavigation()
 
-    const { 
-        setUserProfile, 
-        setUserTemLocation, 
-        setProduct, 
+    const {
+        setUserProfile,
+        setUserTemLocation,
+        setProduct,
         setProductReloader,
         seteditTempInformation,
         setMainData,
