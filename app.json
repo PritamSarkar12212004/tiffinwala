@@ -121,6 +121,12 @@
     "owner": "pritam_sarkar",
     "updates": {
       "url": "https://u.expo.dev/30b9a184-5754-4029-82f1-60a637003c62"
+    },
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     }
   }
 }

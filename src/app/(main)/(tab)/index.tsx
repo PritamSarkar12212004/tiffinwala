@@ -1,16 +1,22 @@
-import { View, Text, StyleSheet, Image, Animated, Platform } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
+import { View, Text, StyleSheet, Image, Animated, Platform, Pressable, Dimensions } from 'react-native'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import BgColor from '@/src/constants/color/BgColor'
 import MainPageHeader from '@/src/components/headers/MainPageHeader'
 import MainPageLayout from '@/src/components/layout/MainPageLayout'
 import Searhmain from '@/src/components/search/Searhmain'
 import MainCardShow from '@/src/components/layout/MainCardShow'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { userContext } from '@/src/utils/context/ContextApi'
 import Color from '@/src/constants/color/Color'
 import useMainDataFetch from '@/src/hooks/product-api/useMainDataFetch'
 import LottiConstant from '@/src/constants/lotti/LottiConstant'
 import LottiAnimation from '@/src/components/layout/LottiAnimation'
+import { BlurView } from 'expo-blur';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+
+const { width } = Dimensions.get('window');
+const ITEM_WIDTH = width * 0.85;
 
 const index = () => {
   const [loading, setLoading] = useState<boolean>(false)
@@ -39,8 +45,24 @@ const index = () => {
     }
   }, [])
 
-  return (
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+      />
+    ),
+    []
+  );
 
+  const handleItemPress = (item: any) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Add any additional item press handling here
+  };
+
+  return (
     <View className="flex-1" style={{ backgroundColor: BgColor.Primary }}>
       <MainPageHeader />
       <MainPageLayout>
@@ -65,51 +87,81 @@ const index = () => {
       <BottomSheet
         ref={bottomSheetRef}
         style={styles.bottomSheet}
-        snapPoints={['70%']}
+        snapPoints={['85%']}
         index={-1}
         enablePanDownToClose={true}
-        handleStyle={{ backgroundColor: BgColor.Primary }}
-        handleIndicatorStyle={{ backgroundColor: Color.Third }}
-        backgroundStyle={{ backgroundColor: BgColor.Primary }}
+        handleStyle={styles.handleStyle}
+        handleIndicatorStyle={styles.handleIndicator}
+        backgroundStyle={styles.bottomSheetBackground}
         enableHandlePanningGesture={true}
+        backdropComponent={renderBackdrop}
       >
-        <BottomSheetScrollView style={styles.contentContainer}>
-          <View className='w-full h-full p-4 mb-32'>
-            <Text className="text-white text-xl font-bold mb-4">Menu Items</Text>
-            <View className='flex-row flex-wrap justify-between'>
+        <BottomSheetScrollView
+          style={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className='w-full h-full px-4 pb-32'>
+            {/* Header Section */}
+            <View className='py-4 border-b border-zinc-800'>
+              <Text className="text-white text-2xl font-bold mb-1">Menu Items</Text>
+              <Text className="text-zinc-400 text-sm">Explore our delicious offerings</Text>
+            </View>
+
+            {/* Menu Items Grid */}
+            <View className='mt-4'>
               {bottomSheetData?.map((item: any, index: number) => (
-                <View
+                <Pressable
                   key={index}
-                  className='w-[48%] mb-6'
-                  style={{
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                    elevation: 5,
-                  }}
+                  onPress={() => handleItemPress(item)}
+                  className='mb-4'
                 >
-                  <View className='aspect-square rounded-xl overflow-hidden bg-zinc-800'>
-                    <Image
-                      source={{ uri: item.image }}
-                      className='w-full h-full'
-                      resizeMode='cover'
-                    />
-                  </View>
-                  <View className='mt-2'>
-                    <Text className='text-white text-center text-sm font-bold' numberOfLines={1}>
-                      {item.title}
-                    </Text>
-                    {item.description && (
-                      <Text className='text-zinc-400 text-center text-xs mt-1' numberOfLines={2}>
-                        {item.description}
-                      </Text>
-                    )}
-                  </View>
-                </View>
+                  <Animated.View
+                    className='rounded-2xl overflow-hidden bg-zinc-900'
+                    style={styles.menuItemCard}
+                  >
+                    <View className='flex-row'>
+                      {/* Image Container */}
+                      <View className='w-36 h-36'>
+                        <Image
+                          source={{ uri: item.image }}
+                          className='w-full h-full'
+                          resizeMode='cover'
+                        />
+                      </View>
+
+                      {/* Content Container */}
+                      <View className='flex-1 p-4 justify-between'>
+                        <View>
+                          <Text className='text-white text-xl font-bold mb-2' numberOfLines={1}>
+                            {item.title}
+                          </Text>
+                          {item.description && (
+                            <Text className='text-zinc-400 text-sm leading-5' numberOfLines={3}>
+                              {item.description}
+                            </Text>
+                          )}
+                        </View>
+
+                        {/* Tags and Info */}
+                        <View className='flex-row items-center mt-3'>
+                          {item.isVeg !== undefined && (
+                            <View className='flex-row items-center bg-zinc-800 px-3 py-1.5 rounded-full mr-2'>
+                              <MaterialCommunityIcons
+                                name={item.isVeg ? "food-apple" : "food-steak"}
+                                size={14}
+                                color={item.isVeg ? "#4CAF50" : "#FF4B4B"}
+                              />
+                              <Text className='text-zinc-300 text-xs ml-1.5 font-medium'>
+                                {item.isVeg ? 'Pure Veg' : 'Non-Veg Available'}
+                              </Text>
+                            </View>
+                          )}
+
+                        </View>
+                      </View>
+                    </View>
+                  </Animated.View>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -121,19 +173,37 @@ const index = () => {
 
 const styles = StyleSheet.create({
   bottomSheet: {
-    marginBottom: 80,
+    marginBottom: Platform.OS === 'ios' ? 0 : 80,
     zIndex: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+  },
+  bottomSheetBackground: {
+    backgroundColor: BgColor.Primary,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  handleStyle: {
+    backgroundColor: BgColor.Primary,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  handleIndicator: {
+    backgroundColor: Color.Third,
+    width: 40,
   },
   contentContainer: {
     flex: 1,
+  },
+  menuItemCard: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
 });
 
