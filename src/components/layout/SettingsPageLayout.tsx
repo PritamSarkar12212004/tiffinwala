@@ -17,7 +17,8 @@ const SettingsPageLayout = ({ title, children, showBack = true }: SettingsPageLa
             <SafeAreaView className="flex-1">
                 <View className="flex-row items-center p-4 border-b border-zinc-800">
                     {showBack && (
-                        <TouchableOpacity 
+                        <TouchableOpacity
+                            activeOpacity={0.9}
                             onPress={() => router.back()}
                             className="mr-4"
                         >

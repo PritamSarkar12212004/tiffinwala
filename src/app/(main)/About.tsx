@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, Linking } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import SettingsPageLayout from '@/src/components/layout/SettingsPageLayout'
+import * as Application from 'expo-application';
 
 const About = () => {
     const aboutSections = [
@@ -10,17 +11,17 @@ const About = () => {
             items: [
                 {
                     title: "Version",
-                    value: "1.0.0",
+                    value: Application.nativeApplicationVersion,
                     icon: "information-circle-outline"
                 },
                 {
                     title: "Build",
-                    value: "2024.1",
+                    value: "2025",
                     icon: "build-outline"
                 },
                 {
                     title: "Last Updated",
-                    value: "March 2024",
+                    value: "March 2025",
                     icon: "time-outline"
                 }
             ]
@@ -36,15 +37,15 @@ const About = () => {
                 },
                 {
                     title: "Email",
-                    value: "contact@tiffinwala.com",
+                    value: "tiffinwala2004@gmail.com",
                     icon: "mail-outline",
-                    action: () => Linking.openURL('mailto:contact@tiffinwala.com')
+                    action: () => Linking.openURL('mailto:tiffinwala2004@gmail.com')
                 },
                 {
                     title: "Phone",
-                    value: "+91 1234567890",
+                    value: "+917620876689",
                     icon: "call-outline",
-                    action: () => Linking.openURL('tel:+911234567890')
+                    action: () => Linking.openURL('tel:+917620876689')
                 }
             ]
         },
